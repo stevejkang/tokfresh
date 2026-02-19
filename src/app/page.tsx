@@ -48,8 +48,8 @@ export default function Home() {
             Token Reset Timing
           </h1>
           <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground">
-            Never wait for token resets again. Schedule automatic API calls to
-            start your 5-hour cycle exactly when you want.
+            Schedule automatic API calls to start your 5-hour cycle
+            exactly when you want. Use your Claude tokens more efficiently.
           </p>
           <Button asChild size="lg" className="h-12 px-8 text-base">
             <Link href="/setup">
