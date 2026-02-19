@@ -24,9 +24,9 @@ import {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-border/40 bg-white/80 backdrop-blur-sm">
+      <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="text-xl font-bold tracking-tight">
             TokFresh
@@ -75,7 +75,7 @@ export default function Home() {
 
           <div className="grid gap-8 md:grid-cols-2">
             {/* Before */}
-            <Card className="border-destructive/20 bg-white">
+            <Card className="border-destructive/20">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <XCircle className="h-5 w-5 text-destructive" />
@@ -109,7 +109,7 @@ export default function Home() {
             </Card>
 
             {/* After */}
-            <Card className="border-primary/20 bg-white">
+            <Card className="border-primary/20">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -155,7 +155,7 @@ export default function Home() {
           </p>
 
           <div className="grid gap-8 md:grid-cols-3">
-            <Card className="bg-white">
+            <Card>
               <CardHeader>
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                   <Zap className="h-5 w-5 text-primary" />
@@ -168,7 +168,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white">
+            <Card>
               <CardHeader>
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                   <DollarSign className="h-5 w-5 text-primary" />
@@ -181,7 +181,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white">
+            <Card>
               <CardHeader>
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                   <Shield className="h-5 w-5 text-primary" />
