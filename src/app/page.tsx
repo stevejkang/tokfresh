@@ -221,7 +221,7 @@ export default function Home() {
             How It Works
           </h2>
           <p className="mx-auto mb-12 max-w-2xl text-center text-muted-foreground">
-            3 minutes to set up. Zero maintenance after that.
+            1 minute to set up. Zero maintenance after that.
           </p>
 
           <div className="grid gap-8 md:grid-cols-3">
@@ -278,7 +278,7 @@ export default function Home() {
             Ready to optimize your Claude workflow?
           </h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">
-            Set up in 3 minutes. Free forever. Your computer can be off.
+            Set up in 1 minute. Free forever. Your computer can be off.
           </p>
           <p className="mx-auto mb-8 flex items-center justify-center gap-1.5 text-xs text-muted-foreground/70">
             <Shield className="h-3 w-3" />
