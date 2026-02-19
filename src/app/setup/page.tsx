@@ -590,20 +590,21 @@ export default function SetupPage() {
             </AlertDescription>
           </Alert>
         </CardContent>
-        <CardFooter className="flex flex-col gap-3 sm:flex-row">
-          <Button asChild variant="outline" className="w-full">
-            <a
-              href="https://dash.cloudflare.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+        <CardFooter className="flex flex-col gap-3">
+          <a
+            href="https://dash.cloudflare.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full"
+          >
+            <Button variant="outline" className="w-full">
               View in Cloudflare Dashboard
               <ExternalLink className="ml-2 h-4 w-4" />
-            </a>
-          </Button>
-          <Button asChild className="w-full">
-            <Link href="/">Back to Home</Link>
-          </Button>
+            </Button>
+          </a>
+          <Link href="/" className="w-full">
+            <Button className="w-full">Back to Home</Button>
+          </Link>
         </CardFooter>
       </Card>
     );
