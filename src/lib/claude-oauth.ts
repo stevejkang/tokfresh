@@ -1,6 +1,5 @@
 const CLIENT_ID = "9d1c250a-e61b-44d9-88ed-5944d1962f5e";
 const REDIRECT_URI = "https://console.anthropic.com/oauth/code/callback";
-const TOKEN_ENDPOINT = "https://console.anthropic.com/v1/oauth/token";
 
 async function generatePKCE(): Promise<{
   verifier: string;
@@ -55,28 +54,17 @@ export async function exchangeCode(
   error?: string;
 }> {
   try {
-    const splits = code.trim().split("#");
-    const authCode = splits[0];
-    const state = splits[1] || "";
-
-    const response = await fetch(TOKEN_ENDPOINT, {
+    const response = await fetch("/api/auth/exchange", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        code: authCode,
-        state,
-        grant_type: "authorization_code",
-        client_id: CLIENT_ID,
-        redirect_uri: REDIRECT_URI,
-        code_verifier: verifier,
-      }),
+      body: JSON.stringify({ code, verifier }),
     });
 
     if (!response.ok) {
-      const text = await response.text();
+      const json = await response.json().catch(() => null);
       return {
         success: false,
-        error: `Token exchange failed (${response.status}): ${text}`,
+        error: json?.error ?? `Token exchange failed (${response.status})`,
       };
     }
 
