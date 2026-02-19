@@ -2,28 +2,45 @@ export function generateWorkerCode(): string {
   return `export default {
   async scheduled(event, env, ctx) {
     try {
+      // Read refresh token from KV (fallback to env secret for initial run)
+      let refreshToken = await env.TOKEN_STORE.get('refresh_token');
+      if (!refreshToken) {
+        refreshToken = env.REFRESH_TOKEN;
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+      }
+
       const tokenRes = await fetch('https://console.anthropic.com/v1/oauth/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           grant_type: 'refresh_token',
-          refresh_token: env.REFRESH_TOKEN,
+          refresh_token: refreshToken,
           client_id: '9d1c250a-e61b-44d9-88ed-5944d1962f5e'
         })
       });
 
       if (!tokenRes.ok) {
-        throw new Error('Token refresh failed: ' + tokenRes.status);
+        const errorBody = await tokenRes.text().catch(() => '');
+        throw new Error('Token refresh failed: ' + tokenRes.status + ' ' + errorBody);
       }
 
-      const { access_token } = await tokenRes.json();
+      const tokenData = await tokenRes.json();
+      const accessToken = tokenData.access_token;
 
-      const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
+      // Persist rotated refresh token for next invocation
+      if (tokenData.refresh_token) {
+        await env.TOKEN_STORE.put('refresh_token', tokenData.refresh_token);
+      }
+
+      const apiRes = await fetch('https://api.anthropic.com/v1/messages?beta=true', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer ' + access_token,
+          'Authorization': 'Bearer ' + accessToken,
           'anthropic-version': '2023-06-01',
-          'anthropic-beta': 'oauth-2025-04-20',
+          'anthropic-beta': 'oauth-2025-04-20,interleaved-thinking-2025-05-14',
+          'user-agent': 'claude-cli/2.1.2 (external, cli)',
           'content-type': 'application/json'
         },
         body: JSON.stringify({
@@ -34,7 +51,8 @@ export function generateWorkerCode(): string {
       });
 
       if (!apiRes.ok) {
-        throw new Error('Claude API call failed: ' + apiRes.status);
+        const errorBody = await apiRes.text().catch(() => '');
+        throw new Error('Claude API call failed: ' + apiRes.status + ' ' + errorBody);
       }
 
       if (env.NOTIFICATION_CONFIG) {

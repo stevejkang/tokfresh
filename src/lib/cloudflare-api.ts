@@ -30,6 +30,7 @@ export async function deployWorker(params: {
   const { onProgress, ...payload } = params;
 
   try {
+    onProgress?.("Setting up token storage...");
     onProgress?.("Creating worker...");
     onProgress?.("Setting schedule...");
     onProgress?.("Storing secrets...");
