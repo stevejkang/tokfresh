@@ -82,32 +82,32 @@ export default function Home() {
               </div>
 
               <div className="flex items-stretch gap-2.5">
-                <div className="flex h-[4.5rem] flex-[5] items-center justify-center rounded-xl border border-zinc-700/40 bg-zinc-800/60">
+                <div className="flex h-[4.5rem] flex-[5] items-center justify-center rounded-xl border border-border bg-muted">
                   <div className="text-center">
-                    <div className="text-xs font-medium text-zinc-300">
+                    <div className="text-xs font-medium text-foreground">
                       Session
                     </div>
-                    <div className="mt-0.5 text-[10px] text-zinc-500">
+                    <div className="mt-0.5 text-[10px] text-muted-foreground">
                       limit reached
                     </div>
                   </div>
                 </div>
 
-                <div className="flex h-[4.5rem] shrink-0 flex-col items-center justify-center rounded-xl border border-red-500/20 bg-red-950/40 px-5">
+                <div className="flex h-[4.5rem] shrink-0 flex-col items-center justify-center rounded-xl border border-red-200 bg-red-50 px-5 dark:border-red-500/20 dark:bg-red-950/40">
                   <span className="text-base leading-none">⏳</span>
-                  <span className="mt-1 text-[9px] font-medium text-red-400">
+                  <span className="mt-1 text-[9px] font-medium text-red-600 dark:text-red-400">
                     wait
                   </span>
                 </div>
 
-                <div className="flex h-[4.5rem] flex-[3] items-center justify-center rounded-xl border border-dashed border-zinc-700/40 bg-zinc-800/20">
-                  <span className="text-[10px] text-zinc-500">
+                <div className="flex h-[4.5rem] flex-[3] items-center justify-center rounded-xl border border-dashed border-border bg-muted/50">
+                  <span className="text-[10px] text-muted-foreground">
                     rest of work
                   </span>
                 </div>
               </div>
 
-              <p className="mt-3 text-xs text-red-400/80">
+              <p className="mt-3 text-xs text-red-600/80 dark:text-red-400/80">
                 Hit the limit mid-task. Wait hours, then finish the rest.
               </p>
             </div>
@@ -122,33 +122,38 @@ export default function Home() {
             {/* With TokFresh */}
             <div>
               <div className="mb-3 flex items-center gap-2 text-sm font-medium">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 With TokFresh
               </div>
 
-              <div className="flex h-[4.5rem] items-stretch overflow-hidden rounded-xl border border-emerald-500/20 shadow-sm shadow-emerald-500/5">
-                <div className="flex flex-1 items-center justify-center bg-emerald-500/10">
-                  <span className="text-xs font-medium text-emerald-300">
+              <div className="flex h-[4.5rem] items-stretch overflow-hidden rounded-xl border border-emerald-200 shadow-sm dark:border-emerald-500/20 dark:shadow-emerald-500/5">
+                <div className="flex flex-1 items-center justify-center bg-emerald-50 dark:bg-emerald-500/10">
+                  <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
                     Session 1
                   </span>
                 </div>
-                <div className="flex w-12 shrink-0 flex-col items-center justify-center bg-emerald-500/25 shadow-[0_0_16px_rgba(16,185,129,0.3)]">
-                  <span className="text-sm font-bold leading-none text-emerald-300">
+                <div className="flex w-12 shrink-0 flex-col items-center justify-center bg-emerald-100 dark:bg-emerald-500/25 dark:shadow-[0_0_16px_rgba(16,185,129,0.3)]">
+                  <span className="text-sm font-bold leading-none text-emerald-700 dark:text-emerald-300">
                     ↻
                   </span>
-                  <span className="mt-0.5 text-[8px] font-medium text-emerald-400/60">
+                  <span className="mt-0.5 text-[8px] font-medium text-emerald-600/60 dark:text-emerald-400/60">
                     refresh
                   </span>
                 </div>
-                <div className="flex flex-1 items-center justify-center bg-emerald-500/10">
-                  <span className="text-xs font-medium text-emerald-300">
+                <div className="flex flex-1 items-center justify-center bg-emerald-50 dark:bg-emerald-500/10">
+                  <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
                     Session 2
                   </span>
                 </div>
               </div>
 
-              <p className="mt-3 text-xs font-medium text-emerald-400">
-                Limit refreshes mid-work. No interruption.
+              <p className="mt-3 text-xs text-muted-foreground">
+                <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                  Limit refreshes mid-work.
+                </span>{" "}
+                No interruption — fresh tokens kick in while you&apos;re deep
+                in a session. Set your start time and TokFresh aligns every
+                cycle to your routine.
               </p>
             </div>
           </div>
