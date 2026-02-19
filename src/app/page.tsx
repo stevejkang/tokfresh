@@ -10,11 +10,9 @@ import {
   Zap,
   Shield,
   DollarSign,
-  Clock,
   ArrowRight,
   CheckCircle2,
   XCircle,
-  Timer,
   Cloud,
   Link2,
   CalendarClock,
@@ -64,82 +62,95 @@ export default function Home() {
 
       {/* Problem / Solution */}
       <section className="border-y border-border bg-muted/30 py-20">
-        <div className="mx-auto max-w-6xl px-6">
+        <div className="mx-auto max-w-4xl px-6">
           <h2 className="mb-4 text-center text-3xl font-bold tracking-tight">
-            The Problem
+            Your workday, optimized
           </h2>
-          <p className="mx-auto mb-12 max-w-2xl text-center text-muted-foreground">
-            Claude resets your tokens 5 hours after your first use. Without
-            planning, you waste peak hours waiting.
+          <p className="mx-auto mb-14 max-w-xl text-center text-muted-foreground">
+            Same work, same session limit.{" "}
+            <span className="font-medium text-foreground">
+              Zero interruption.
+            </span>
           </p>
 
-          <div className="grid gap-8 md:grid-cols-2">
-            {/* Before */}
-            <Card className="border-destructive/20">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <XCircle className="h-5 w-5 text-destructive" />
-                  Before TokFresh
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 font-mono text-sm">
-                  <div className="flex items-start gap-3">
-                    <Clock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                    <span>10:00 - First Claude use</span>
-                  </div>
-                  <div className="ml-7 border-l-2 border-dashed border-muted-foreground/30 py-2 pl-4 text-muted-foreground">
-                    Token timer starts...
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Timer className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-                    <span className="text-destructive">
-                      14:00 - Tokens exhausted
-                    </span>
-                  </div>
-                  <div className="ml-7 border-l-2 border-dashed border-destructive/30 py-2 pl-4 text-destructive">
-                    1 hour waiting...
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Clock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                    <span>15:00 - Token reset</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="space-y-8">
+            {/* Without TokFresh */}
+            <div>
+              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <XCircle className="h-4 w-4 text-red-500" />
+                Without TokFresh
+              </div>
 
-            {/* After */}
-            <Card className="border-primary/20">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <CheckCircle2 className="h-5 w-5 text-primary" />
-                  After TokFresh
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 font-mono text-sm">
-                  <div className="flex items-start gap-3">
-                    <Zap className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span>06:00 - Auto API call</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span>11:00 - Reset / Auto API call</span>
-                  </div>
-                  <div className="ml-7 border-l-2 border-dashed border-primary/30 py-2 pl-4 text-primary">
-                    Full coverage during work hours
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span>16:00 - Reset / Auto API call</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span>21:00 - Reset / Auto API call</span>
+              <div className="flex items-stretch gap-2.5">
+                <div className="flex h-[4.5rem] flex-[5] items-center justify-center rounded-xl border border-zinc-700/40 bg-zinc-800/60">
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-zinc-300">
+                      Session
+                    </div>
+                    <div className="mt-0.5 text-[10px] text-zinc-500">
+                      limit reached
+                    </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+
+                <div className="flex h-[4.5rem] shrink-0 flex-col items-center justify-center rounded-xl border border-red-500/20 bg-red-950/40 px-5">
+                  <span className="text-base leading-none">⏳</span>
+                  <span className="mt-1 text-[9px] font-medium text-red-400">
+                    wait
+                  </span>
+                </div>
+
+                <div className="flex h-[4.5rem] flex-[3] items-center justify-center rounded-xl border border-dashed border-zinc-700/40 bg-zinc-800/20">
+                  <span className="text-[10px] text-zinc-500">
+                    rest of work
+                  </span>
+                </div>
+              </div>
+
+              <p className="mt-3 text-xs text-red-400/80">
+                Hit the limit mid-task. Wait hours, then finish the rest.
+              </p>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 text-xs text-muted-foreground/50">
+              <div className="h-px flex-1 bg-border" />
+              <span className="shrink-0">↓ Same work</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+
+            {/* With TokFresh */}
+            <div>
+              <div className="mb-3 flex items-center gap-2 text-sm font-medium">
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                With TokFresh
+              </div>
+
+              <div className="flex h-[4.5rem] items-stretch overflow-hidden rounded-xl border border-emerald-500/20 shadow-sm shadow-emerald-500/5">
+                <div className="flex flex-1 items-center justify-center bg-emerald-500/10">
+                  <span className="text-xs font-medium text-emerald-300">
+                    Session 1
+                  </span>
+                </div>
+                <div className="flex w-12 shrink-0 flex-col items-center justify-center bg-emerald-500/25 shadow-[0_0_16px_rgba(16,185,129,0.3)]">
+                  <span className="text-sm font-bold leading-none text-emerald-300">
+                    ↻
+                  </span>
+                  <span className="mt-0.5 text-[8px] font-medium text-emerald-400/60">
+                    refresh
+                  </span>
+                </div>
+                <div className="flex flex-1 items-center justify-center bg-emerald-500/10">
+                  <span className="text-xs font-medium text-emerald-300">
+                    Session 2
+                  </span>
+                </div>
+              </div>
+
+              <p className="mt-3 text-xs font-medium text-emerald-400">
+                Limit refreshes mid-work. No interruption.
+              </p>
+            </div>
           </div>
         </div>
       </section>
