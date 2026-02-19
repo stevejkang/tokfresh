@@ -225,6 +225,14 @@ export default function SetupPage() {
                 After authorizing on claude.ai, you&apos;ll see an authorization
                 code. Copy and paste it below.
               </p>
+              <div className="flex items-start gap-2 rounded-md bg-emerald-500/10 px-3 py-2 text-xs text-emerald-400">
+                <Shield className="mt-0.5 h-3 w-3 shrink-0" />
+                <span>
+                  Your token is exchanged in your browser only and sent directly
+                  to your Cloudflare account. TokFresh never collects or stores
+                  it.
+                </span>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="auth-code">Authorization Code</Label>
                 <div className="flex gap-2">
@@ -473,6 +481,13 @@ export default function SetupPage() {
             }
             disabled={state.deploymentStatus === "deploying"}
           />
+          <div className="flex items-start gap-2 rounded-md bg-emerald-500/10 px-3 py-2 text-xs text-emerald-400">
+            <Shield className="mt-0.5 h-3 w-3 shrink-0" />
+            <span>
+              This token is used once to deploy the worker, then discarded.
+              TokFresh never stores your Cloudflare credentials.
+            </span>
+          </div>
         </div>
 
         {state.deploymentStatus === "deploying" && (

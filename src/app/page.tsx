@@ -200,8 +200,9 @@ export default function Home() {
                 <CardTitle className="text-lg">Secure by Design</CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground">
-                OAuth only, no API keys. Tokens stored encrypted in YOUR
-                Cloudflare account. Our service never sees your credentials.
+                We never collect or store your tokens. Everything is processed
+                in your browser and deployed directly to YOUR Cloudflare
+                account.
               </CardContent>
             </Card>
           </div>
@@ -273,6 +274,10 @@ export default function Home() {
           </h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">
             Set up in 3 minutes. Free forever. Your computer can be off.
+          </p>
+          <p className="mx-auto mb-8 flex items-center justify-center gap-1.5 text-xs text-muted-foreground/70">
+            <Shield className="h-3 w-3" />
+            We never collect or store your credentials.
           </p>
           <Button asChild size="lg" className="h-12 px-8 text-base">
             <Link href="/setup">
