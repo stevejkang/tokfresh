@@ -11,15 +11,20 @@ export function generateWorkerCode(): string {
         }
       }
 
-      const tokenRes = await fetch('https://console.anthropic.com/v1/oauth/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          grant_type: 'refresh_token',
-          refresh_token: refreshToken,
-          client_id: '9d1c250a-e61b-44d9-88ed-5944d1962f5e'
-        })
-      });
+      let tokenRes;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        tokenRes = await fetch('https://console.anthropic.com/v1/oauth/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken,
+            client_id: '9d1c250a-e61b-44d9-88ed-5944d1962f5e'
+          })
+        });
+        if (tokenRes.ok) break;
+        if (attempt < 2) await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+      }
 
       if (!tokenRes.ok) {
         const errorBody = await tokenRes.text().catch(() => '');
