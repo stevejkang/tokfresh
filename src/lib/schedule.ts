@@ -69,7 +69,13 @@ export function getNextTrigger(
 
   const tzAbbr = getTimezoneAbbr(timezone);
 
-  for (const time of schedule) {
+  const sorted = [...schedule].sort((a, b) => {
+    const [ah, am] = a.split(":").map(Number);
+    const [bh, bm] = b.split(":").map(Number);
+    return ah * 60 + am - (bh * 60 + bm);
+  });
+
+  for (const time of sorted) {
     const [h, m] = time.split(":").map(Number);
     const timeMinutes = h * 60 + m;
     if (timeMinutes > currentMinutes) {
@@ -77,7 +83,7 @@ export function getNextTrigger(
     }
   }
 
-  return { time: schedule[0], label: `Tomorrow ${schedule[0]} ${tzAbbr}` };
+  return { time: sorted[0], label: `Tomorrow ${sorted[0]} ${tzAbbr}` };
 }
 
 export function detectTimezone(): string {
