@@ -137,11 +137,14 @@ export default function SetupPage() {
 
     let notificationConfig: string | undefined;
     if (state.notificationType !== "none" && state.notificationWebhook) {
-      const config: Record<string, string> = {};
+      const config: Record<string, string | boolean> = {};
       if (state.notificationType === "slack") {
         config.slackWebhook = state.notificationWebhook;
       } else {
         config.discordWebhook = state.notificationWebhook;
+      }
+      if (state.notifyOnFailureOnly) {
+        config.failureOnly = true;
       }
       notificationConfig = JSON.stringify(config);
     }
@@ -400,23 +403,44 @@ export default function SetupPage() {
         </RadioGroup>
 
         {state.notificationType !== "none" && (
-          <div className="space-y-2">
-            <Label htmlFor="webhook-url">
-              {state.notificationType === "slack" ? "Slack" : "Discord"}{" "}
-              Webhook URL
-            </Label>
-            <Input
-              id="webhook-url"
-              placeholder={
-                state.notificationType === "slack"
-                  ? "https://hooks.slack.com/services/..."
-                  : "https://discord.com/api/webhooks/..."
-              }
-              value={state.notificationWebhook}
-              onChange={(e) =>
-                update({ notificationWebhook: e.target.value })
-              }
-            />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="webhook-url">
+                {state.notificationType === "slack" ? "Slack" : "Discord"}{" "}
+                Webhook URL
+              </Label>
+              <Input
+                id="webhook-url"
+                placeholder={
+                  state.notificationType === "slack"
+                    ? "https://hooks.slack.com/services/..."
+                    : "https://discord.com/api/webhooks/..."
+                }
+                value={state.notificationWebhook}
+                onChange={(e) =>
+                  update({ notificationWebhook: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>When to notify</Label>
+              <RadioGroup
+                value={state.notifyOnFailureOnly ? "failure" : "all"}
+                onValueChange={(v) =>
+                  update({ notifyOnFailureOnly: v === "failure" })
+                }
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="all" id="notify-all" />
+                  <Label htmlFor="notify-all">Every trigger</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="failure" id="notify-failure" />
+                  <Label htmlFor="notify-failure">Failures only</Label>
+                </div>
+              </RadioGroup>
+            </div>
           </div>
         )}
       </CardContent>

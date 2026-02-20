@@ -1,6 +1,34 @@
 export function generateWorkerCode(): string {
   return `export default {
   async scheduled(event, env, ctx) {
+    async function notify(message) {
+      if (!env.NOTIFICATION_CONFIG) return;
+      const config = JSON.parse(env.NOTIFICATION_CONFIG);
+
+      if (config.slackWebhook) {
+        await fetch(config.slackWebhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: message })
+        }).catch(() => {});
+      }
+
+      if (config.discordWebhook) {
+        await fetch(config.discordWebhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: message })
+        }).catch(() => {});
+      }
+    }
+
+    function shouldNotify(succeeded) {
+      if (!env.NOTIFICATION_CONFIG) return false;
+      const config = JSON.parse(env.NOTIFICATION_CONFIG);
+      if (config.failureOnly) return !succeeded;
+      return true;
+    }
+
     try {
       // Read refresh token from KV (fallback to env secret for initial run)
       let refreshToken = await env.TOKEN_STORE.get('refresh_token');
@@ -60,33 +88,20 @@ export function generateWorkerCode(): string {
         throw new Error('Claude API call failed: ' + apiRes.status + ' ' + errorBody);
       }
 
-      if (env.NOTIFICATION_CONFIG) {
-        const config = JSON.parse(env.NOTIFICATION_CONFIG);
-        const now = new Date().toLocaleString('en-US', {
-          timeZone: env.TIMEZONE || 'UTC'
-        });
-        const message = 'TokFresh: Token timer triggered at ' + now;
-
-        if (config.slackWebhook) {
-          await fetch(config.slackWebhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: message })
-          });
-        }
-
-        if (config.discordWebhook) {
-          await fetch(config.discordWebhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: message })
-          });
-        }
+      if (shouldNotify(true)) {
+        const now = new Date().toLocaleString('en-US', { timeZone: env.TIMEZONE || 'UTC' });
+        await notify('TokFresh: Token timer triggered at ' + now);
       }
 
       console.log('Token timer triggered successfully');
     } catch (error) {
       console.error('Worker error:', error.message);
+
+      if (shouldNotify(false)) {
+        const now = new Date().toLocaleString('en-US', { timeZone: env.TIMEZONE || 'UTC' });
+        await notify('TokFresh FAILED at ' + now + ': ' + error.message);
+      }
+
       throw error;
     }
   }

@@ -6,6 +6,7 @@ export interface SetupState {
   timezone: string;
   notificationType: "none" | "slack" | "discord";
   notificationWebhook: string;
+  notifyOnFailureOnly: boolean;
   cloudflareApiToken: string;
   cloudflareAccountId: string;
   deploymentStatus: "idle" | "deploying" | "success" | "error";
@@ -20,6 +21,7 @@ export const INITIAL_SETUP_STATE: SetupState = {
   timezone: "Asia/Seoul",
   notificationType: "none",
   notificationWebhook: "",
+  notifyOnFailureOnly: false,
   cloudflareApiToken: "",
   cloudflareAccountId: "",
   deploymentStatus: "idle",
