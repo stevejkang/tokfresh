@@ -132,7 +132,7 @@ export default function SetupPage() {
     update({ cloudflareAccountId: accountId });
     setDeployProgress((prev) => [...prev, "Token verified"]);
 
-    const cronExpression = timeToCron(schedule);
+    const cronExpression = timeToCron(schedule, state.timezone);
     const workerCode = generateWorkerCode();
 
     let notificationConfig: string | undefined;
@@ -567,7 +567,7 @@ export default function SetupPage() {
 
   const renderSuccess = () => {
     const nextTrigger = getNextTrigger(schedule, state.timezone);
-    const cronExpression = timeToCron(schedule);
+    const cronExpression = timeToCron(schedule, state.timezone);
 
     return (
       <Card>

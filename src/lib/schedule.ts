@@ -22,10 +22,26 @@ export function getResetTime(triggerTime: string): string {
   return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
 }
 
-export function timeToCron(times: string[]): string {
-  const hours = times.map((t) => parseInt(t.split(":")[0], 10));
-  const minute = parseInt(times[0].split(":")[1], 10);
-  return `${minute} ${hours.join(",")} * * *`;
+function getTimezoneOffsetMinutes(timezone: string): number {
+  const now = new Date();
+  const utcStr = now.toLocaleString("en-US", { timeZone: "UTC" });
+  const tzStr = now.toLocaleString("en-US", { timeZone: timezone });
+  return (new Date(tzStr).getTime() - new Date(utcStr).getTime()) / 60000;
+}
+
+export function timeToCron(times: string[], timezone: string): string {
+  const offsetMinutes = getTimezoneOffsetMinutes(timezone);
+  const [firstH, firstM] = times[0].split(":").map(Number);
+  const utcBase = ((firstH * 60 + firstM - offsetMinutes) % 1440 + 1440) % 1440;
+  const utcMinute = utcBase % 60;
+
+  const utcHours = times.map((t) => {
+    const [h, m] = t.split(":").map(Number);
+    const totalUtc = ((h * 60 + m - offsetMinutes) % 1440 + 1440) % 1440;
+    return Math.floor(totalUtc / 60);
+  });
+
+  return `${utcMinute} ${utcHours.join(",")} * * *`;
 }
 
 export function getNextTrigger(
