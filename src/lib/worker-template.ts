@@ -90,16 +90,16 @@ export function generateWorkerCode(): string {
 
       if (shouldNotify(true)) {
         const now = new Date().toLocaleString('en-US', { timeZone: env.TIMEZONE || 'UTC' });
-        await notify('TokFresh: Token timer triggered at ' + now);
+        await notify('TokFresh: Successfully refreshed at ' + now);
       }
 
-      console.log('Token timer triggered successfully');
+      console.log('Token timer refreshed successfully');
     } catch (error) {
       console.error('Worker error:', error.message);
 
       if (shouldNotify(false)) {
         const now = new Date().toLocaleString('en-US', { timeZone: env.TIMEZONE || 'UTC' });
-        await notify('TokFresh FAILED at ' + now + ': ' + error.message);
+        await notify('TokFresh: Failed at ' + now + ': ' + error.message);
       }
 
       throw error;
