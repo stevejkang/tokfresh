@@ -300,7 +300,7 @@ export default function Home() {
             TokFresh &copy; {new Date().getFullYear()}
           </span>
           <a
-            href="https://github.com"
+            href="https://github.com/stevejkang/tokfresh"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground transition-colors hover:text-foreground"
