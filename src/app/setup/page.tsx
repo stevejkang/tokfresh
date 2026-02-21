@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,6 +51,7 @@ import {
   verifyCloudflareToken,
   deployWorker,
 } from "@/lib/cloudflare-api";
+import { trackEvent } from "@/lib/analytics";
 
 const STEP_TITLES = [
   "Connect Claude",
@@ -66,10 +67,28 @@ export default function SetupPage() {
   const [exchangeError, setExchangeError] = useState<string | null>(null);
   const [oauthOpened, setOauthOpened] = useState(false);
   const [deployProgress, setDeployProgress] = useState<string[]>([]);
+  const trackedSteps = useRef(new Set<number>());
 
   useEffect(() => {
     setState((prev) => ({ ...prev, timezone: detectTimezone() }));
+    trackEvent({ action: "setup_started" });
   }, []);
+
+  useEffect(() => {
+    if (trackedSteps.current.has(state.step)) return;
+    trackedSteps.current.add(state.step);
+
+    if (state.step <= 4) {
+      trackEvent({
+        action: "setup_step_viewed",
+        params: { step: state.step, step_name: STEP_TITLES[state.step - 1] },
+      });
+    }
+
+    if (state.step === 5) {
+      trackEvent({ action: "setup_completed" });
+    }
+  }, [state.step]);
 
   const update = useCallback(
     (partial: Partial<SetupState>) =>
