@@ -7,6 +7,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   Zap,
   Shield,
   DollarSign,
@@ -290,6 +296,54 @@ export default function Home() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="border-t border-border bg-muted/30 py-20">
+        <div className="mx-auto max-w-2xl px-6">
+          <h2 className="mb-12 text-center text-3xl font-bold tracking-tight">
+            FAQ
+          </h2>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="change-schedule">
+              <AccordionTrigger>
+                How do I change my schedule?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Run the setup again. It deploys to the same worker, so a new
+                deployment replaces the existing one with your updated schedule.
+                Alternatively, you can edit the cron expression(UTC) directly in
+                the Trigger Events section of your{" "}
+                <a
+                  href="https://dash.cloudflare.com/?to=/:account/workers/services/view/tokfresh-scheduler/production/settings"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
+                >
+                  Cloudflare Worker settings
+                </a>
+                .
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="delete-worker">
+              <AccordionTrigger>
+                How do I remove scheduler?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Go to your{" "}
+                <a
+                  href="https://dash.cloudflare.com/?to=/:account/workers/services/view/tokfresh-scheduler/production/settings"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
+                >
+                  Cloudflare Worker settings
+                </a>{" "}
+                and delete the <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-mono">tokfresh-scheduler</code> worker. That&#39;s it.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </section>
 
