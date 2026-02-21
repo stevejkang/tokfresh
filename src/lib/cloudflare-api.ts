@@ -26,7 +26,7 @@ export async function deployWorker(params: {
   timezone: string;
   notificationConfig?: string;
   onProgress?: (step: string) => void;
-}): Promise<{ success: boolean; error?: string }> {
+}): Promise<{ success: boolean; error?: string; errorCode?: number }> {
   const { onProgress, ...payload } = params;
 
   try {

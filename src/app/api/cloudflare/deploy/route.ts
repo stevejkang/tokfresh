@@ -4,6 +4,15 @@ const CF_API_BASE = "https://api.cloudflare.com/client/v4";
 const WORKER_NAME = "tokfresh-scheduler";
 const KV_NAMESPACE_TITLE = "tokfresh-tokens";
 
+function parseCfErrorCode(body: string): number | undefined {
+  try {
+    const json = JSON.parse(body);
+    return json.errors?.[0]?.code;
+  } catch {
+    return undefined;
+  }
+}
+
 async function findOrCreateKVNamespace(
   accountId: string,
   headers: Record<string, string>,
@@ -124,6 +133,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: false,
       error: `Worker upload failed (${uploadRes.status}): ${text}`,
+      errorCode: parseCfErrorCode(text),
     });
   }
 
@@ -138,6 +148,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: false,
       error: `Cron setup failed (${cronRes.status}): ${text}`,
+      errorCode: parseCfErrorCode(text),
     });
   }
 

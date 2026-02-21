@@ -11,6 +11,7 @@ export interface SetupState {
   cloudflareAccountId: string;
   deploymentStatus: "idle" | "deploying" | "success" | "error";
   deploymentError: string | null;
+  deploymentErrorCode: number | null;
 }
 
 export const INITIAL_SETUP_STATE: SetupState = {
@@ -26,4 +27,5 @@ export const INITIAL_SETUP_STATE: SetupState = {
   cloudflareAccountId: "",
   deploymentStatus: "idle",
   deploymentError: null,
+  deploymentErrorCode: null,
 };

@@ -134,7 +134,7 @@ export default function SetupPage() {
   const handleDeploy = async () => {
     if (!state.cloudflareApiToken || !state.claudeRefreshToken) return;
 
-    update({ deploymentStatus: "deploying", deploymentError: null });
+    update({ deploymentStatus: "deploying", deploymentError: null, deploymentErrorCode: null });
     setDeployProgress(["Verifying Cloudflare token..."]);
 
     const verification = await verifyCloudflareToken(state.cloudflareApiToken);
@@ -185,6 +185,7 @@ export default function SetupPage() {
       update({
         deploymentStatus: "error",
         deploymentError: result.error ?? "Deployment failed",
+        deploymentErrorCode: result.errorCode ?? null,
       });
     }
   };
@@ -548,7 +549,35 @@ export default function SetupPage() {
           </div>
         )}
 
-        {state.deploymentStatus === "error" && (
+        {state.deploymentStatus === "error" && state.deploymentErrorCode === 10063 && (
+          <Alert className="border-amber-500/50 text-amber-500 [&>svg]:text-amber-500">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Workers subdomain required</AlertTitle>
+            <AlertDescription className="space-y-3">
+              <p className="text-sm">
+                Your Cloudflare account needs a workers.dev subdomain.
+                Open the Workers dashboard once to create it automatically.
+              </p>
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://dash.cloudflare.com/?to=/:account/workers-and-pages"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline" size="sm">
+                    Open Workers Dashboard
+                    <ExternalLink className="ml-2 h-3 w-3" />
+                  </Button>
+                </a>
+                <Button size="sm" onClick={handleDeploy}>
+                  Retry
+                </Button>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {state.deploymentStatus === "error" && state.deploymentErrorCode !== 10063 && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{state.deploymentError}</AlertDescription>
