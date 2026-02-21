@@ -679,7 +679,7 @@ export default function SetupPage() {
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
           <a
-            href="https://dash.cloudflare.com"
+            href="https://dash.cloudflare.com/?to=/:account/workers/services/view/tokfresh-scheduler/production"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full"
