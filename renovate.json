@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "timezone": "Asia/Seoul",
+  "schedule": [
+    "* 0-9 * * *"
+  ],
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 10,
+  "rangeStrategy": "bump",
+  "minimumReleaseAge": "7 days",
+  "labels": [
+    "dependencies"
+  ],
+  "major": {
+    "enabled": false
+  },
+  "baseBranchPatterns": [
+    "main"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true
+  },
+  "reviewers": [
+    "stevejkang"
+  ]
+}
