@@ -13,10 +13,47 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
+const title = "TokFresh - Claude Token Reset Automation";
+const description =
+  "Automate your Claude Pro/Max token reset timing with Cloudflare Workers. Schedule 5-hour cycles to align with your workday. Free, secure, 24/7 automatic.";
+
 export const metadata: Metadata = {
-  title: "TokFresh - Claude Token Reset Automation",
-  description:
-    "Automate your Claude Pro/Max token reset timing with Cloudflare Workers. Free, secure, 24/7 automatic.",
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: title,
+    template: "%s | TokFresh",
+  },
+  description,
+  keywords: [
+    "Claude",
+    "Claude Pro",
+    "Claude Max",
+    "token reset",
+    "Anthropic",
+    "Cloudflare Workers",
+    "automation",
+    "AI productivity",
+  ],
+  openGraph: {
+    title,
+    description,
+    url: "/",
+    siteName: "TokFresh",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({
