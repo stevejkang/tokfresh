@@ -1,3 +1,5 @@
+export const ACTIVE_TRIGGER_COUNT = 4;
+
 export function calculateSchedule(startTime: string): string[] {
   const [hours, minutes] = startTime.split(":").map(Number);
   const schedule: string[] = [];
@@ -30,17 +32,16 @@ function getTimezoneOffsetMinutes(timezone: string): number {
 }
 
 export function timeToCron(times: string[], timezone: string): string {
+  const active = times.slice(0, ACTIVE_TRIGGER_COUNT);
   const offsetMinutes = getTimezoneOffsetMinutes(timezone);
-  const [firstH, firstM] = times[0].split(":").map(Number);
+  const [firstH, firstM] = active[0].split(":").map(Number);
   const utcBase = ((firstH * 60 + firstM - offsetMinutes) % 1440 + 1440) % 1440;
   const utcMinute = utcBase % 60;
-
-  const utcHours = times.map((t) => {
+  const utcHours = active.map((t) => {
     const [h, m] = t.split(":").map(Number);
     const totalUtc = ((h * 60 + m - offsetMinutes) % 1440 + 1440) % 1440;
     return Math.floor(totalUtc / 60);
   });
-
   return `${utcMinute} ${utcHours.join(",")} * * *`;
 }
 
@@ -48,6 +49,7 @@ export function getNextTrigger(
   schedule: string[],
   timezone: string,
 ): { time: string; label: string } {
+  const active = schedule.slice(0, ACTIVE_TRIGGER_COUNT);
   const now = new Date();
   const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone: timezone,
@@ -69,7 +71,7 @@ export function getNextTrigger(
 
   const tzAbbr = getTimezoneAbbr(timezone);
 
-  const sorted = [...schedule].sort((a, b) => {
+  const sorted = [...active].sort((a, b) => {
     const [ah, am] = a.split(":").map(Number);
     const [bh, bm] = b.split(":").map(Number);
     return ah * 60 + am - (bh * 60 + bm);

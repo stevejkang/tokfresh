@@ -40,6 +40,7 @@ import {
 import { type SetupState, INITIAL_SETUP_STATE } from "@/lib/types";
 import { generateAuthUrl, exchangeCode } from "@/lib/claude-oauth";
 import {
+  ACTIVE_TRIGGER_COUNT,
   calculateSchedule,
   getResetTime,
   timeToCron,
@@ -360,20 +361,35 @@ export default function SetupPage() {
         <div>
           <h4 className="mb-3 text-sm font-medium">Your 5-Hour Schedule</h4>
           <div className="space-y-2">
-            {schedule.map((time, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 rounded-md bg-muted/50 px-3 py-2 text-sm font-mono"
-              >
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
-                <span className="font-semibold">{time}</span>
-                <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                <span className="text-muted-foreground">
-                  Reset at {getResetTime(time)}
-                </span>
-              </div>
-            ))}
+            {schedule.map((time, i) => {
+              const isInactive = i >= ACTIVE_TRIGGER_COUNT;
+              return (
+                <div
+                  key={i}
+                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-mono ${
+                    isInactive
+                      ? "bg-muted/30 opacity-50"
+                      : "bg-muted/50"
+                  }`}
+                >
+                  {isInactive ? (
+                    <AlertCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  ) : (
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                  )}
+                  <span className={isInactive ? "text-muted-foreground line-through" : "font-semibold"}>{time}</span>
+                  <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-muted-foreground">
+                    Reset at {getResetTime(time)}
+                  </span>
+                </div>
+              );
+            })}
           </div>
+          <p className="text-xs text-muted-foreground">
+            The 5th trigger is skipped because 5 × 5h = 25h exceeds 24h.
+            It would overlap with the next day&apos;s first cycle, making both ineffective.
+          </p>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
@@ -653,19 +669,30 @@ export default function SetupPage() {
           <div>
             <h4 className="mb-3 text-sm font-medium">Trigger Schedule</h4>
             <div className="space-y-2">
-              {schedule.map((time, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 rounded-md bg-muted/50 px-3 py-2 text-sm font-mono"
-                >
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
-                  <span className="font-semibold">{time}</span>
-                  <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground">
-                    Reset at {getResetTime(time)}
-                  </span>
-                </div>
-              ))}
+              {schedule.map((time, i) => {
+                const isInactive = i >= ACTIVE_TRIGGER_COUNT;
+                return (
+                  <div
+                    key={i}
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-mono ${
+                      isInactive
+                        ? "bg-muted/30 opacity-50"
+                        : "bg-muted/50"
+                    }`}
+                  >
+                    {isInactive ? (
+                      <AlertCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    ) : (
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                    )}
+                    <span className={isInactive ? "text-muted-foreground line-through" : "font-semibold"}>{time}</span>
+                    <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-muted-foreground">
+                      Reset at {getResetTime(time)}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
