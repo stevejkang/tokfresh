@@ -24,7 +24,8 @@ import {
   CalendarClock,
   Rocket,
   Github,
-  } from "lucide-react";
+  Heart,
+} from "lucide-react";
 import { GitHubStarButton } from "@/components/github-star-button";
 
 export default function Home() {
@@ -355,7 +356,18 @@ export default function Home() {
       <footer className="border-t border-border py-8">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6">
           <span className="text-sm text-muted-foreground">
-            TokFresh &copy; {new Date().getFullYear()}
+            TokFresh made with{" "}
+            <Heart className="inline h-3.5 w-3.5 fill-current text-red-500" />{" "}
+            by{" "}
+            <a
+              href="https://github.com/stevejkang"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline transition-colors hover:text-foreground"
+            >
+              stevejkang
+            </a>
+            {" "}&copy; {new Date().getFullYear()}
           </span>
           <a
             href="https://github.com/stevejkang/tokfresh"
