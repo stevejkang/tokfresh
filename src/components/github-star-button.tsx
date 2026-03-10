@@ -1,8 +1,12 @@
 import { Github, Star } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { getStarCount } from "@/lib/github";
 
 export async function GitHubStarButton() {
-  const stars = await getStarCount();
+  const [stars, t] = await Promise.all([
+    getStarCount(),
+    getTranslations("Nav"),
+  ]);
 
   return (
     <a
@@ -13,7 +17,7 @@ export async function GitHubStarButton() {
     >
       <Github className="h-4 w-4" />
       <Star className="h-3 w-3" />
-      Star
+      {t("star")}
       {stars !== null && (
         <>
           <span className="mx-0.5 h-3 w-px bg-border" />

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -54,7 +55,7 @@ import {
 } from "@/lib/cloudflare-api";
 import { trackEvent } from "@/lib/analytics";
 
-const STEP_TITLES = [
+const STEP_TITLES_EN = [
   "Connect Claude",
   "Configure Schedule",
   "Notifications",
@@ -62,6 +63,9 @@ const STEP_TITLES = [
 ];
 
 export default function SetupPage() {
+  const t = useTranslations("Setup");
+  const stepTitles = [t("stepConnect"), t("stepSchedule"), t("stepNotifications"), t("stepDeploy")];
+
   const [state, setState] = useState<SetupState>(INITIAL_SETUP_STATE);
   const [authCode, setAuthCode] = useState("");
   const [isExchanging, setIsExchanging] = useState(false);
@@ -82,7 +86,7 @@ export default function SetupPage() {
     if (state.step <= 4) {
       trackEvent({
         action: "setup_step_viewed",
-        params: { step: state.step, step_name: STEP_TITLES[state.step - 1] },
+        params: { step: state.step, step_name: STEP_TITLES_EN[state.step - 1] },
       });
     }
 
@@ -195,9 +199,9 @@ export default function SetupPage() {
     <div className="mb-8">
       <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
         <span>
-          Step {Math.min(state.step, 4)} of 4
+          {t("stepOf", { step: Math.min(state.step, 4), total: 4 })}
         </span>
-        <span>{STEP_TITLES[Math.min(state.step, 4) - 1]}</span>
+        <span>{stepTitles[Math.min(state.step, 4) - 1]}</span>
       </div>
       <div className="flex gap-1.5">
         {[1, 2, 3, 4].map((s) => (
@@ -217,19 +221,18 @@ export default function SetupPage() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Shield className="h-5 w-5" />
-          Connect Claude Account
+          {t("step1Title")}
         </CardTitle>
         <CardDescription>
-          Authorize TokFresh to trigger API calls with your Claude subscription.
+          {t("step1Description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <Alert>
           <Info className="h-4 w-4" />
-          <AlertTitle>Requires Claude Pro or Max</AlertTitle>
+          <AlertTitle>{t("step1RequiresTitle")}</AlertTitle>
           <AlertDescription>
-            You need an active Claude Pro or Max subscription to use this
-            service.
+            {t("step1RequiresDescription")}
           </AlertDescription>
         </Alert>
 
@@ -240,29 +243,26 @@ export default function SetupPage() {
             size="lg"
           >
             <ExternalLink className="mr-2 h-4 w-4" />
-            Connect Claude Account
+            {t("step1Connect")}
           </Button>
 
           {oauthOpened && (
             <div className="space-y-4 rounded-lg border border-border bg-muted/50 p-4">
               <p className="text-sm text-muted-foreground">
-                After authorizing on claude.ai, you&apos;ll see an authorization
-                code. Copy and paste it below.
+                {t("step1AfterAuth")}
               </p>
               <div className="flex items-start gap-2 rounded-md bg-emerald-500/10 px-3 py-2 text-xs text-emerald-400">
                 <Shield className="mt-0.5 h-3 w-3 shrink-0" />
                 <span>
-                  Your token is exchanged in your browser only and sent directly
-                  to your Cloudflare account. TokFresh never collects or stores
-                  it.
+                  {t("step1Privacy")}
                 </span>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="auth-code">Authorization Code</Label>
+                <Label htmlFor="auth-code">{t("step1CodeLabel")}</Label>
                 <div className="flex gap-2">
                   <Input
                     id="auth-code"
-                    placeholder="Paste the authorization code here..."
+                    placeholder={t("step1CodePlaceholder")}
                     value={authCode}
                     onChange={(e) => setAuthCode(e.target.value)}
                   />
@@ -273,7 +273,7 @@ export default function SetupPage() {
                     {isExchanging ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      "Verify"
+                      t("step1Verify")
                     )}
                   </Button>
                 </div>
@@ -297,16 +297,16 @@ export default function SetupPage() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
-          Configure Schedule
+          {t("step2Title")}
         </CardTitle>
         <CardDescription>
-          Choose when your 5-hour token cycles should start.
+          {t("step2Description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>Start Hour</Label>
+            <Label>{t("step2StartHour")}</Label>
             <Select
               value={state.startTime.split(":")[0]}
               onValueChange={(h) =>
@@ -331,7 +331,7 @@ export default function SetupPage() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Start Minute</Label>
+            <Label>{t("step2StartMinute")}</Label>
             <Select
               value={state.startTime.split(":")[1]}
               onValueChange={(m) =>
@@ -353,13 +353,13 @@ export default function SetupPage() {
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Globe className="h-4 w-4" />
-          <span>Timezone: {state.timezone}</span>
+          <span>{t("step2Timezone", { timezone: state.timezone })}</span>
         </div>
 
         <Separator />
 
         <div>
-          <h4 className="mb-3 text-sm font-medium">Your 5-Hour Schedule</h4>
+          <h4 className="mb-3 text-sm font-medium">{t("step2ScheduleTitle")}</h4>
           <div className="space-y-2">
             {schedule.map((time, i) => {
               const isInactive = i >= ACTIVE_TRIGGER_COUNT;
@@ -380,25 +380,24 @@ export default function SetupPage() {
                   <span className={isInactive ? "text-muted-foreground line-through" : "font-semibold"}>{time}</span>
                   <ArrowRight className="h-3 w-3 text-muted-foreground" />
                   <span className="text-muted-foreground">
-                    Reset at {getResetTime(time)}
+                    {t("step2ResetAt", { time: getResetTime(time) })}
                   </span>
                 </div>
               );
             })}
           </div>
           <p className="text-xs text-muted-foreground">
-            The 5th trigger is skipped because 5 × 5h = 25h exceeds 24h.
-            It would overlap with the next day&apos;s first cycle, making both ineffective.
+            {t("step2SkipNote")}
           </p>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="ghost" onClick={() => update({ step: 1 })}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+          {t("back")}
         </Button>
         <Button onClick={() => update({ step: 3 })}>
-          Continue
+          {t("continue")}
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </CardFooter>
@@ -408,9 +407,9 @@ export default function SetupPage() {
   const renderStep3 = () => (
     <Card>
       <CardHeader>
-        <CardTitle>Notifications (Optional)</CardTitle>
+        <CardTitle>{t("step3Title")}</CardTitle>
         <CardDescription>
-          Get notified when the token timer is triggered.
+          {t("step3Description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -426,15 +425,15 @@ export default function SetupPage() {
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="none" id="none" />
-            <Label htmlFor="none">None</Label>
+            <Label htmlFor="none">{t("step3None")}</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="slack" id="slack" />
-            <Label htmlFor="slack">Slack Webhook</Label>
+            <Label htmlFor="slack">{t("step3Slack")}</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="discord" id="discord" />
-            <Label htmlFor="discord">Discord Webhook</Label>
+            <Label htmlFor="discord">{t("step3Discord")}</Label>
           </div>
         </RadioGroup>
 
@@ -442,8 +441,7 @@ export default function SetupPage() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="webhook-url">
-                {state.notificationType === "slack" ? "Slack" : "Discord"}{" "}
-                Webhook URL
+                {t("step3WebhookLabel", { platform: state.notificationType === "slack" ? "Slack" : "Discord" })}
               </Label>
               <Input
                 id="webhook-url"
@@ -460,7 +458,7 @@ export default function SetupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>When to notify</Label>
+              <Label>{t("step3WhenToNotify")}</Label>
               <RadioGroup
                 value={state.notifyOnFailureOnly ? "failure" : "all"}
                 onValueChange={(v) =>
@@ -469,11 +467,11 @@ export default function SetupPage() {
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="all" id="notify-all" />
-                  <Label htmlFor="notify-all">Every trigger</Label>
+                  <Label htmlFor="notify-all">{t("step3NotifyAll")}</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="failure" id="notify-failure" />
-                  <Label htmlFor="notify-failure">Failures only</Label>
+                  <Label htmlFor="notify-failure">{t("step3NotifyFailure")}</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -483,10 +481,10 @@ export default function SetupPage() {
       <CardFooter className="flex justify-between">
         <Button variant="ghost" onClick={() => update({ step: 2 })}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+          {t("back")}
         </Button>
         <Button onClick={() => update({ step: 4 })}>
-          Continue
+          {t("continue")}
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </CardFooter>
@@ -496,46 +494,44 @@ export default function SetupPage() {
   const renderStep4 = () => (
     <Card>
       <CardHeader>
-        <CardTitle>Deploy to Cloudflare</CardTitle>
+        <CardTitle>{t("step4Title")}</CardTitle>
         <CardDescription>
-          Deploy a worker to your Cloudflare account that runs automatically.
+          {t("step4Description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <Alert>
           <Info className="h-4 w-4" />
-          <AlertTitle>Create a Cloudflare API Token</AlertTitle>
+          <AlertTitle>{t("step4TokenTitle")}</AlertTitle>
           <AlertDescription className="space-y-2">
             <ol className="mt-2 list-inside list-decimal space-y-1 text-sm">
               <li>
-                Go to{" "}
+                {t("step4TokenStep1")}
                 <a
                   href="https://dash.cloudflare.com/profile/api-tokens"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 font-medium underline"
                 >
-                  Cloudflare API Tokens
+                  {t("step4TokenLink")}
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
-              <li>Click &quot;Create Token&quot;</li>
-              <li>
-                Use the &quot;Edit Cloudflare Workers&quot; template
-              </li>
-              <li>Set Account Resources to your account</li>
-              <li>Set Zone Resources to your zone (domain)</li>
-              <li>Create and copy the token</li>
+              <li>{t("step4TokenStep2")}</li>
+              <li>{t("step4TokenStep3")}</li>
+              <li>{t("step4TokenStep4")}</li>
+              <li>{t("step4TokenStep5")}</li>
+              <li>{t("step4TokenStep6")}</li>
             </ol>
           </AlertDescription>
         </Alert>
 
         <div className="space-y-2">
-          <Label htmlFor="cf-token">Cloudflare API Token</Label>
+          <Label htmlFor="cf-token">{t("step4Label")}</Label>
           <Input
             id="cf-token"
             type="password"
-            placeholder="Paste your Cloudflare API token..."
+            placeholder={t("step4Placeholder")}
             value={state.cloudflareApiToken}
             onChange={(e) =>
               update({ cloudflareApiToken: e.target.value })
@@ -545,8 +541,7 @@ export default function SetupPage() {
           <div className="flex items-start gap-2 rounded-md bg-emerald-500/10 px-3 py-2 text-xs text-emerald-400">
             <Shield className="mt-0.5 h-3 w-3 shrink-0" />
             <span>
-              This token is used once to deploy the worker, then discarded.
-              TokFresh never stores your Cloudflare credentials.
+              {t("step4Privacy")}
             </span>
           </div>
         </div>
@@ -569,11 +564,10 @@ export default function SetupPage() {
         {state.deploymentStatus === "error" && state.deploymentErrorCode === 10063 && (
           <Alert className="border-amber-500/50 text-amber-500 [&>svg]:text-amber-500">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Workers subdomain required</AlertTitle>
+            <AlertTitle>{t("step4SubdomainTitle")}</AlertTitle>
             <AlertDescription className="space-y-3">
               <p className="text-sm">
-                Your Cloudflare account needs a workers.dev subdomain.
-                Open the Workers dashboard once to create it automatically.
+                {t("step4SubdomainDescription")}
               </p>
               <div className="flex items-center gap-2">
                 <a
@@ -582,12 +576,12 @@ export default function SetupPage() {
                   rel="noopener noreferrer"
                 >
                   <Button variant="outline" size="sm">
-                    Open Workers Dashboard
+                    {t("step4OpenDashboard")}
                     <ExternalLink className="ml-2 h-3 w-3" />
                   </Button>
                 </a>
                 <Button size="sm" onClick={handleDeploy}>
-                  Retry
+                  {t("step4Retry")}
                 </Button>
               </div>
             </AlertDescription>
@@ -608,7 +602,7 @@ export default function SetupPage() {
           disabled={state.deploymentStatus === "deploying"}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+          {t("back")}
         </Button>
         <Button
           onClick={handleDeploy}
@@ -620,10 +614,10 @@ export default function SetupPage() {
           {state.deploymentStatus === "deploying" ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Deploying...
+              {t("step4Deploying")}
             </>
           ) : (
-            "Deploy"
+            t("step4Deploy")
           )}
         </Button>
       </CardFooter>
@@ -640,35 +634,35 @@ export default function SetupPage() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <CheckCircle2 className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-2xl">All Done!</CardTitle>
+          <CardTitle className="text-2xl">{t("successTitle")}</CardTitle>
           <CardDescription>
-            Your token scheduler is deployed and running.
+            {t("successDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="rounded-lg border border-border bg-muted/50 p-4">
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Worker</span>
+                <span className="text-muted-foreground">{t("successWorker")}</span>
                 <span className="font-mono font-medium">
                   tokfresh-scheduler
                 </span>
               </div>
               <Separator />
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Next trigger</span>
+                <span className="text-muted-foreground">{t("successNextTrigger")}</span>
                 <span className="font-medium">{nextTrigger.label}</span>
               </div>
               <Separator />
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Cron</span>
+                <span className="text-muted-foreground">{t("successCron")}</span>
                 <span className="font-mono text-xs">{cronExpression}</span>
               </div>
             </div>
           </div>
 
           <div>
-            <h4 className="mb-3 text-sm font-medium">Trigger Schedule</h4>
+            <h4 className="mb-3 text-sm font-medium">{t("successScheduleTitle")}</h4>
             <div className="space-y-2">
               {schedule.map((time, i) => {
                 const isInactive = i >= ACTIVE_TRIGGER_COUNT;
@@ -689,7 +683,7 @@ export default function SetupPage() {
                     <span className={isInactive ? "text-muted-foreground line-through" : "font-semibold"}>{time}</span>
                     <ArrowRight className="h-3 w-3 text-muted-foreground" />
                     <span className="text-muted-foreground">
-                      Reset at {getResetTime(time)}
+                      {t("step2ResetAt", { time: getResetTime(time) })}
                     </span>
                   </div>
                 );
@@ -700,8 +694,7 @@ export default function SetupPage() {
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription>
-              Your computer can be off &mdash; the worker runs automatically on
-              Cloudflare&apos;s edge network!
+              {t("successOffNote")}
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -713,12 +706,12 @@ export default function SetupPage() {
             className="w-full"
           >
             <Button variant="outline" className="w-full">
-              View in Cloudflare Dashboard
+              {t("successViewDashboard")}
               <ExternalLink className="ml-2 h-4 w-4" />
             </Button>
           </a>
           <Link href="/" className="w-full">
-            <Button className="w-full">Back to Home</Button>
+            <Button className="w-full">{t("successBackHome")}</Button>
           </Link>
         </CardFooter>
       </Card>
@@ -728,7 +721,7 @@ export default function SetupPage() {
   return (
     <>
       <h1 className="mb-2 text-2xl font-bold tracking-tight">
-        Set Up TokFresh
+        {t("title")}
       </h1>
 
       {state.step <= 4 && renderStepIndicator()}

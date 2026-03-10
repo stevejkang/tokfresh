@@ -1,3 +1,5 @@
+English | [한국어](./README.ko.md)
+
 # TokFresh
 
 Automate your Claude token reset timing for maximum efficiency.
