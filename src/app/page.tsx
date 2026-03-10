@@ -24,7 +24,8 @@ import {
   CalendarClock,
   Rocket,
   Github,
-} from "lucide-react";
+  } from "lucide-react";
+import { GitHubStarButton } from "@/components/github-star-button";
 
 export default function Home() {
   return (
@@ -35,9 +36,12 @@ export default function Home() {
           <Link href="/" className="text-xl font-bold tracking-tight">
             TokFresh
           </Link>
-          <Button asChild size="sm">
-            <Link href="/setup">Get Started</Link>
-          </Button>
+          <div className="flex items-center gap-3">
+            <GitHubStarButton />
+            <Button asChild size="sm">
+              <Link href="/setup">Get Started</Link>
+            </Button>
+          </div>
         </div>
       </nav>
 

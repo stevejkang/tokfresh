@@ -726,30 +726,18 @@ export default function SetupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <div className="mx-auto max-w-xl px-4 py-8">
-        <div className="mb-6">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to home
-          </Link>
-        </div>
+    <>
+      <h1 className="mb-2 text-2xl font-bold tracking-tight">
+        Set Up TokFresh
+      </h1>
 
-        <h1 className="mb-2 text-2xl font-bold tracking-tight">
-          Set Up TokFresh
-        </h1>
+      {state.step <= 4 && renderStepIndicator()}
 
-        {state.step <= 4 && renderStepIndicator()}
-
-        {state.step === 1 && renderStep1()}
-        {state.step === 2 && renderStep2()}
-        {state.step === 3 && renderStep3()}
-        {state.step === 4 && renderStep4()}
-        {state.step === 5 && renderSuccess()}
-      </div>
-    </div>
+      {state.step === 1 && renderStep1()}
+      {state.step === 2 && renderStep2()}
+      {state.step === 3 && renderStep3()}
+      {state.step === 4 && renderStep4()}
+      {state.step === 5 && renderSuccess()}
+    </>
   );
 }
