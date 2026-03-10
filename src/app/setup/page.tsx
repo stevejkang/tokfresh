@@ -524,6 +524,7 @@ export default function SetupPage() {
                 Use the &quot;Edit Cloudflare Workers&quot; template
               </li>
               <li>Set Account Resources to your account</li>
+              <li>Set Zone Resources to your zone (domain)</li>
               <li>Create and copy the token</li>
             </ol>
           </AlertDescription>
