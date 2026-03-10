@@ -49,7 +49,7 @@ export default async function Home({
           <Link href="/" className="text-xl font-bold tracking-tight">
             TokFresh
           </Link>
-          <div className="flex items-center gap-3" aria-label={tNav("star")}>
+          <div className="flex items-center gap-3">
             <GitHubStarButton />
             <LanguageSwitcher />
             <Button asChild size="sm">
@@ -58,7 +58,6 @@ export default async function Home({
           </div>
         </div>
       </nav>
-
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-6 pb-24 pt-20 text-center">
         <div className="mx-auto max-w-3xl">
