@@ -37,6 +37,7 @@ import {
   CheckCircle2,
   Info,
   Copy,
+  Mail,
 } from "lucide-react";
 import { type SetupState, INITIAL_SETUP_STATE } from "@/lib/types";
 import { generateAuthUrl, exchangeCode } from "@/lib/claude-oauth";
@@ -72,6 +73,8 @@ export default function SetupPage() {
   const [exchangeError, setExchangeError] = useState<string | null>(null);
   const [oauthOpened, setOauthOpened] = useState(false);
   const [deployProgress, setDeployProgress] = useState<string[]>([]);
+  const [subscribeEmail, setSubscribeEmail] = useState("");
+  const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "submitting" | "success" | "already" | "error">("idle");
   const trackedSteps = useRef(new Set<number>());
 
   useEffect(() => {
@@ -192,6 +195,30 @@ export default function SetupPage() {
         deploymentError: result.error ?? "Deployment failed",
         deploymentErrorCode: result.errorCode ?? null,
       });
+    }
+  };
+
+  const handleSubscribe = async () => {
+    if (!subscribeEmail.trim()) return;
+
+    setSubscribeStatus("submitting");
+
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: subscribeEmail.trim() }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSubscribeStatus(data.alreadySubscribed ? "already" : "success");
+      } else {
+        setSubscribeStatus("error");
+      }
+    } catch {
+      setSubscribeStatus("error");
     }
   };
 
@@ -697,6 +724,54 @@ export default function SetupPage() {
               {t("successOffNote")}
             </AlertDescription>
           </Alert>
+
+          <Separator />
+
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+            <h4 className="mb-1 flex items-center gap-2 text-sm font-semibold text-amber-300">
+              <AlertCircle className="h-4 w-4" />
+              {t("subscribeTitle")}
+            </h4>
+            <p className="mb-3 text-xs text-muted-foreground">
+              {t("subscribeDescription")}
+            </p>
+
+            {subscribeStatus === "success" || subscribeStatus === "already" ? (
+              <div className="flex items-center gap-2 rounded-md bg-emerald-500/10 px-3 py-2 text-sm text-emerald-400">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>
+                  {subscribeStatus === "already"
+                    ? t("subscribeAlready")
+                    : t("subscribeSuccess")}
+                </span>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Input
+                    type="email"
+                    placeholder={t("subscribePlaceholder")}
+                    value={subscribeEmail}
+                    onChange={(e) => setSubscribeEmail(e.target.value)}
+                    disabled={subscribeStatus === "submitting"}
+                  />
+                  <Button
+                    onClick={handleSubscribe}
+                    disabled={!subscribeEmail.trim() || subscribeStatus === "submitting"}
+                  >
+                    {subscribeStatus === "submitting" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      t("subscribeButton")
+                    )}
+                  </Button>
+                </div>
+                {subscribeStatus === "error" && (
+                  <p className="text-xs text-destructive">{t("subscribeError")}</p>
+                )}
+              </div>
+            )}
+          </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
           <a

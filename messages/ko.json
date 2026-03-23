@@ -132,6 +132,14 @@
     "successScheduleTitle": "트리거 스케줄",
     "successOffNote": "컴퓨터가 꺼져 있어도 됩니다 — 워커가 Cloudflare 엣지 네트워크에서 자동으로 실행됩니다!",
     "successViewDashboard": "Cloudflare 대시보드에서 보기",
-    "successBackHome": "홈으로 돌아가기"
+    "successBackHome": "홈으로 돌아가기",
+    "subscribeTitle": "워커 업데이트가 필요할 수 있습니다",
+    "subscribeDescription": "워커는 고정된 코드 스냅샷으로 실행됩니다. Anthropic이 API 헤더, OAuth 정책, 모델 엔드포인트를 변경하면 스케줄러가 조용히 멈출 수 있습니다. 이메일을 남겨주시면 재설정이 필요할 때 알려드립니다.",
+    "subscribePlaceholder": "you@example.com",
+    "subscribeButton": "알림 받기",
+    "subscribeSubmitting": "구독 중...",
+    "subscribeSuccess": "구독 완료! 조치가 필요할 때만 이메일을 보내드립니다.",
+    "subscribeAlready": "이미 구독 중입니다.",
+    "subscribeError": "구독에 실패했습니다. 다시 시도해 주세요."
   }
 }

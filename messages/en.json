@@ -130,6 +130,14 @@
     "successScheduleTitle": "Trigger Schedule",
     "successOffNote": "Your computer can be off — the worker runs automatically on Cloudflare's edge network!",
     "successViewDashboard": "View in Cloudflare Dashboard",
-    "successBackHome": "Back to Home"
+    "successBackHome": "Back to Home",
+    "subscribeTitle": "Worker updates may be required",
+    "subscribeDescription": "Your worker runs a fixed code snapshot. If Anthropic changes their API headers, OAuth policy, or model endpoints, your scheduler will break silently. Leave your email and we'll notify you when a re-setup is needed.",
+    "subscribePlaceholder": "you@example.com",
+    "subscribeButton": "Notify me",
+    "subscribeSubmitting": "Subscribing...",
+    "subscribeSuccess": "You're subscribed! We'll only email you when action is needed.",
+    "subscribeAlready": "You're already subscribed.",
+    "subscribeError": "Failed to subscribe. Please try again."
   }
 }
