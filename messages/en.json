@@ -1,4 +1,8 @@
 {
+  "Banner": {
+    "title": "Setup before Mar 17, 2026?",
+    "description": "Anthropic changed their OAuth policy. Re-run the setup to fix your scheduler."
+  },
   "Metadata": {
     "title": "TokFresh - Claude Token Reset Automation",
     "description": "Automate your Claude Pro/Max token reset timing with Cloudflare Workers. Schedule 5-hour cycles to align with your workday. Free, secure, 24/7 automatic."

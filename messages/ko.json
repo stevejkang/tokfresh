@@ -1,4 +1,8 @@
 {
+  "Banner": {
+    "title": "2026년 3월 17일 이전에 설정하셨나요?",
+    "description": "Anthropic의 OAuth 정책이 변경되었습니다. 셋업을 다시 실행하면 정상적으로 동작합니다."
+  },
   "Metadata": {
     "title": "TokFresh - Claude 토큰 리셋 자동화",
     "description": "Cloudflare Workers로 Claude Pro/Max 토큰 리셋 타이밍을 자동화하세요. 5시간 주기를 업무 시간에 맞춰 설정할 수 있습니다. 무료, 보안, 24시간 자동 실행."
