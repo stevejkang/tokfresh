@@ -67,18 +67,21 @@ export function generateWorkerCode(): string {
         await env.TOKEN_STORE.put('refresh_token', tokenData.refresh_token);
       }
 
-      const apiRes = await fetch('https://api.anthropic.com/v1/messages?beta=true', {
+      const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + accessToken,
           'anthropic-version': '2023-06-01',
-          'anthropic-beta': 'oauth-2025-04-20,interleaved-thinking-2025-05-14',
-          'user-agent': 'claude-cli/2.1.2 (external, cli)',
+          'anthropic-beta': 'claude-code-20250219,oauth-2025-04-20,interleaved-thinking-2025-05-14,prompt-caching-scope-2026-01-05',
+          'user-agent': 'claude-cli/2.1.80 (external, cli)',
+          'x-app': 'cli',
+          'x-anthropic-billing-header': 'cc_version=2.1.80.claude-sonnet-4-20250514; cc_entrypoint=cli; cch=00000;',
           'content-type': 'application/json'
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 10,
+          max_tokens: 128,
+          system: [{ type: 'text', text: 'You are Claude Code, Anthropic\\u0027s official CLI for Claude.' }],
           messages: [{ role: 'user', content: 'ping' }]
         })
       });
