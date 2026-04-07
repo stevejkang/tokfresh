@@ -82,6 +82,178 @@ export default async function Home({
         </div>
       </section>
 
+      {/* Token Math — 2T vs 3T */}
+      <section className="py-20">
+        <div className="mx-auto max-w-4xl px-6">
+          <h2 className="mb-4 text-center text-3xl font-bold tracking-tight">
+            {t("tokenMathTitle")}
+          </h2>
+          <p className="mx-auto mb-12 max-w-xl text-center text-muted-foreground">
+            {t("tokenMathSubtitle")}
+            <span className="font-medium text-foreground">
+              {t("tokenMathHighlight")}
+            </span>
+          </p>
+
+          {/* T definition pill */}
+          <div className="mb-10 flex justify-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-4 py-1.5 text-sm">
+              <span className="font-mono font-bold text-foreground">T</span>
+              <span className="text-muted-foreground">
+                = {t("tokenMathDefinition")}
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {/* Scenario 1: Start at 9 AM — 2T */}
+            <div>
+              <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                  {t("tokenMathScenario1Label")}
+                  <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground/70">
+                    {t("tokenMathScenario1Tag")}
+                  </span>
+                </div>
+                <div className="text-sm font-semibold tabular-nums text-muted-foreground">
+                  2T{" "}
+                  <span className="font-normal text-muted-foreground/70">
+                    {t("tokenMathAvailable")}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mb-1.5 flex items-stretch">
+                <div className="flex-[3]" />
+                <div className="flex h-5 flex-[9] items-center justify-center rounded-md border border-dashed border-muted-foreground/50 dark:border-muted-foreground/55">
+                  <span className="text-[9px] font-medium tracking-wide text-muted-foreground/80 dark:text-muted-foreground/80">
+                    9–18 {t("tokenMathWorkingHours")}
+                  </span>
+                </div>
+                <div className="hidden flex-[3] sm:block" />
+              </div>
+
+              <div className="flex items-stretch gap-1">
+                {/* 6–9 idle */}
+                <div className="flex h-14 flex-[3] items-center justify-center rounded-lg border border-dashed border-border bg-muted/30">
+                  <span className="hidden text-[10px] text-muted-foreground/40 sm:inline">
+                    {t("tokenMathIdle")}
+                  </span>
+                </div>
+                {/* 9–14 Session 1 */}
+                <div className="flex h-14 flex-[5] items-center justify-center rounded-lg border border-border bg-muted">
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-foreground">
+                      {t("tokenMathSession")} 1
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">
+                      9–14
+                    </div>
+                  </div>
+                </div>
+                {/* 14–19 Session 2 */}
+                <div className="flex h-14 flex-[5] items-center justify-center rounded-lg border border-border bg-muted">
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-foreground">
+                      {t("tokenMathSession")} 2
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">
+                      14–19
+                    </div>
+                  </div>
+                </div>
+                {/* 19–21 idle */}
+                <div className="hidden h-14 flex-[2] items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 sm:flex" />
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 text-xs text-muted-foreground/50">
+              <div className="h-px flex-1 bg-border" />
+              <span className="shrink-0">↓</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+
+            {/* Scenario 2: Start at 6 AM — 3T */}
+            <div>
+              <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  {t("tokenMathScenario2Label")}
+                  <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">
+                    {t("tokenMathScenario2Tag")}
+                  </span>
+                </div>
+                <div className="text-sm font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+                  3T{" "}
+                  <span className="font-normal text-emerald-600/70 dark:text-emerald-400/70">
+                    {t("tokenMathAvailable")}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mb-1.5 flex items-stretch">
+                <div className="flex-[3]" />
+                <div className="flex h-5 flex-[9] items-center justify-center rounded-md border border-dashed border-muted-foreground/50 dark:border-muted-foreground/55">
+                  <span className="text-[9px] font-medium tracking-wide text-muted-foreground/80 dark:text-muted-foreground/80">
+                    9–18 {t("tokenMathWorkingHours")}
+                  </span>
+                </div>
+                <div className="flex-[3]" />
+              </div>
+
+              <div className="flex h-14 items-stretch overflow-hidden rounded-xl border border-emerald-200 shadow-sm dark:border-emerald-500/20 dark:shadow-emerald-500/5">
+                {/* 6–11 Session 1 */}
+                <div className="flex flex-1 items-center justify-center bg-emerald-50 dark:bg-emerald-500/10">
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                      {t("tokenMathSession")} 1
+                    </div>
+                    <div className="text-[10px] text-emerald-600/60 dark:text-emerald-400/60">
+                      6–11
+                    </div>
+                  </div>
+                </div>
+                <div className="w-px bg-emerald-200 dark:bg-emerald-500/30" />
+                {/* 11–16 Session 2 */}
+                <div className="flex flex-1 items-center justify-center bg-emerald-50 dark:bg-emerald-500/10">
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                      {t("tokenMathSession")} 2
+                    </div>
+                    <div className="text-[10px] text-emerald-600/60 dark:text-emerald-400/60">
+                      11–16
+                    </div>
+                  </div>
+                </div>
+                <div className="w-px bg-emerald-200 dark:bg-emerald-500/30" />
+                {/* 16–21 Session 3 */}
+                <div className="flex flex-1 items-center justify-center bg-emerald-50 dark:bg-emerald-500/10">
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                      {t("tokenMathSession")} 3
+                    </div>
+                    <div className="text-[10px] text-emerald-600/60 dark:text-emerald-400/60">
+                      16–21
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Punchline */}
+          <div className="mt-10 text-center">
+            <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+              {t("tokenMathPunchline")}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t("tokenMathPunchlineDetail")}
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Problem / Solution */}
       <section className="border-y border-border bg-muted/30 py-20">
         <div className="mx-auto max-w-4xl px-6">
