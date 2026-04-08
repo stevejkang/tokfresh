@@ -4,6 +4,9 @@ English | [한국어](./README.ko.md)
 
 Automate your Claude token reset timing for maximum efficiency.
 
+> [!NOTE]  
+> You can use CLI instead of web UI. See [tokfresh-cli](https://github.com/stevejkang/tokfresh-cli)
+
 ## What It Does
 
 Claude Pro/Max usage resets every 5 hours from your first API call. TokFresh pre-triggers that cycle on a schedule you set, so resets align with your workday instead of interrupting it.

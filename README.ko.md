@@ -4,6 +4,9 @@
 
 Claude 토큰 리셋 타이밍을 자동화하여 최대 효율을 달성하세요.
 
+> [!NOTE]  
+> 웹 대신 CLI를 사용할 수 있습니다. 자세한 내용은 [tokfresh-cli](https://github.com/stevejkang/tokfresh-cli)를 참조하세요.
+
 ## 기능
 
 Claude Pro/Max 사용량은 첫 API 호출 후 5시간마다 리셋됩니다. TokFresh는 설정한 스케줄에 따라 해당 주기를 사전 트리거하여, 리셋이 업무 시간에 맞춰지도록 합니다.
