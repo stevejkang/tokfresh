@@ -62,7 +62,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: "/",
       siteName: "TokFresh",
       type: "website",
       locale: locale === "ko" ? "ko_KR" : "en_US",
@@ -72,13 +71,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
     },
-    alternates: {
-      canonical: "/",
-      languages: {
-        en: "/en",
-        ko: "/ko",
-      },
-    },
+
   };
 }
 

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
@@ -8,6 +9,24 @@ type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+
+  return {
+    alternates: {
+      canonical: locale === "en" ? "/setup" : `/${locale}/setup`,
+      languages: {
+        en: "/en/setup",
+        ko: "/ko/setup",
+        "x-default": "/setup",
+      },
+    },
+    openGraph: {
+      url: locale === "en" ? "/setup" : `/${locale}/setup`,
+    },
+  };
+}
 
 export default async function SetupLayout({ children, params }: Props) {
   const { locale } = await params;

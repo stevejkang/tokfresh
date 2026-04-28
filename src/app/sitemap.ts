@@ -11,12 +11,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 1,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/en`,
+          ko: `${baseUrl}/ko`,
+        },
+      },
     },
     {
       url: `${baseUrl}/setup`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/en/setup`,
+          ko: `${baseUrl}/ko/setup`,
+        },
+      },
     },
   ];
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,28 @@ import {
 } from "lucide-react";
 import { GitHubStarButton } from "@/components/github-star-button";
 import { LanguageSwitcher } from "@/components/language-switcher";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  return {
+    alternates: {
+      canonical: locale === "en" ? "/" : `/${locale}`,
+      languages: {
+        en: "/en",
+        ko: "/ko",
+        "x-default": "/",
+      },
+    },
+    openGraph: {
+      url: locale === "en" ? "/" : `/${locale}`,
+    },
+  };
+}
 
 export default async function Home({
   params,
