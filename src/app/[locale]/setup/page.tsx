@@ -583,31 +583,23 @@ export default function SetupPage() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertTitle>{t("step4TokenTitle")}</AlertTitle>
-          <AlertDescription className="space-y-2">
-            <ol className="mt-2 list-inside list-decimal space-y-1 text-sm">
-              <li>
-                {t("step4TokenStep1")}
-                <a
-                  href="https://dash.cloudflare.com/profile/api-tokens"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-medium underline"
-                >
-                  {t("step4TokenLink")}
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </li>
-              <li>{t("step4TokenStep2")}</li>
-              <li>{t("step4TokenStep3")}</li>
-              <li>{t("step4TokenStep4")}</li>
-              <li>{t("step4TokenStep5")}</li>
-              <li>{t("step4TokenStep6")}</li>
-            </ol>
-          </AlertDescription>
-        </Alert>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <h4 className="text-sm font-medium">{t("step4TokenTitle")}</h4>
+            <p className="text-sm text-muted-foreground">{t("step4TokenDescription")}</p>
+          </div>
+          <a
+            href={`https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=${encodeURIComponent(JSON.stringify([{key:"workers_scripts",type:"edit"},{key:"workers_kv_storage",type:"edit"},{key:"account_settings",type:"read"}]))}&name=TokFresh`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="outline" className="w-full">
+              <ExternalLink className="mr-2 h-4 w-4" />
+              {t("step4CreateToken")}
+            </Button>
+          </a>
+          <p className="text-xs text-muted-foreground">{t("step4TokenAfter")}</p>
+        </div>
 
         <div className="space-y-2">
           <Label htmlFor="cf-token">{t("step4Label")}</Label>
