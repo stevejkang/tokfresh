@@ -63,6 +63,17 @@ const STEP_TITLES_EN = [
   "Deploy",
 ];
 
+function categorizeError(error: string): string {
+  const lower = error.toLowerCase();
+  if (lower.includes("network") || lower.includes("fetch")) return "network_error";
+  if (lower.includes("unauthorized") || lower.includes("403") || lower.includes("invalid token")) return "auth_failed";
+  if (lower.includes("rate limit") || lower.includes("429")) return "rate_limited";
+  if (lower.includes("timeout")) return "timeout";
+  if (lower.includes("subdomain") || lower.includes("10063")) return "subdomain_not_configured";
+  if (lower.includes("not found") || lower.includes("404")) return "not_found";
+  return "unknown";
+}
+
 export default function SetupPage() {
   const t = useTranslations("Setup");
   const stepTitles = [t("stepConnect"), t("stepSchedule"), t("stepNotifications"), t("stepDeploy")];
@@ -76,6 +87,8 @@ export default function SetupPage() {
   const [subscribeEmail, setSubscribeEmail] = useState("");
   const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "submitting" | "success" | "already" | "error">("idle");
   const trackedSteps = useRef(new Set<number>());
+  const trackedActions = useRef(new Set<string>());
+  const deployAttemptRef = useRef(0);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, timezone: detectTimezone() }));
@@ -111,12 +124,16 @@ export default function SetupPage() {
     sessionStorage.setItem("tokfresh_verifier", verifier);
     window.open(url, "_blank", "noopener");
     setOauthOpened(true);
+    trackEvent({ action: "setup_oauth_window_opened" });
   };
 
   const handleExchangeCode = async () => {
+    trackEvent({ action: "setup_oauth_code_submitted" });
+
     const verifier = sessionStorage.getItem("tokfresh_verifier");
     if (!verifier) {
       setExchangeError("Session expired. Please connect Claude again.");
+      trackEvent({ action: "setup_oauth_exchange_error", params: { error_type: "session_expired" } });
       return;
     }
 
@@ -132,32 +149,60 @@ export default function SetupPage() {
         claudeAccessToken: result.accessToken ?? null,
         step: 2,
       });
+      trackEvent({ action: "setup_oauth_exchange_success" });
     } else {
       setExchangeError(result.error ?? "Failed to verify code");
+      trackEvent({ action: "setup_oauth_exchange_error", params: { error_type: "exchange_failed" } });
     }
 
     setIsExchanging(false);
   };
 
+  const handleScheduleContinue = () => {
+    if (!trackedActions.current.has("schedule_configured")) {
+      trackedActions.current.add("schedule_configured");
+      trackEvent({ action: "setup_schedule_configured", params: { start_time: state.startTime, timezone: state.timezone } });
+    }
+    update({ step: 3 });
+  };
+
+  const handleNotificationContinue = () => {
+    if (!trackedActions.current.has("notification_configured")) {
+      trackedActions.current.add("notification_configured");
+      trackEvent({
+        action: "setup_notification_configured",
+        params: { type: state.notificationType, failure_only: state.notifyOnFailureOnly ? "true" : "false" },
+      });
+    }
+    update({ step: 4 });
+  };
+
   const handleDeploy = async () => {
     if (!state.cloudflareApiToken || !state.claudeRefreshToken) return;
 
+    deployAttemptRef.current += 1;
+    const attempt = deployAttemptRef.current;
+
+    trackEvent({ action: "setup_deploy_initiated", params: { attempt } });
     update({ deploymentStatus: "deploying", deploymentError: null, deploymentErrorCode: null });
     setDeployProgress(["Verifying Cloudflare token..."]);
 
     const verification = await verifyCloudflareToken(state.cloudflareApiToken);
 
     if (!verification.valid) {
+      const error = verification.error ?? "Token verification failed";
       update({
         deploymentStatus: "error",
-        deploymentError: verification.error ?? "Token verification failed",
+        deploymentError: error,
       });
+      trackEvent({ action: "setup_cf_verify_error", params: { error_type: categorizeError(error), attempt } });
       return;
     }
 
     const accountId = verification.accountId!;
     update({ cloudflareAccountId: accountId });
     setDeployProgress((prev) => [...prev, "Token verified"]);
+    trackEvent({ action: "setup_cf_verify_success", params: { attempt } });
 
     const cronExpression = timeToCron(schedule, state.timezone);
     const workerCode = generateWorkerCode();
@@ -189,18 +234,25 @@ export default function SetupPage() {
 
     if (result.success) {
       update({ deploymentStatus: "success", step: 5 });
+      trackEvent({ action: "setup_deploy_success", params: { attempt } });
     } else {
+      const error = result.error ?? "Deployment failed";
+      const errorCode = result.errorCode ?? null;
       update({
         deploymentStatus: "error",
-        deploymentError: result.error ?? "Deployment failed",
-        deploymentErrorCode: result.errorCode ?? null,
+        deploymentError: error,
+        deploymentErrorCode: errorCode,
       });
+      const params: Record<string, string | number> = { error_type: categorizeError(error), attempt };
+      if (errorCode != null) params.error_code = errorCode;
+      trackEvent({ action: "setup_deploy_error", params });
     }
   };
 
   const handleSubscribe = async () => {
     if (!subscribeEmail.trim()) return;
 
+    trackEvent({ action: "setup_subscribe_submitted" });
     setSubscribeStatus("submitting");
 
     try {
@@ -213,12 +265,16 @@ export default function SetupPage() {
       const data = await res.json();
 
       if (data.success) {
-        setSubscribeStatus(data.alreadySubscribed ? "already" : "success");
+        const status = data.alreadySubscribed ? "already" : "success";
+        setSubscribeStatus(status);
+        trackEvent({ action: "setup_subscribe_result", params: { result: status } });
       } else {
         setSubscribeStatus("error");
+        trackEvent({ action: "setup_subscribe_result", params: { result: "error" } });
       }
     } catch {
       setSubscribeStatus("error");
+      trackEvent({ action: "setup_subscribe_result", params: { result: "error" } });
     }
   };
 
@@ -423,7 +479,7 @@ export default function SetupPage() {
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t("back")}
         </Button>
-        <Button onClick={() => update({ step: 3 })}>
+        <Button onClick={handleScheduleContinue}>
           {t("continue")}
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
@@ -510,7 +566,7 @@ export default function SetupPage() {
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t("back")}
         </Button>
-        <Button onClick={() => update({ step: 4 })}>
+        <Button onClick={handleNotificationContinue}>
           {t("continue")}
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
