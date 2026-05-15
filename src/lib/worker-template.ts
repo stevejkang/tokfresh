@@ -1,6 +1,22 @@
-export function generateWorkerCode(): string {
+const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
+
+export function generateWorkerCode(baseUrl: string): string {
   return `export default {
   async scheduled(event, env, ctx) {
+    const TOKFRESH_BASE = '${baseUrl}';
+    const FALLBACK_MODEL = '${DEFAULT_MODEL}';
+
+    async function fetchModel() {
+      try {
+        const res = await fetch(TOKFRESH_BASE + '/api/config/model');
+        if (!res.ok) return FALLBACK_MODEL;
+        const text = (await res.text()).trim();
+        return text || FALLBACK_MODEL;
+      } catch {
+        return FALLBACK_MODEL;
+      }
+    }
+
     async function notify(message) {
       if (!env.NOTIFICATION_CONFIG) return;
       const config = JSON.parse(env.NOTIFICATION_CONFIG);
@@ -30,6 +46,8 @@ export function generateWorkerCode(): string {
     }
 
     try {
+      const model = await fetchModel();
+
       // Read refresh token from KV (fallback to env secret for initial run)
       let refreshToken = await env.TOKEN_STORE.get('refresh_token');
       if (!refreshToken) {
@@ -75,11 +93,11 @@ export function generateWorkerCode(): string {
           'anthropic-beta': 'claude-code-20250219,oauth-2025-04-20,interleaved-thinking-2025-05-14,prompt-caching-scope-2026-01-05',
           'user-agent': 'claude-cli/2.1.80 (external, cli)',
           'x-app': 'cli',
-          'x-anthropic-billing-header': 'cc_version=2.1.80.claude-sonnet-4-20250514; cc_entrypoint=cli; cch=00000;',
+          'x-anthropic-billing-header': 'cc_version=2.1.80.' + model + '; cc_entrypoint=cli; cch=00000;',
           'content-type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: model,
           max_tokens: 128,
           system: [{ type: 'text', text: 'You are Claude Code, Anthropic\\u0027s official CLI for Claude.' }],
           messages: [{ role: 'user', content: 'ping' }]
