@@ -205,7 +205,7 @@ export default function SetupPage() {
     trackEvent({ action: "setup_cf_verify_success", params: { attempt } });
 
     const cronExpression = timeToCron(schedule, state.timezone);
-    const workerCode = generateWorkerCode(window.location.origin);
+    const workerCode = generateWorkerCode();
 
     let notificationConfig: string | undefined;
     if (state.notificationType !== "none" && state.notificationWebhook) {

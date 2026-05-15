@@ -9,12 +9,12 @@ const FALLBACK_HEADERS = {
   "x-anthropic-billing-header": `cc_version=2.1.80.${DEFAULT_MODEL}; cc_entrypoint=cli; cch=00000;`,
 };
 
-export function generateWorkerCode(baseUrl: string): string {
+export function generateWorkerCode(): string {
   const fallbackHeadersJson = JSON.stringify(FALLBACK_HEADERS);
 
   return `export default {
   async scheduled(event, env, ctx) {
-    const TOKFRESH_BASE = '${baseUrl}';
+    const TOKFRESH_BASE = 'https://tokfresh.com';
     const FALLBACK_MODEL = '${DEFAULT_MODEL}';
     const FALLBACK_HEADERS = ${fallbackHeadersJson};
 
