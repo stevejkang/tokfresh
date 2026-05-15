@@ -138,6 +138,8 @@ export function generateWorkerCode(baseUrl: string): string {
         await notify('TokFresh: Successfully refreshed at ' + now);
       }
 
+      try { await fetch(TOKFRESH_BASE + '/api/ping', { method: 'POST' }); } catch {}
+
       console.log('Token timer refreshed successfully');
     } catch (error) {
       console.error('Worker error:', error.message);
@@ -146,6 +148,8 @@ export function generateWorkerCode(baseUrl: string): string {
         const now = new Date().toLocaleString('en-US', { timeZone: env.TIMEZONE || 'UTC' });
         await notify('TokFresh: Failed at ' + now + ': ' + error.message);
       }
+
+      try { await fetch(TOKFRESH_BASE + '/api/ping', { method: 'POST' }); } catch {}
 
       throw error;
     }
