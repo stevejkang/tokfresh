@@ -1,7 +1,7 @@
 {
   "Banner": {
-    "title": "Setup before Mar 17, 2026?",
-    "description": "Anthropic changed their OAuth policy. Re-run the setup to fix your scheduler."
+    "title": "Deployed before May 15, 2026?",
+    "description": "Re-run the setup once — your worker will automatically adapt to future model deprecations and header changes."
   },
   "Metadata": {
     "title": "TokFresh - Claude Token Reset Automation",

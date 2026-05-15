@@ -1,7 +1,7 @@
 {
   "Banner": {
-    "title": "2026년 3월 17일 이전에 설정하셨나요?",
-    "description": "Anthropic의 OAuth 정책이 변경되었습니다. 셋업을 다시 실행하면 정상적으로 동작합니다."
+    "title": "2026년 5월 15일 이전에 배포하셨나요?",
+    "description": "셋업을 한 번만 다시 실행해 주세요 — 이후 모델 지원 중단이나 헤더 변경에 자동으로 대응합니다."
   },
   "Metadata": {
     "title": "TokFresh - Claude 토큰 리셋 자동화",

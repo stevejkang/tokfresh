@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { X, AlertTriangle } from "lucide-react";
 
-const DISMISS_KEY = "tokfresh_banner_mar17_dismissed";
+const DISMISS_KEY = "tokfresh_banner_may15_dismissed";
 
 export function AnnouncementBanner() {
   const t = useTranslations("Banner");
@@ -25,7 +25,7 @@ export function AnnouncementBanner() {
 
   return (
     <div className="relative border-b border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-center text-sm text-amber-300">
-      <div className="mx-auto flex max-w-4xl items-center justify-center gap-2">
+      <div className="mx-auto flex max-w-6xl items-center justify-center gap-2">
         <AlertTriangle className="hidden h-4 w-4 shrink-0 sm:block" />
         <p>
           <span className="font-medium">{t("title")}</span>
