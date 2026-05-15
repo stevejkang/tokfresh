@@ -1,10 +1,22 @@
 const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
 
+const FALLBACK_HEADERS = {
+  "anthropic-version": "2023-06-01",
+  "anthropic-beta":
+    "claude-code-20250219,oauth-2025-04-20,interleaved-thinking-2025-05-14,prompt-caching-scope-2026-01-05",
+  "user-agent": "claude-cli/2.1.80 (external, cli)",
+  "x-app": "cli",
+  "x-anthropic-billing-header": `cc_version=2.1.80.${DEFAULT_MODEL}; cc_entrypoint=cli; cch=00000;`,
+};
+
 export function generateWorkerCode(baseUrl: string): string {
+  const fallbackHeadersJson = JSON.stringify(FALLBACK_HEADERS);
+
   return `export default {
   async scheduled(event, env, ctx) {
     const TOKFRESH_BASE = '${baseUrl}';
     const FALLBACK_MODEL = '${DEFAULT_MODEL}';
+    const FALLBACK_HEADERS = ${fallbackHeadersJson};
 
     async function fetchModel() {
       try {
@@ -14,6 +26,17 @@ export function generateWorkerCode(baseUrl: string): string {
         return text || FALLBACK_MODEL;
       } catch {
         return FALLBACK_MODEL;
+      }
+    }
+
+    async function fetchHeaders() {
+      try {
+        const res = await fetch(TOKFRESH_BASE + '/api/config/headers');
+        if (!res.ok) return FALLBACK_HEADERS;
+        const data = await res.json();
+        return Object.assign({}, FALLBACK_HEADERS, data);
+      } catch {
+        return FALLBACK_HEADERS;
       }
     }
 
@@ -47,6 +70,7 @@ export function generateWorkerCode(baseUrl: string): string {
 
     try {
       const model = await fetchModel();
+      const dynamicHeaders = await fetchHeaders();
 
       // Read refresh token from KV (fallback to env secret for initial run)
       let refreshToken = await env.TOKEN_STORE.get('refresh_token');
@@ -89,11 +113,11 @@ export function generateWorkerCode(baseUrl: string): string {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + accessToken,
-          'anthropic-version': '2023-06-01',
-          'anthropic-beta': 'claude-code-20250219,oauth-2025-04-20,interleaved-thinking-2025-05-14,prompt-caching-scope-2026-01-05',
-          'user-agent': 'claude-cli/2.1.80 (external, cli)',
-          'x-app': 'cli',
-          'x-anthropic-billing-header': 'cc_version=2.1.80.' + model + '; cc_entrypoint=cli; cch=00000;',
+          'anthropic-version': dynamicHeaders['anthropic-version'],
+          'anthropic-beta': dynamicHeaders['anthropic-beta'],
+          'user-agent': dynamicHeaders['user-agent'],
+          'x-app': dynamicHeaders['x-app'],
+          'x-anthropic-billing-header': dynamicHeaders['x-anthropic-billing-header'],
           'content-type': 'application/json'
         },
         body: JSON.stringify({
