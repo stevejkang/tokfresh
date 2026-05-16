@@ -25,6 +25,8 @@ export async function deployWorker(params: {
   schedule: string;
   timezone: string;
   notificationConfig?: string;
+  enableLogs?: boolean;
+  enableTraces?: boolean;
   onProgress?: (step: string) => void;
 }): Promise<{ success: boolean; error?: string; errorCode?: number }> {
   const { onProgress, ...payload } = params;

@@ -24,6 +24,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   ArrowLeft,
   ArrowRight,
@@ -229,6 +230,8 @@ export default function SetupPage() {
       schedule: cronExpression,
       timezone: state.timezone,
       notificationConfig,
+      enableLogs: state.enableLogs,
+      enableTraces: state.enableTraces,
       onProgress: (step) => setDeployProgress((prev) => [...prev, step]),
     });
 
@@ -619,6 +622,41 @@ export default function SetupPage() {
               {t("step4Privacy")}
             </span>
           </div>
+        </div>
+
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium">{t("step4ObservabilityTitle")}</h4>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="enable-logs"
+                checked={state.enableLogs}
+                onCheckedChange={(checked) =>
+                  update({ enableLogs: checked === true })
+                }
+                disabled={state.deploymentStatus === "deploying"}
+              />
+              <Label htmlFor="enable-logs" className="text-sm font-normal">
+                {t("step4EnableLogs")}
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="enable-traces"
+                checked={state.enableTraces}
+                onCheckedChange={(checked) =>
+                  update({ enableTraces: checked === true })
+                }
+                disabled={state.deploymentStatus === "deploying"}
+              />
+              <Label htmlFor="enable-traces" className="text-sm font-normal">
+                {t("step4EnableTraces")}
+              </Label>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {t("step4ObservabilityDescription")}
+          </p>
         </div>
 
         {state.deploymentStatus === "deploying" && (

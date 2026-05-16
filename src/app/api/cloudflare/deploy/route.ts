@@ -60,6 +60,8 @@ export async function POST(request: NextRequest) {
     schedule,
     timezone,
     notificationConfig,
+    enableLogs,
+    enableTraces,
   } = body;
 
   if (!apiToken || !accountId || !workerCode || !refreshToken || !schedule) {
@@ -99,7 +101,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const metadata = {
+  const metadata: Record<string, unknown> = {
     main_module: "worker.js",
     compatibility_date: "2024-01-01",
     bindings: [
@@ -110,6 +112,14 @@ export async function POST(request: NextRequest) {
       },
     ],
   };
+
+  if (enableLogs || enableTraces) {
+    metadata.observability = {
+      enabled: true,
+      ...(enableLogs && { logs: { enabled: true, invocation_logs: true } }),
+      ...(enableTraces && { traces: { enabled: true } }),
+    };
+  }
 
   const formData = new FormData();
   formData.append(

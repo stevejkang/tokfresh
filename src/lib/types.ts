@@ -9,6 +9,8 @@ export interface SetupState {
   notifyOnFailureOnly: boolean;
   cloudflareApiToken: string;
   cloudflareAccountId: string;
+  enableLogs: boolean;
+  enableTraces: boolean;
   deploymentStatus: "idle" | "deploying" | "success" | "error";
   deploymentError: string | null;
   deploymentErrorCode: number | null;
@@ -25,6 +27,8 @@ export const INITIAL_SETUP_STATE: SetupState = {
   notifyOnFailureOnly: false,
   cloudflareApiToken: "",
   cloudflareAccountId: "",
+  enableLogs: true,
+  enableTraces: true,
   deploymentStatus: "idle",
   deploymentError: null,
   deploymentErrorCode: null,
