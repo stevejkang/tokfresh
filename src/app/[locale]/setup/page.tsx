@@ -744,8 +744,8 @@ export default function SetupPage() {
     return (
       <Card>
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-            <CheckCircle2 className="h-8 w-8 text-primary" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10">
+            <CheckCircle2 className="h-8 w-8 text-emerald-500" />
           </div>
           <CardTitle className="text-2xl">{t("successTitle")}</CardTitle>
           <CardDescription>
