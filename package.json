@@ -19,7 +19,7 @@
     "radix-ui": "^1.6.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
-    "resend": "^6.12.4",
+    "resend": "^6.16.0",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
