@@ -55,22 +55,30 @@ export default async function NewsPage({
     <div className="mx-auto max-w-5xl px-6 py-12">
       <PostsSectionHeader title={t("news")} className="mb-10" />
 
-      <section>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
-          {cardPosts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
-      </section>
+      {posts.length > 0 ? (
+        <>
+          <section>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+              {cardPosts.map((post) => (
+                <PostCard key={post.slug} post={post} />
+              ))}
+            </div>
+          </section>
 
-      {listPosts.length > 0 && (
-        <section className="mt-12">
-          <div className="flex flex-col">
-            {listPosts.map((post) => (
-              <PostListItem key={post.slug} post={post} />
-            ))}
-          </div>
-        </section>
+          {listPosts.length > 0 && (
+            <section className="mt-12">
+              <div className="flex flex-col">
+                {listPosts.map((post) => (
+                  <PostListItem key={post.slug} post={post} />
+                ))}
+              </div>
+            </section>
+          )}
+        </>
+      ) : (
+        <p className="py-20 text-center text-muted-foreground">
+          {t("noResults")}
+        </p>
       )}
     </div>
   );

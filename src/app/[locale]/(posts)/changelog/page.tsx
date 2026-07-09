@@ -51,15 +51,21 @@ export default async function ChangelogPage({
     <div className="mx-auto max-w-5xl px-6 py-12">
       <PostsSectionHeader title={t("changelog")} className="mb-10" />
 
-      <div className="flex flex-col gap-14">
-        {posts.map((post, index) => (
-          <TimelineEntry
-            key={post.slug}
-            post={post}
-            isFirst={index === 0}
-          />
-        ))}
-      </div>
+      {posts.length > 0 ? (
+        <div className="flex flex-col gap-14">
+          {posts.map((post, index) => (
+            <TimelineEntry
+              key={post.slug}
+              post={post}
+              isFirst={index === 0}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="py-20 text-center text-muted-foreground">
+          {t("noResults")}
+        </p>
+      )}
     </div>
   );
 }

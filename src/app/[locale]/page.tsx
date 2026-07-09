@@ -480,26 +480,28 @@ export default async function Home({
       </section>
 
       {/* Recent Updates */}
-      <section className="border-t border-border py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="mb-12 text-center text-3xl font-bold tracking-tight">
-            {tPosts("recentUpdates")}
-          </h2>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
-            {recentPosts.map((post) => (
-              <PostCard key={post.slug} post={post} />
-            ))}
+      {recentPosts.length > 0 && (
+        <section className="border-t border-border py-20">
+          <div className="mx-auto max-w-6xl px-6">
+            <h2 className="mb-12 text-center text-3xl font-bold tracking-tight">
+              {tPosts("recentUpdates")}
+            </h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
+              {recentPosts.map((post) => (
+                <PostCard key={post.slug} post={post} />
+              ))}
+            </div>
+            <div className="mt-10 text-center">
+              <Button asChild variant="outline">
+                <Link href="/posts">
+                  {tPosts("viewAll")}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
           </div>
-          <div className="mt-10 text-center">
-            <Button asChild variant="outline">
-              <Link href="/posts">
-                {tPosts("viewAll")}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* FAQ */}
       <section className="border-t border-border bg-muted/30 py-20">
