@@ -35,12 +35,12 @@ export function TimelineEntry({
 
           <div
             className={cn(
-              "mt-2.5 size-2 shrink-0 rounded-full md:absolute md:-right-[25px] md:top-3",
+              "mt-2.5 size-2 shrink-0 rounded-full md:absolute md:-right-[25px] md:top-[15px] md:mt-0",
               isFirst ? "bg-destructive" : "bg-border",
             )}
           />
 
-          <div className="absolute -right-[21px] top-6 hidden h-[calc(100%+2rem)] w-px bg-border md:block" />
+          <div className="absolute -right-[21px] top-[23px] hidden h-[calc(100%+2rem)] w-px bg-border md:block" />
         </div>
 
         <div className="flex flex-col gap-4">

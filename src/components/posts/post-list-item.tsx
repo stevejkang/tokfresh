@@ -24,7 +24,7 @@ export function PostListItem({
     <Link
       href={`/posts/${post.slug}`}
       className={cn(
-        "group flex items-center justify-between gap-4 border-b border-border py-4 transition-colors duration-200 hover:bg-muted/50",
+        "group -mx-3 flex items-center justify-between gap-4 rounded-md border-b border-border px-3 py-4 transition-colors duration-200 hover:bg-muted/50",
         className,
       )}
     >
