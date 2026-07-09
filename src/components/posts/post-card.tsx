@@ -27,17 +27,16 @@ export function PostCard({
       className={cn("group block", className)}
     >
       <article className="flex flex-col gap-3">
-        {post.heroImage && (
-          <div className="overflow-hidden rounded-lg border border-border">
-            <Image
-              src={post.heroImage}
-              alt={post.title}
-              width={1200}
-              height={630}
-              className="aspect-[1200/630] w-full object-cover transition-opacity duration-200 group-hover:opacity-90"
-            />
-          </div>
-        )}
+        <div className="overflow-hidden rounded-lg border border-border">
+          <Image
+            src={post.heroImage ?? `/${post.locale}/posts/${post.slug}/og`}
+            alt={post.title}
+            width={1200}
+            height={630}
+            unoptimized={!post.heroImage}
+            className="aspect-[1200/630] w-full object-cover transition-opacity duration-200 group-hover:opacity-90"
+          />
+        </div>
 
         <h3 className="text-base font-semibold text-foreground transition-colors duration-200 group-hover:text-muted-foreground">
           {post.title}

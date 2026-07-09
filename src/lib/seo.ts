@@ -39,6 +39,8 @@ export function generateArticleJsonLd(
 
   if (image) {
     jsonLd.image = image.startsWith("http") ? image : `${baseUrl}${image}`;
+  } else {
+    jsonLd.image = `${baseUrl}/favicon.ico`;
   }
 
   return jsonLd;
@@ -50,13 +52,6 @@ export function generatePostMetadata(
 ): Metadata {
   const canonicalUrl =
     locale === "en" ? `/posts/${post.slug}` : `/${locale}/posts/${post.slug}`;
-
-  const image = post.ogImage ?? post.heroImage;
-  const ogImageUrl = image
-    ? image.startsWith("http")
-      ? image
-      : `${baseUrl}${image}`
-    : null;
 
   // Build hreflang map — only include locales where the translation exists
   const languages: Record<string, string> = {};
@@ -77,9 +72,6 @@ export function generatePostMetadata(
       title: post.title,
       description: post.description,
       url: canonicalUrl,
-      ...(ogImageUrl && {
-        images: [{ url: ogImageUrl, width: 1200, height: 630 }],
-      }),
       type: "article",
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt ?? post.publishedAt,
@@ -90,7 +82,6 @@ export function generatePostMetadata(
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      ...(ogImageUrl && { images: [ogImageUrl] }),
     },
     alternates: {
       canonical: canonicalUrl,
