@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { routing } from "@/i18n/routing";
 import { getPostsByCategory } from "@/lib/posts";
 import { PostCard } from "@/components/posts/post-card";
 import { PostListItem } from "@/components/posts/post-list-item";
-import { PostsTabNav } from "@/components/posts/posts-tab-nav";
+import { PostsSectionHeader } from "@/components/posts/posts-section-header";
 
 const CARD_LIMIT = 6;
 
@@ -21,7 +21,7 @@ export async function generateMetadata({
   const { locale } = await params;
 
   return {
-    title: "News | TokFresh",
+    title: "News",
     description:
       "Announcements and blog posts from TokFresh — product news, tips, and insights.",
     alternates: {
@@ -46,33 +46,32 @@ export default async function NewsPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
+  const t = await getTranslations("Posts");
   const posts = getPostsByCategory(locale, ["announcements", "blog"]);
   const cardPosts = posts.slice(0, CARD_LIMIT);
   const listPosts = posts.slice(CARD_LIMIT);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">
-        <PostsTabNav className="mb-8 border-b border-border pb-2" />
+    <div className="mx-auto max-w-5xl px-6 py-12">
+      <PostsSectionHeader title={t("news")} className="mb-10" />
 
-        <section>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-            {cardPosts.map((post) => (
-              <PostCard key={post.slug} post={post} />
+      <section>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+          {cardPosts.map((post) => (
+            <PostCard key={post.slug} post={post} />
+          ))}
+        </div>
+      </section>
+
+      {listPosts.length > 0 && (
+        <section className="mt-12">
+          <div className="flex flex-col">
+            {listPosts.map((post) => (
+              <PostListItem key={post.slug} post={post} />
             ))}
           </div>
         </section>
-
-        {listPosts.length > 0 && (
-          <section className="mt-12">
-            <div className="flex flex-col">
-              {listPosts.map((post) => (
-                <PostListItem key={post.slug} post={post} />
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
+      )}
     </div>
   );
 }

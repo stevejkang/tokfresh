@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { routing } from "@/i18n/routing";
 import { getPostsByCategory } from "@/lib/posts";
-import { PostsTabNav } from "@/components/posts/posts-tab-nav";
+import { PostsSectionHeader } from "@/components/posts/posts-section-header";
 import { TimelineEntry } from "@/components/posts/timeline-entry";
 
 export function generateStaticParams() {
@@ -19,7 +19,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Posts" });
 
   return {
-    title: `${t("changelog")} | TokFresh`,
+    title: t("changelog"),
     description: t("categoryProductUpdates"),
     alternates: {
       canonical:
@@ -48,12 +48,8 @@ export default async function ChangelogPage({
   const posts = getPostsByCategory(locale, ["product-updates"]);
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12">
-      <h1 className="mb-8 text-4xl font-bold tracking-tighter text-foreground sm:text-5xl">
-        {t("changelog")}
-      </h1>
-
-      <PostsTabNav className="mb-12 border-b border-border pb-2" />
+    <div className="mx-auto max-w-5xl px-6 py-12">
+      <PostsSectionHeader title={t("changelog")} className="mb-10" />
 
       <div className="flex flex-col gap-14">
         {posts.map((post, index) => (
