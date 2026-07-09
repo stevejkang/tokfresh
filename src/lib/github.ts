@@ -1,9 +1,11 @@
+import { cache } from "react";
+
 const REPO = "stevejkang/tokfresh";
 
-export async function getStarCount(): Promise<number | null> {
+export const getStarCount = cache(async (): Promise<number | null> => {
   try {
     const res = await fetch(`https://api.github.com/repos/${REPO}`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 21600 },
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -11,4 +13,4 @@ export async function getStarCount(): Promise<number | null> {
   } catch {
     return null;
   }
-}
+});

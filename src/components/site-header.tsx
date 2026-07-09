@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import { GitHubStarButton } from "@/components/github-star-button";
 import { LanguageSwitcher } from "@/components/language-switcher";
 
-export async function SiteHeader() {
+export async function SiteHeader({
+  showGitHubStars = true,
+}: {
+  showGitHubStars?: boolean;
+} = {}) {
   const tNav = await getTranslations("Nav");
 
   return (
@@ -20,7 +24,7 @@ export async function SiteHeader() {
           >
             {tNav("posts")}
           </Link>
-          <GitHubStarButton />
+          {showGitHubStars && <GitHubStarButton />}
           <LanguageSwitcher />
           <Button asChild size="sm">
             <Link href="/setup">{tNav("getStarted")}</Link>

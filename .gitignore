@@ -29,6 +29,15 @@ yarn-error.log*
 # vercel
 .vercel
 
+# playwright mcp
+.playwright-mcp/
+
+# cloudflare wrangler
+.wrangler/
+
+# test artifacts
+test-results/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

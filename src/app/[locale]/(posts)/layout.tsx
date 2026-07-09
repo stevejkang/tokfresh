@@ -19,7 +19,7 @@ export default async function PostsLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
+      <SiteHeader showGitHubStars={false} />
       {children}
     </div>
   );
