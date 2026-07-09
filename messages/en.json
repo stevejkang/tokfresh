@@ -10,7 +10,8 @@
   "Nav": {
     "getStarted": "Get Started",
     "star": "Star",
-    "backToHome": "Back to home"
+    "backToHome": "Back to home",
+    "posts": "Posts"
   },
   "Landing": {
     "badge": "Free forever. No API keys needed.",
@@ -153,5 +154,24 @@
     "subscribeSuccess": "You're subscribed! We'll only email you when action is needed.",
     "subscribeAlready": "You're already subscribed.",
     "subscribeError": "Failed to subscribe. Please try again."
+  },
+  "Posts": {
+    "allPosts": "All",
+    "changelog": "Changelog",
+    "news": "News",
+    "searchPlaceholder": "Search posts...",
+    "noResults": "No posts found.",
+    "recentUpdates": "Recent updates",
+    "viewAll": "View all",
+    "olderPosts": "Older posts",
+    "readMore": "Read more",
+    "categoryProductUpdates": "Product Updates",
+    "categoryAnnouncements": "Announcements",
+    "categoryBlog": "Blog",
+    "backToPosts": "Back to posts",
+    "publishedAt": "Published {date}",
+    "updatedAt": "Updated {date}",
+    "minuteRead": "{minutes} min read",
+    "rssFeed": "RSS Feed"
   }
 }

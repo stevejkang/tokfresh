@@ -10,7 +10,8 @@
   "Nav": {
     "getStarted": "시작하기",
     "star": "Star",
-    "backToHome": "홈으로"
+    "backToHome": "홈으로",
+    "posts": "포스트"
   },
   "Landing": {
     "badge": "영원히 무료. API 키 불필요.",
@@ -154,5 +155,24 @@
     "subscribeSuccess": "구독 완료! 조치가 필요할 때만 이메일을 보내드립니다.",
     "subscribeAlready": "이미 구독 중입니다.",
     "subscribeError": "구독에 실패했습니다. 다시 시도해 주세요."
+  },
+  "Posts": {
+    "allPosts": "전체",
+    "changelog": "체인지로그",
+    "news": "소식",
+    "searchPlaceholder": "포스트 검색...",
+    "noResults": "포스트를 찾을 수 없습니다.",
+    "recentUpdates": "최근 업데이트",
+    "viewAll": "전체 보기",
+    "olderPosts": "이전 포스트",
+    "readMore": "더 읽기",
+    "categoryProductUpdates": "제품 업데이트",
+    "categoryAnnouncements": "공지사항",
+    "categoryBlog": "블로그",
+    "backToPosts": "포스트 목록으로",
+    "publishedAt": "{date} 게시",
+    "updatedAt": "{date} 수정",
+    "minuteRead": "{minutes}분 읽기",
+    "rssFeed": "RSS 피드"
   }
 }
