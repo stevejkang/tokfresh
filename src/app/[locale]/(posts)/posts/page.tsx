@@ -19,8 +19,7 @@ export async function generateMetadata({
 
   return {
     title: t("recentUpdates"),
-    description:
-      "All posts from TokFresh — changelogs, announcements, and blog articles.",
+    description: t("postsDescription"),
     alternates: {
       canonical: locale === "en" ? "/posts" : `/${locale}/posts`,
       languages: {

@@ -10,6 +10,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { getAllSlugs, getPostBySlug } from "@/lib/posts";
+import { generateArticleJsonLd, generatePostMetadata } from "@/lib/seo";
 import type { PostCategory } from "@/types/post";
 import { mdxComponents } from "./mdx-components";
 
@@ -47,30 +48,7 @@ export async function generateMetadata({
     return {};
   }
 
-  const languages: Record<string, string> = {};
-  for (const loc of routing.locales) {
-    const otherPost = getPostBySlug(slug, loc);
-    if (otherPost && !otherPost.draft) {
-      languages[loc] = `/${loc}/posts/${slug}`;
-    }
-  }
-
-  if (languages["en"]) {
-    languages["x-default"] = `/posts/${slug}`;
-  }
-
-  return {
-    title: post.title,
-    description: post.description,
-    alternates: {
-      canonical:
-        locale === "en" ? `/posts/${slug}` : `/${locale}/posts/${slug}`,
-      languages,
-    },
-    openGraph: {
-      url: locale === "en" ? `/posts/${slug}` : `/${locale}/posts/${slug}`,
-    },
-  };
+  return generatePostMetadata(post, locale);
 }
 
 export default async function PostDetailPage({
@@ -101,8 +79,14 @@ export default async function PostDetailPage({
     day: "numeric",
   });
 
+  const jsonLd = generateArticleJsonLd(post, locale);
+
   return (
     <article className="mx-auto max-w-3xl px-4 pb-24 pt-12 sm:px-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <nav className="mb-8 text-center text-sm text-muted-foreground">
         <Link
           href="/posts"

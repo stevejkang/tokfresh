@@ -14,6 +14,12 @@ export async function SiteHeader() {
           TokFresh
         </Link>
         <div className="flex items-center gap-3">
+          <Link
+            href="/posts"
+            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {tNav("posts")}
+          </Link>
           <GitHubStarButton />
           <LanguageSwitcher />
           <Button asChild size="sm">

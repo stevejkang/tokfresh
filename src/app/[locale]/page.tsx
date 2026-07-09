@@ -29,6 +29,8 @@ import {
   Heart,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { PostCard } from "@/components/posts/post-card";
+import { getAllPosts } from "@/lib/posts";
 
 export async function generateMetadata({
   params,
@@ -61,6 +63,8 @@ export default async function Home({
   setRequestLocale(locale);
 
   const t = await getTranslations("Landing");
+  const tPosts = await getTranslations("Posts");
+  const recentPosts = getAllPosts(locale).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background">
@@ -472,6 +476,28 @@ export default async function Home({
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
+        </div>
+      </section>
+
+      {/* Recent Updates */}
+      <section className="border-t border-border py-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <h2 className="mb-12 text-center text-3xl font-bold tracking-tight">
+            {tPosts("recentUpdates")}
+          </h2>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
+            {recentPosts.map((post) => (
+              <PostCard key={post.slug} post={post} />
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Button asChild variant="outline">
+              <Link href="/posts">
+                {tPosts("viewAll")}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 

@@ -19,11 +19,11 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Posts" });
 
   return {
-    title: "News",
-    description:
-      "Announcements and blog posts from TokFresh — product news, tips, and insights.",
+    title: t("news"),
+    description: t("newsDescription"),
     alternates: {
       canonical: locale === "en" ? "/news" : `/${locale}/news`,
       languages: {

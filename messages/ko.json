@@ -173,6 +173,8 @@
     "publishedAt": "{date} 게시",
     "updatedAt": "{date} 수정",
     "minuteRead": "{minutes}분 읽기",
-    "rssFeed": "RSS 피드"
+    "rssFeed": "RSS 피드",
+    "newsDescription": "TokFresh의 공지사항과 블로그 — 제품 소식, 팁, 인사이트를 확인하세요.",
+    "postsDescription": "TokFresh의 모든 포스트 — 체인지로그, 공지사항, 블로그 게시글을 확인하세요."
   }
 }
