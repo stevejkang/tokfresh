@@ -12,6 +12,7 @@ import { Link } from "@/i18n/navigation";
 import { getAllSlugs, getPostBySlug } from "@/lib/posts";
 import { generateArticleJsonLd, generatePostMetadata } from "@/lib/seo";
 import type { PostCategory } from "@/types/post";
+import { CtaSection } from "@/components/cta-section";
 import { mdxComponents } from "./mdx-components";
 
 const categoryTranslationKeys: Record<PostCategory, string> = {
@@ -131,6 +132,8 @@ export default async function PostDetailPage({
           components={mdxComponents}
         />
       </div>
+
+      <CtaSection />
     </article>
   );
 }
