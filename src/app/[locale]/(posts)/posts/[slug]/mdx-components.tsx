@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { ComponentPropsWithoutRef, JSX } from "react";
+import { MdxAnchor } from "./mdx-anchor";
 
 function Heading2(props: ComponentPropsWithoutRef<"h2">) {
   return (
@@ -46,16 +47,7 @@ function PreBlock(props: ComponentPropsWithoutRef<"pre">) {
   );
 }
 
-function Anchor(props: ComponentPropsWithoutRef<"a">) {
-  return (
-    <a
-      className="font-medium text-foreground underline decoration-muted-foreground/40 underline-offset-4 transition-colors hover:decoration-foreground"
-      target={props.href?.startsWith("http") ? "_blank" : undefined}
-      rel={props.href?.startsWith("http") ? "noopener noreferrer" : undefined}
-      {...props}
-    />
-  );
-}
+
 
 function UnorderedList(props: ComponentPropsWithoutRef<"ul">) {
   return (
@@ -148,7 +140,7 @@ export const mdxComponents: Record<string, (props: Record<string, unknown>) => J
   p: Paragraph,
   code: InlineCode,
   pre: PreBlock,
-  a: Anchor,
+  a: MdxAnchor,
   ul: UnorderedList,
   ol: OrderedList,
   li: ListItem,
