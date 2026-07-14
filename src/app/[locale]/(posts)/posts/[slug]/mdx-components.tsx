@@ -88,6 +88,44 @@ function Blockquote(props: ComponentPropsWithoutRef<"blockquote">) {
   );
 }
 
+function Table(props: ComponentPropsWithoutRef<"table">) {
+  return (
+    <div className="mb-6 overflow-x-auto rounded-lg border border-border">
+      <table className="w-full text-sm" {...props} />
+    </div>
+  );
+}
+
+function TableHead(props: ComponentPropsWithoutRef<"thead">) {
+  return <thead className="border-b border-border bg-muted/50" {...props} />;
+}
+
+function TableBody(props: ComponentPropsWithoutRef<"tbody">) {
+  return <tbody className="divide-y divide-border" {...props} />;
+}
+
+function TableRow(props: ComponentPropsWithoutRef<"tr">) {
+  return <tr className="transition-colors hover:bg-muted/30" {...props} />;
+}
+
+function TableHeader(props: ComponentPropsWithoutRef<"th">) {
+  return (
+    <th
+      className="px-4 py-3 text-left font-semibold text-foreground"
+      {...props}
+    />
+  );
+}
+
+function TableCell(props: ComponentPropsWithoutRef<"td">) {
+  return (
+    <td
+      className="px-4 py-3 text-muted-foreground"
+      {...props}
+    />
+  );
+}
+
 function MdxImage(props: ComponentPropsWithoutRef<"img">) {
   if (!props.src || typeof props.src !== "string") return null;
 
@@ -116,4 +154,10 @@ export const mdxComponents: Record<string, (props: Record<string, unknown>) => J
   li: ListItem,
   blockquote: Blockquote,
   img: MdxImage,
+  table: Table,
+  thead: TableHead,
+  tbody: TableBody,
+  tr: TableRow,
+  th: TableHeader,
+  td: TableCell,
 };
