@@ -20,7 +20,7 @@ export async function SiteHeader({
         <div className="flex items-center gap-3">
           <Link
             href="/posts"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:inline"
           >
             {tNav("posts")}
           </Link>
