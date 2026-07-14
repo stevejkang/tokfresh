@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { X, AlertTriangle } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { X, AlertTriangle, ArrowRight } from "lucide-react";
 
 const DISMISS_KEY = "tokfresh_banner_may15_dismissed";
 
@@ -31,6 +32,14 @@ export function AnnouncementBanner() {
           <span className="font-medium">{t("title")}</span>
           {" "}
           {t("description")}
+          {" "}
+          <Link
+            href="/posts/model-deprecation-may-2026"
+            className="inline-flex items-center gap-1 font-medium underline underline-offset-4 transition-colors hover:text-amber-100"
+          >
+            {t("learnMore")}
+            <ArrowRight className="h-3 w-3" />
+          </Link>
         </p>
       </div>
       <button

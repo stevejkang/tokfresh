@@ -1,7 +1,8 @@
 {
   "Banner": {
     "title": "Deployed before May 15, 2026?",
-    "description": "Re-run the setup once — your worker will automatically adapt to future model deprecations and header changes."
+    "description": "Re-run the setup once — your worker will automatically adapt to future model deprecations and header changes.",
+    "learnMore": "Learn more"
   },
   "Metadata": {
     "title": "TokFresh - Claude Token Reset Automation",
