@@ -1,0 +1,48 @@
+---
+title: "Dynamic Model and Header Fetching: One Redeploy, Updates Forever"
+description: "TokFresh workers now fetch model names and API headers dynamically from our server, so future Anthropic API changes no longer require you to redeploy."
+category: "product-updates"
+author: "Steve Kang"
+publishedAt: "2026-05-15"
+---
+
+## The problem with hardcoded config
+
+Every TokFresh worker runs on your own Cloudflare account: your worker, your credentials, nothing stored on our side. But until now, the worker code baked in two things at deploy time: the model name it pings and the API headers it sends.
+
+That broke when Anthropic shipped the March 17 OAuth update. Every worker with the old header format started failing, and the fix, redeploy with updated code, meant every user had to notice the failure, come back, and run setup again.
+
+Hardcoding config into code that runs independently across thousands of accounts doesn't scale. Anthropic updates its API on its own schedule, and we had no way to reach workers already deployed.
+
+## What changed
+
+The worker no longer ships with a fixed model name or headers. Instead, on each run it asks TokFresh's server what to use, right before it pings the Claude API.
+
+This flips the whole update model. Previously: we push new worker code, users redeploy, done, until the next change. Now: we update one config endpoint, and every worker picks it up on its next cycle. No redeploy, no action from you.
+
+## How it works
+
+The worker calls two lightweight endpoints before pinging:
+
+- `/api/config/model` returns the current model name to use
+- `/api/config/headers` returns the current set of API headers
+
+Both are cached for 5 minutes inside the worker, so there's no added round-trip per run, just a periodic refresh. If the config endpoint is slow or briefly unreachable, the worker falls back to a hardcoded default (currently `claude-haiku-4-5-20251001`) and keeps running.
+
+That fallback matters: a worker fully dependent on an external service for its core function can break in a new way. A sane default means a config hiccup on our end never turns into a missed reset cycle on yours.
+
+Right now the live config points to `claude-haiku-4-5-20251001`, small and fast, more than enough for a ping whose only job is triggering Claude's usage cycle. The header set includes the current claude-code beta flag, the `oauth-2025-04-20` version, interleaved thinking, and prompt-caching scope, matching what Anthropic's API currently expects from OAuth-based clients.
+
+## What this means for you
+
+If you deployed TokFresh before this change, your worker is still running the old hardcoded logic. Redeploy once, same setup flow, same settings, at tokfresh.com/setup.
+
+After that, you're done. Next time Anthropic tweaks a header or swaps the underlying model, we update the config endpoint and your worker adjusts automatically on its next scheduled run. No email, no manual step, no risk of your reset cycle silently failing because of a header change you never saw announced.
+
+## Technical details
+
+The pattern is simple by design: fetch with a short cache, fall back to a safe default on any error. No retries, no queuing, nothing that could turn a config hiccup into a failed reset. The worker's core job, pinging Claude on schedule, keeps working even if TokFresh's own infrastructure is down.
+
+This is also why the change ships safely, incrementally. Workers that haven't redeployed keep running on their old hardcoded values. Workers that have redeployed pick up the new fetch-and-fallback logic immediately. Nothing breaks in the transition, and no coordinated cutover is required on either end.
+
+The full implementation is public in the TokFresh repository if you want to see how the fetch and fallback logic is wired up.

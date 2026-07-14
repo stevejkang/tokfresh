@@ -1,0 +1,75 @@
+---
+title: "Claude Token Reset Automation Compared: Manual, Automa, and TokFresh"
+description: "A practical comparison of three ways to automate Claude Pro/Max token reset timing: manual pings, the Automa Chrome extension, and TokFresh's Cloudflare Worker approach."
+category: "blog"
+author: "Steve Kang"
+publishedAt: "2026-07-10"
+---
+
+## The problem everyone running Claude eventually hits
+
+Claude Pro and Max don't reset usage at midnight or on any fixed clock. They reset five hours after your *first* API call in a window. Send a message at 11:47 AM, and your fresh window opens at 4:47 PM — not 5:00, not noon, whenever that first call happened.
+
+Fine if you never think about it. A real problem if you want a full uninterrupted work block. Say your best coding hours are 9 AM to 2 PM. If your first message lands at 9:45, your reset falls at 2:45, right when you want fresh capacity for an afternoon push. Miss the timing by twenty minutes and you've lost a chunk of your five-hour window to bad luck.
+
+The fix is simple in concept: trigger a call before you start working, so the reset clock is already ticking in your favor. The hard part is doing that reliably, every day, without babysitting it.
+
+There are three ways people solve this, each with real tradeoffs depending on what you're optimizing for.
+
+## Method 1: Manual ping
+
+Costs nothing and takes thirty seconds. Set an alarm for whenever you want your reset window to start. When it goes off, open Claude, type "hi," send it, close the tab. That single message starts your five-hour clock at exactly the time you chose.
+
+**What's good about it:** no setup at all. You don't need to trust an extension or a Cloudflare account with anything. It works instantly, and it's the fastest way to confirm the concept actually works.
+
+**Where it falls apart:** it depends entirely on you remembering. Forget one morning, sleep through the alarm, or get pulled into a meeting when it fires, and your schedule silently drifts with no recovery besides starting over the next day. It also doesn't scale if you're managing multiple Claude accounts or want different weekday/weekend schedules. Good for testing the idea, not for running it long-term.
+
+## Method 2: Browser extension (Automa)
+
+[Automa](https://www.automa.site/) is a Chrome extension for browser automation: it opens tabs, clicks elements, types text, and runs on a timer. People have adapted it to automate the manual ping above, just without needing to be at the keyboard when it fires.
+
+The setup:
+
+1. Install the Automa extension from the Chrome Web Store.
+2. Import a workflow (shared JSON files circulate, or build one from scratch in Automa's visual editor).
+3. Point the workflow at your actual Claude conversation URL, since Automa needs a specific tab to act on.
+4. Set the trigger interval to roughly 305 minutes (5 hours plus a small buffer), so it fires just before your natural reset.
+
+The workflow: open the Claude tab, click the message input, type "hi," click send, wait a couple of seconds, then close the tab. Automa repeats this on the interval you set, for as long as Chrome is open.
+
+**What's good about it:** visual and approachable if you're not comfortable with a terminal or cloud infrastructure. You can watch it run, tweak the click targets yourself if something's off, and target a specific project or conversation to keep your reset ping isolated from your real work history.
+
+**Where it falls apart:** Automa only runs while Chrome is open and your computer is on. Close the laptop for lunch, and the automation stops with it. It's also fragile: Claude's web UI changes layout periodically, and when it does, the click targets Automa relies on can silently break, meaning your "automated" reset just stops firing until you notice and fix the workflow. And because it depends on an actual browser session, running it overnight or across a multi-day trip means either leaving your machine on the whole time or accepting a gap.
+
+## Method 3: TokFresh (Cloudflare Workers)
+
+TokFresh takes a different approach: instead of automating clicks in a browser you have to keep open, it deploys a small Cloudflare Worker directly to your own Cloudflare account. That Worker runs on a cron schedule you choose, calling the Claude API on your behalf to trigger the reset, independent of whether your computer is on, asleep, or in a bag a thousand miles away.
+
+Setup takes about as long as configuring Automa, through a different flow: connect your Claude account via OAuth (no API keys to copy around), pick the time you want your window to start, and deploy. From there, the Worker runs on Cloudflare's infrastructure, not yours.
+
+**What's good about it:** since it's not tied to your browser or machine, it runs 24/7 without you doing anything, including while you're asleep, on a flight, or your laptop is closed in a bag. It's free, running entirely within Cloudflare's free Workers tier. There's no browser dependency to break when a UI changes, since it talks to the API directly. It's stateless, storing nothing on any TokFresh-controlled server, since the Worker lives entirely in your own Cloudflare account. And because the deployment template updates centrally, config changes like new headers or model updates propagate automatically.
+
+If you'd rather skip the web dashboard, there's also a [CLI version](https://github.com/stevejkang/tokfresh-cli) written in Go. Running `tokfresh init` walks you through the same OAuth and scheduling flow from a terminal.
+
+**Where it falls short:** it requires a Cloudflare account, a small extra step compared to installing a Chrome extension. The OAuth flow, while guided, is still an authentication step some would rather skip. And the whole approach leans developer-oriented: not hard, but it assumes baseline comfort with cron schedules and cloud accounts that a pure point-and-click tool wouldn't require.
+
+## Comparison at a glance
+
+| | Manual | Automa | TokFresh |
+|---|---|---|---|
+| Difficulty | None | Easy | Easy |
+| PC required | Yes | Yes | No |
+| Cost | Free | Free | Free |
+| Reliability | Low | Medium | High |
+| Maintenance | High | Medium | Low |
+| Best for | Quick test | Non-developers with PC always on | Set-and-forget automation |
+
+Both Automa and TokFresh are free and roughly comparable in setup difficulty. The real divide is reliability and where the automation lives: Automa's runs in your browser, TokFresh's runs in the cloud.
+
+## Which one should you actually use
+
+If you've never tried timing your Claude resets before, start manual. It costs nothing, takes thirty seconds, and lets you feel whether the idea is worth automating before you invest time in a tool.
+
+If you're not a developer, your PC is on most of the day anyway, and you like seeing the automation run, Automa is a solid choice. It's approachable, visual, and doesn't require touching a cloud account.
+
+If you want something that runs whether or not you remember it exists, whether or not your laptop is open, and whether or not Claude's UI happens to change this week, TokFresh is built for exactly that. Set the schedule once and never think about it again.

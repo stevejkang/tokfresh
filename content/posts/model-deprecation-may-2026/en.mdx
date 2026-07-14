@@ -1,0 +1,48 @@
+---
+title: "Model Deprecation Notice: Action Needed for Some TokFresh Workers"
+description: "Anthropic deprecated claude-sonnet-4-20250514, causing some TokFresh workers to fail with 404 errors. Here's what changed and the one-time fix."
+category: "announcements"
+author: "Steve Kang"
+publishedAt: "2026-05-18"
+---
+
+## What happened
+
+Anthropic deprecated `claude-sonnet-4-20250514`, the model older TokFresh workers used for their ping requests. This was announced on Anthropic's model deprecations page, and it wasn't gradual: once the deprecation took effect, requests to that model ID stopped working entirely.
+
+## Impact
+
+If your worker was deployed before this change, it may have started returning 404 errors on its scheduled ping. The request wasn't malformed, the model it asked for simply no longer exists on Anthropic's side. If your reset cycle stopped triggering on schedule recently, this is almost certainly why.
+
+Not every worker was affected equally, deployment timing determined which model version got baked into your worker code, but if you deployed a while ago and haven't redeployed since, assume you're impacted.
+
+## What we changed
+
+We made three changes, two immediate and one structural:
+
+**Model swap.** TokFresh now uses `claude-haiku-4-5-20251001` for its ping instead of the deprecated Sonnet model. Haiku is lighter and faster, and since the ping's only job is triggering Claude's usage cycle rather than generating meaningful output, it's actually a better fit than Sonnet was.
+
+**Dynamic config.** Model name and API headers are no longer hardcoded into the worker at deploy time. They're now fetched from TokFresh's server on each run, with a short cache and a safe fallback if that fetch fails. Covered in detail in a [separate post](/posts/dynamic-model-and-header-fetching), the short version: this is the fix that prevents this exact problem from recurring.
+
+**Automatic future adaptation.** Because of the dynamic config change, the next time Anthropic deprecates a model or changes something about the API contract, we update one endpoint on our end, and every redeployed worker adjusts automatically on its next scheduled run. No new announcement post, no redeploy, no risk of another silent 404 streak.
+
+## What you need to do
+
+If your worker was deployed before this change, redeploy once:
+
+1. Go to [tokfresh.com/setup](https://tokfresh.com/setup)
+2. Sign in with the same account you used originally
+3. Keep your existing schedule and settings as they are
+4. Click Deploy
+
+The new worker replaces the old one on your Cloudflare account automatically, no manual cleanup needed.
+
+If you're not sure whether you're affected, redeploying is harmless either way. Worst case, you redeploy a worker that was already working fine and it keeps working fine.
+
+## After this
+
+Once you've redeployed, you're covered going forward. This is meant to be the last time a model deprecation on Anthropic's side requires action from you. The dynamic config system fetches current model and header values automatically, so future changes on Anthropic's end get absorbed without another announcement, redeploy, or gap in your reset schedule.
+
+## Transparency
+
+The model swap, dynamic config fetch, and fallback logic are all public in the TokFresh repository at [github.com/stevejkang/tokfresh](https://github.com/stevejkang/tokfresh). Read the code before redeploying if you want to verify exactly what your worker does.

@@ -1,0 +1,45 @@
+---
+title: "Anthropic Changed Its OAuth Policy: How TokFresh Responded"
+description: "On March 17, 2026, Anthropic updated OAuth authentication requirements. Here's what broke, how TokFresh fixed it within six days, and what you need to do."
+category: "announcements"
+author: "Steve Kang"
+publishedAt: "2026-03-23"
+---
+
+## What happened
+
+On March 17, 2026, Anthropic rolled out a change to how OAuth-authenticated requests are validated against the Claude API. The specifics weren't publicly documented, but the practical effect was clear: requests that used to authenticate cleanly started getting rejected or flagged, depending on how they were shaped.
+
+TokFresh relies entirely on OAuth, by design, since we never touch API keys. Any shift in how Anthropic validates OAuth traffic has a direct effect on whether our pings land successfully.
+
+## The impact
+
+For a window of time, Workers deployed before the policy change stopped authenticating the way they used to. The pings that trigger your reset window either failed outright or were accepted without reliably starting the countdown. If your scheduled reset windows felt like they drifted or stopped firing around this time, this is why.
+
+To be clear about scope: nothing about your account, your data, or your Cloudflare Worker's deployment was compromised. This was strictly an authentication compatibility issue between the request shape TokFresh's Worker sends and what Anthropic's API now expects.
+
+## What we changed
+
+We spent the following days digging into exactly what Anthropic's updated validation expected, comparing it against how the official Claude Code CLI forms its own requests, and adjusting TokFresh's Worker template to match. Three changes went out.
+
+**Model switch.** The ping request previously used `claude-sonnet-4-20250514`. We moved it to `claude-haiku-4-5`. The ping doesn't need a large model, just a valid, minimal request that starts the session clock. Haiku is faster, cheaper on the margins that matter, and better suited to what is fundamentally a heartbeat operation rather than a real conversation.
+
+**Header updates.** This was the core of the fix. We added the `claude-code` beta flag that Anthropic's updated validation now expects on programmatic requests. We updated the user-agent string to `claude-cli/2.1.80`, matching what the current official CLI reports, and added an `x-app` header and a billing header, both of which appear to be part of how Anthropic distinguishes legitimate CLI-originated traffic from other automated requests.
+
+**Increased max_tokens.** The ping's `max_tokens` value went from 10 to 128. The original value was tuned to keep the ping as lightweight as possible, but the new validation appears to expect a slightly larger minimum for requests to be treated as valid.
+
+None of this changes what TokFresh does conceptually. It still sends a minimal ping to start your five-hour window. What changed is the exact shape of that request, so Anthropic's API accepts it the same way it accepts requests from official Claude tooling.
+
+## What you need to do
+
+If you deployed your TokFresh Worker before March 23, you'll need to re-run setup once. This isn't a reconfiguration: your schedule, account connection, and existing preferences carry over exactly as they were. Re-running setup simply redeploys the Worker with the updated template, so the new headers and model are in place.
+
+The process is the same three steps as your original setup: connect, confirm your existing schedule, and deploy. Because your settings are already saved, this should take well under a minute.
+
+If you deployed or redeployed after March 23, you're already running the updated template and don't need to do anything.
+
+## Going forward
+
+Anthropic's OAuth surface isn't something TokFresh controls, and this won't be the last time something shifts on their end. We've added an email subscription option so changes like this don't sit unnoticed. If you opt in, you'll get a notification the moment we identify a change that affects TokFresh's authentication, along with clear instructions on whether and how to update.
+
+We'd rather you hear about a fix from us within days than discover a silent gap in your reset schedule weeks later.

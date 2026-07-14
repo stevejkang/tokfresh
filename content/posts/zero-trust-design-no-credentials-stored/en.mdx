@@ -1,0 +1,74 @@
+---
+title: "We Don't Store Your Credentials: How TokFresh's Zero-Trust Architecture Works"
+description: "TokFresh never sees your Claude OAuth tokens. Here's how PKCE, browser-side token exchange, and Cloudflare Secrets keep your credentials entirely in your own hands."
+category: "blog"
+author: "Steve Kang"
+publishedAt: "2026-05-05"
+---
+
+Every time you connect a third-party tool to an account that matters, you're making a trust decision, usually without thinking hard about it: that this company won't leak your tokens, get breached, quietly repurpose your access, or disappear one day leaving your credentials sitting in an abandoned database.
+
+For a tool that just pings an API on a schedule, that's a lot to ask. So we built TokFresh to not need it.
+
+## The typical SaaS pattern
+
+Most automation tools follow a predictable shape: you authenticate, the tool receives an OAuth token or API key, and that credential gets stored on the tool's servers, usually encrypted and behind reasonable security practices. From there, the tool's backend acts on your behalf using that stored credential.
+
+This works, and for many use cases it's the only practical architecture. But your credential now lives in two places: your account and someone else's database. If that someone else gets breached, gets acquired, has an employee go rogue, or has a misconfigured backup, your credential is exposed through no fault of your own.
+
+For a tool that exists purely to send a scheduled ping, this tradeoff felt disproportionate. TokFresh's value doesn't require holding your tokens at all, so we built it so we structurally can't.
+
+## TokFresh's approach: we never see your tokens
+
+Here's the actual flow. At no point does a token pass through a TokFresh-controlled server in a way that would let us store or read it.
+
+**Step 1: Your browser opens Claude's OAuth flow.** Same flow Claude Code itself uses. You're redirected to Anthropic's authorization page, approve the request, and Claude redirects back with an authorization code, all between your browser and Anthropic's servers.
+
+**Step 2: Your browser exchanges the code for tokens, using PKCE.** This is the part that matters most. The exchange for actual access and refresh tokens happens client-side, inside your browser, via PKCE. Our server isn't a party to it, never receives the tokens, never proxies the request, has no code path that could intercept them.
+
+**Step 3: Tokens live briefly in sessionStorage.** They sit in `sessionStorage`, cleared the moment you close the tab. No persistence layer on our end captures this data, and none on yours either once the tab closes.
+
+**Step 4: Your browser sends the tokens directly to your Cloudflare account.** Using the Cloudflare API, your browser writes the tokens straight into your own account's storage, a direct browser-to-Cloudflare connection, authenticated with your credentials, not ours.
+
+**Step 5: Our server served a web page. That's the extent of its involvement.** No Claude token ever passes through infrastructure we control. We're not being coy about "not storing" tokens after receiving them, we structurally never receive them.
+
+## PKCE, explained
+
+PKCE stands for Proof Key for Code Exchange. It solves a specific problem in OAuth flows involving a public client, one like a browser-based app that can't keep a secret the way a server-side backend can.
+
+In a standard OAuth flow, a client secret gets exchanged alongside the authorization code to prove the requester's identity. A browser-based app can't safely hold that secret, since anything shipped to the browser is visible to anyone who opens dev tools. PKCE solves this: the client generates a random `code_verifier` before starting the flow, derives a hashed `code_challenge` from it, and sends that challenge with the initial authorization request.
+
+When exchanging the code for tokens, the client sends the original `code_verifier` alongside it. The authorization server checks that hashing the verifier produces the challenge it received earlier. An attacker who intercepts the authorization code in transit, without the original verifier, can't complete the exchange, the code alone is useless.
+
+This lets TokFresh do the entire token exchange in the browser, without a backend client secret, without weakening security. It's the same mechanism mobile apps and single-page apps use for exactly this reason.
+
+## Where your tokens actually live
+
+Once the browser sends your tokens to Cloudflare, they land in Cloudflare Secrets and KV, encrypted at rest with AES-256, tied to your own account. This isn't a TokFresh-managed database with your account as a row, it's a resource inside your own cloud account, same as anything else you run on Cloudflare.
+
+We don't have API access to your Cloudflare account beyond what your browser explicitly grants during setup, and no standing credential lets us read your stored secrets afterward. Revoke TokFresh's access entirely after deployment, and the worker keeps running exactly as before, it was never dependent on an ongoing connection to us.
+
+## The worker's token lifecycle
+
+Once deployed, the Cloudflare Worker manages its own token lifecycle entirely within your account:
+
+1. The worker reads the current refresh token from Cloudflare KV.
+2. It exchanges that refresh token for a fresh access token via Claude's OAuth token endpoint.
+3. It uses the access token to make the scheduled API call to Claude.
+4. Claude's OAuth flow rotates the refresh token on use, so the worker writes the new one back into KV, replacing the old.
+
+This loop happens inside Cloudflare's infrastructure, scoped to your account, with no external server involved. There's no callback to TokFresh's servers at any point, the worker doesn't check in with us, doesn't report usage, and doesn't need us online to keep functioning.
+
+## The tradeoffs we accepted
+
+Building this way isn't free. Committing to storing nothing means giving up things most SaaS products treat as table stakes.
+
+We can't count active users meaningfully, no database tracks who's deployed a worker. We can't offer usage analytics or dashboards showing reset history, since that history lives in your Cloudflare account, not ours. We can't push automatic updates to deployed workers either, since we have no ongoing connection once they're running, which is why TokFresh includes a dynamic configuration system that lets workers pull config updates without us needing direct access.
+
+These are real limitations. A growth-focused SaaS company would call them mistakes. We think they're the right call for a small tool that does one useful thing and gets out of your way.
+
+## Why this matters
+
+If TokFresh's servers went offline tomorrow, permanently, your worker would keep running. Your tokens live in your Cloudflare account, not ours, the cron trigger, refresh logic, and API call all sit in infrastructure you control. The only thing you'd lose is reconfiguring your schedule through our web interface, and even that you could do by editing the worker directly, since the code is open source.
+
+That's the real test of zero-trust design: not whether the vendor promises good behavior, but whether the system still works if the vendor disappears entirely. TokFresh passes that test by construction, not by policy.

@@ -1,0 +1,103 @@
+---
+title: "tokfresh-cli: Manage Your Claude Token Reset Schedule From the Terminal"
+description: "A native Go CLI for TokFresh that lets you set up, monitor, and manage Claude reset automation without leaving your terminal, with full multi-account support."
+category: "product-updates"
+author: "Steve Kang"
+publishedAt: "2026-03-30"
+---
+
+## Why a CLI
+
+The TokFresh web app works well, but not everyone wants to open a browser to manage infrastructure. If you're the kind of developer who provisions cloud resources from a terminal, checks logs with `tail -f`, and scripts everything that can be scripted, switching to a browser tab for a task like "redeploy this Worker" breaks your flow more than it helps.
+
+`tokfresh-cli` is a native command-line tool, written in Go, that does everything the web dashboard does: connect your Claude account, configure your reset schedule, deploy the Cloudflare Worker, and manage it afterward. All from wherever you already spend your day.
+
+## Installing it
+
+The CLI is distributed through a few common channels.
+
+**Homebrew** (macOS and Linux):
+
+```bash
+brew install stevejkang/tap/tokfresh
+```
+
+**Go install** (if you already have a Go toolchain):
+
+```bash
+go install github.com/stevejkang/tokfresh-cli@latest
+```
+
+**Scoop** (Windows):
+
+```bash
+scoop bucket add stevejkang https://github.com/stevejkang/scoop-bucket
+scoop install tokfresh
+```
+
+**Binary download.** Prebuilt binaries for macOS, Linux, and Windows are available directly from the [GitHub releases page](https://github.com/stevejkang/tokfresh-cli/releases), for anyone who'd rather skip a package manager.
+
+## Quick start
+
+Once installed, everything starts with one command:
+
+```bash
+tokfresh init
+```
+
+This walks you through an interactive setup. It opens your browser for the Claude OAuth flow, asks what time you want your reset windows to land, and deploys the Cloudflare Worker using credentials tied to your Cloudflare account. The flow mirrors the web app's setup steps, just driven from your shell instead of a page.
+
+Once it finishes, your Worker is live and running on its schedule. You don't need to keep a terminal open or a process running locally, the CLI's job during day-to-day operation is just to let you inspect and manage what's already deployed.
+
+## Key commands
+
+| Command | What it does |
+|---|---|
+| `tokfresh init` | Interactive setup: connect, schedule, deploy |
+| `tokfresh status` | Lists all deployed Workers and their current schedule |
+| `tokfresh update` | Change the schedule on an existing Worker |
+| `tokfresh upgrade` | Redeploy all Workers using the latest template |
+| `tokfresh remove` | Tear down a Worker and its schedule |
+| `tokfresh logs` | Stream real-time logs from a running Worker |
+| `tokfresh test` | Manually trigger a ping to verify things are working |
+| `tokfresh version` | Print the installed CLI version |
+
+`tokfresh upgrade` is worth calling out. When TokFresh ships a template update, for example the header and model changes covered in our [Anthropic OAuth policy post](/posts/anthropic-oauth-policy-update), running `tokfresh upgrade` redeploys every Worker you manage with the latest template in one shot, without touching each one individually through the web dashboard.
+
+If something looks off, `tokfresh logs` streams the Worker's execution log directly to your terminal, and `tokfresh test` lets you fire a manual ping on demand instead of waiting for the next scheduled trigger, the fastest way to confirm a fix actually worked.
+
+## Managing multiple accounts
+
+A common setup is having a work Claude account and a personal one, both on independent reset schedules. `tokfresh-cli` handles this natively: one Cloudflare account can manage multiple Claude accounts, each with its own named configuration.
+
+```bash
+tokfresh init work
+tokfresh init personal
+```
+
+Each invocation walks through the same OAuth and scheduling flow, but keeps the resulting configuration separate under the name you give it. Commands like `status`, `update`, and `remove` accept that name to target the right one:
+
+```bash
+tokfresh status work
+tokfresh update personal
+```
+
+Useful if your work and personal usage patterns don't overlap, say your work account needs a reset window that lines up with 9-to-5 hours, while your personal account is tuned for evenings and weekends.
+
+## Debugging when something's unclear
+
+Every command accepts verbosity flags for when you need more visibility into what's happening under the hood.
+
+`-v` prints informational logs, showing each step the CLI takes. `-vv` goes further and dumps full HTTP traces, including request and response headers, useful if you're troubleshooting an authentication issue or want to understand exactly what's being sent to Cloudflare or Anthropic's API.
+
+```bash
+tokfresh test -vv
+```
+
+## Web UI vs CLI
+
+Both interfaces produce the same result: a deployed Cloudflare Worker running your reset schedule. The web app is friendlier if you want a visual walkthrough, especially for first-time setup, or if you're managing this from a machine where you don't want to install anything.
+
+The CLI is built for repetition and scripting. If you're managing several accounts, want to fold Worker deployment into a broader dotfiles or provisioning setup, or simply prefer never leaving your terminal, `tokfresh-cli` covers the same ground with less friction.
+
+`tokfresh-cli` is open source, and the full source is available at [github.com/stevejkang/tokfresh-cli](https://github.com/stevejkang/tokfresh-cli).

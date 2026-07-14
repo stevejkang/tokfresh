@@ -1,0 +1,103 @@
+---
+title: "tokfresh-cli: 터미널에서 Claude 토큰 리셋 스케줄 관리하기"
+description: "TokFresh용 네이티브 Go CLI로, 브라우저를 떠나지 않고 Claude 리셋 자동화를 설정, 모니터링, 관리할 수 있습니다. 멀티 계정도 완벽하게 지원합니다."
+category: "product-updates"
+author: "Steve Kang"
+publishedAt: "2026-03-30"
+---
+
+## 왜 CLI인가
+
+TokFresh 웹 앱은 잘 작동하지만, 인프라 관리를 위해 브라우저를 열고 싶어하지 않는 분들도 있습니다. 터미널에서 클라우드 리소스를 프로비저닝하고, `tail -f`로 로그를 확인하고, 스크립트로 만들 수 있는 건 전부 스크립트로 만드는 개발자라면, "Worker를 재배포한다" 같은 작업을 위해 브라우저 탭을 여는 게 도움보다는 흐름을 끊는 쪽에 가깝습니다.
+
+`tokfresh-cli`는 Go로 작성된 네이티브 커맨드라인 도구로, 웹 대시보드가 하는 일을 전부 해냅니다. Claude 계정 연결, 리셋 스케줄 설정, Cloudflare Worker 배포, 그리고 이후 관리까지, 이미 하루 종일 머무는 자리에서 처리할 수 있습니다.
+
+## 설치하기
+
+CLI는 몇 가지 흔한 채널로 배포되니, 환경에 맞는 걸 고르시면 됩니다.
+
+**Homebrew** (macOS와 Linux):
+
+```bash
+brew install stevejkang/tap/tokfresh
+```
+
+**Go install** (이미 Go 툴체인이 있다면):
+
+```bash
+go install github.com/stevejkang/tokfresh-cli@latest
+```
+
+**Scoop** (Windows):
+
+```bash
+scoop bucket add stevejkang https://github.com/stevejkang/scoop-bucket
+scoop install tokfresh
+```
+
+**바이너리 다운로드.** 패키지 매니저를 건너뛰고 싶으신 분들을 위해, macOS, Linux, Windows용 미리 빌드된 바이너리를 [GitHub 릴리스 페이지](https://github.com/stevejkang/tokfresh-cli/releases)에서 바로 받으실 수 있습니다.
+
+## 빠르게 시작하기
+
+설치를 마치면, 모든 건 명령어 하나로 시작됩니다.
+
+```bash
+tokfresh init
+```
+
+이 명령은 대화형 설정 과정을 안내합니다. Claude OAuth 플로우를 위해 브라우저를 열고, 리셋 창이 언제 떨어지길 원하는지 물어본 다음, Cloudflare 계정에 연결된 자격 증명으로 Worker를 배포합니다. 전체 흐름은 웹 앱의 설정 단계와 동일하며, 페이지 대신 셸에서 진행될 뿐입니다.
+
+완료되면 Worker는 곧바로 스케줄에 맞춰 움직입니다. 터미널을 계속 켜두거나 로컬에서 프로세스를 돌릴 필요는 없습니다. 평상시 운영에서 CLI의 역할은 이미 배포된 것들을 확인하고 관리하는 것뿐입니다.
+
+## 주요 명령어
+
+| 명령어 | 하는 일 |
+|---|---|
+| `tokfresh init` | 대화형 설정: 연결, 스케줄, 배포 |
+| `tokfresh status` | 배포된 모든 Worker와 현재 스케줄 목록 표시 |
+| `tokfresh update` | 기존 Worker의 스케줄 변경 |
+| `tokfresh upgrade` | 최신 템플릿으로 모든 Worker 재배포 |
+| `tokfresh remove` | Worker와 스케줄 제거 |
+| `tokfresh logs` | 실행 중인 Worker의 실시간 로그 스트리밍 |
+| `tokfresh test` | 수동으로 핑을 트리거해서 정상 동작 확인 |
+| `tokfresh version` | 설치된 CLI 버전 출력 |
+
+`tokfresh upgrade`는 따로 짚고 넘어갈 만합니다. TokFresh가 템플릿 업데이트를 배포할 때, 예를 들어 [Anthropic OAuth 정책 대응 포스트](/posts/anthropic-oauth-policy-update)에서 다뤘던 헤더와 모델 변경 같은 경우, `tokfresh upgrade` 한 번이면 관리하는 모든 Worker를 최신 템플릿으로 한 번에 재배포할 수 있습니다. 웹 대시보드에서 하나씩 손댈 필요가 없습니다.
+
+뭔가 이상해 보일 때는 `tokfresh logs`가 Worker의 실행 로그를 곧바로 터미널로 스트리밍해주고, `tokfresh test`로는 다음 예약된 트리거를 기다리는 대신 즉시 핑을 발동시킬 수 있습니다. 수정 사항이 실제로 먹혔는지 확인하는 가장 빠른 방법입니다.
+
+## 멀티 계정 관리하기
+
+회사 Claude 계정과 개인 계정을 각각 독립된 리셋 스케줄로 운영하고 싶은 경우가 흔합니다. `tokfresh-cli`는 이걸 네이티브로 지원합니다. Cloudflare 계정 하나로 여러 Claude 계정을 관리할 수 있고, 각각은 이름이 붙은 독립적인 설정으로 저장됩니다.
+
+```bash
+tokfresh init work
+tokfresh init personal
+```
+
+각 실행은 동일한 OAuth와 스케줄 설정 흐름을 거치지만, 결과물은 지정한 이름 아래 별도로 보관됩니다. 이후로는 `status`, `update`, `remove` 같은 명령어에 그 이름을 넘겨 원하는 대상을 지정할 수 있습니다.
+
+```bash
+tokfresh status work
+tokfresh update personal
+```
+
+회사와 개인 사용 패턴이 겹치지 않는 경우에 특히 유용합니다. 예를 들어 회사 계정은 9-to-6 근무 시간에 맞춘 리셋 창이 필요하고, 개인 계정은 저녁이나 주말에 맞춰야 하는 상황 말이죠.
+
+## 뭔가 불분명할 때 디버깅하기
+
+모든 명령어는 내부에서 무슨 일이 벌어지는지 더 자세히 들여다봐야 할 때를 위한 verbosity 플래그를 지원합니다.
+
+`-v`는 CLI가 실행하는 각 단계를 보여주는 정보성 로그를 출력합니다. `-vv`는 여기서 한 발 더 나아가 요청과 응답 헤더를 포함한 전체 HTTP 트레이스를 덤프합니다. 인증 문제를 추적 중이거나, Cloudflare 혹은 Anthropic API로 정확히 무엇이 전송되는지 확인하고 싶을 때 유용합니다.
+
+```bash
+tokfresh test -vv
+```
+
+## 웹 UI vs CLI
+
+두 인터페이스 모두 결과는 같습니다. 리셋 스케줄을 실행하는 배포된 Cloudflare Worker입니다. 시각적인 안내를 원하신다면, 특히 처음 설정하는 경우거나 아무것도 설치하고 싶지 않은 머신에서 관리하는 경우라면 웹 앱이 더 편할 겁니다.
+
+CLI는 반복 작업과 스크립팅을 위해 만들어졌습니다. 여러 계정을 관리하고 있거나, Worker 배포를 더 큰 dotfiles나 프로비저닝 설정에 통합하고 싶거나, 그냥 터미널을 떠나고 싶지 않은 분이라면, `tokfresh-cli`가 마찰 없이 같은 결과를 얻는 길을 제공합니다.
+
+`tokfresh-cli`는 오픈소스이며, 전체 소스코드는 [github.com/stevejkang/tokfresh-cli](https://github.com/stevejkang/tokfresh-cli)에서 확인하실 수 있습니다.

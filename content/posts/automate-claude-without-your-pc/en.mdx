@@ -1,0 +1,71 @@
+---
+title: "Your Computer Can Be Off: How Edge Computing Automates Claude Token Resets"
+description: "Browser extensions and local cron jobs stop when your computer does. Here's how Cloudflare Workers run Claude token reset automation without your PC ever being on."
+category: "blog"
+author: "Steve Kang"
+publishedAt: "2026-07-08"
+---
+
+Most personal automation shares a quiet assumption nobody states out loud: your computer will be on, awake, and connected at the exact moment it needs to run. Fine for a lot of tasks. For a 6 AM trigger meant to fire before you're out of bed, it's the whole problem.
+
+## The local automation trap
+
+Browser extensions, local cron jobs, startup scripts, they all solve "how do I automate this" reasonably well. What they don't solve is "what if my computer isn't running," and for anything scheduled outside your normal waking hours, that question is unavoidable.
+
+Close your laptop lid and a browser extension stops executing. Put your machine to sleep overnight, which is what most people do, and a 6 AM cron job simply never fires, the OS scheduler that would trigger it was asleep too. Restart after an update, and you're hoping whatever script you set to run on boot actually launched, survived the update, or wasn't silently disabled by a security prompt you dismissed without reading.
+
+These aren't edge cases, they're the normal state of a personal computer. Machines get closed, put to sleep, restarted, and left off overnight, because that's what personal computers are for. Automation that depends on your machine being awake at a specific moment will quietly fail on a schedule of its own.
+
+## Why it matters specifically for token resets
+
+The value of scheduling a Claude token reset comes from timing it *before* you start working, not during. Align a usage window to a 9-to-6 workday, and the trigger needs to fire around 6 AM, three hours ahead of when you'd normally sit down.
+
+That's exactly where "is your computer on" becomes a real question, not a formality. Most people don't have a laptop open at 6 AM, they're asleep. If the trigger mechanism lives on your machine, in your browser, or in a process depending on your OS being awake, you've built an automation guaranteed to be offline exactly when it's supposed to run.
+
+You could leave your laptop on overnight so a local script fires at 6 AM, but now you're burning power, generating fan noise, and wearing hardware to work around a limitation that shouldn't exist for a task this light. A single API ping shouldn't require your whole machine powered on for eight hours.
+
+## Edge computing solves this by removing your machine from the equation
+
+Cloudflare Workers run on Cloudflare's edge network, hundreds of distributed data centers across the globe. Deploy a worker and it isn't running on your laptop, or a single server somewhere that might go down. It runs on Cloudflare's own infrastructure, provisioned to execute on your defined schedule, independent of whether any device of yours is on, connected, or even in the same country.
+
+That's the core shift. Your automation no longer depends on your personal hardware being awake, it depends on Cloudflare's infrastructure being awake, which at their scale is a fundamentally different reliability proposition than "is my laptop currently open."
+
+Workers are built for exactly this kind of short-lived, scheduled execution. A cron trigger fires, the worker spins up, does its job in milliseconds, and shuts back down. No persistent process consuming resources between triggers, no server to patch, no OS to update. And critically, this all runs on Cloudflare's free tier, 100,000 requests per day. A daily token reset automation might use four or five. That's a fraction of a fraction of a percent of the free quota.
+
+## How TokFresh uses this
+
+TokFresh's entire automation runs as a Cloudflare Worker deployed to your own account, triggered by a cron schedule rather than anything on your machine. The mechanics:
+
+**A Cron Trigger fires at your scheduled times.** You define your desired reset windows during setup; TokFresh calculates the 5-hour intervals backward from there and configures Cloudflare's native Cron Triggers to fire at those exact times, in UTC, adjusted for your timezone.
+
+**The worker wakes up and reads your refresh token from KV storage.** Cloudflare KV is a key-value store tied to your account, where your Claude refresh token lives encrypted since initial OAuth setup.
+
+**It exchanges the refresh token for a fresh access token** via Claude's OAuth token endpoint, the same mechanism Claude Code relies on to maintain a session without repeated logins.
+
+**It makes a single, lightweight API call to Claude.** A minimal ping, typically routed to a fast, low-cost model like Claude Haiku, whose only purpose is registering as the first message of a new 5-hour window. It's not doing actual work, just starting the clock at the time you chose.
+
+**It optionally fires a Slack or Discord notification**, if configured, confirming the trigger executed without needing to check manually.
+
+**Total execution time: under a second. Total cost: zero.** The whole sequence, wake, read token, call API, notify, completes well within Cloudflare's free execution limits every time it runs.
+
+## The cost math, spelled out
+
+Cloudflare's free tier includes 100,000 worker requests per day. TokFresh's typical daily footprint sits around four or five requests, roughly 0.005% of the free quota, consumed and reset daily without ever approaching a billing threshold.
+
+Run TokFresh's automation continuously for the rest of your working life and you'll never come close to a paid tier. No meter running in the background, no usage-based pricing waiting to surprise you, no reason to worry about cost at all.
+
+## Comparing the approaches directly
+
+| | Browser extension | Local cron job | Cloudflare Worker (edge) |
+|---|---|---|---|
+| Requires PC to be on | Yes | Yes | No |
+| Requires browser open | Yes | No | No |
+| Survives OS updates/restarts | No | Not reliably | Yes |
+| Works while you sleep | No | Only if PC stays awake | Yes |
+| Breaks on UI/site changes | Often | Rarely | No (uses OAuth API directly) |
+| Cost | Free | Free | Free (well within free tier) |
+| Maintenance | Ongoing | Ongoing | None after setup |
+
+The pattern across every row is the same. Local approaches are tied to a device with its own sleep schedule, updates, and restarts, all unrelated to whether your token reset should fire at 6 AM. Edge-based automation removes that dependency entirely, running on infrastructure whose entire purpose is staying available around the clock.
+
+For a task this small, that reliability gap matters more than it seems. A trigger that fires 90% of the time because your laptop was occasionally asleep isn't solving the scheduling problem, it's just moving the unreliability somewhere less visible. Running the same logic on Cloudflare's edge closes that gap completely, because the automation was never waiting on your hardware to begin with.

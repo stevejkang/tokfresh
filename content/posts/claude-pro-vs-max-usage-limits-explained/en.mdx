@@ -1,0 +1,79 @@
+---
+title: "Claude Pro vs Max: Usage Limits Explained and How to Choose"
+description: "A clear breakdown of Claude Pro vs Max usage limits, the 5-hour rolling window, weekly caps, and how to decide which plan actually fits how you work."
+category: "blog"
+author: "Steve Kang"
+publishedAt: "2026-07-14"
+---
+
+## The plans at a glance
+
+Anthropic sells three tiers of Claude subscription for individuals, and the gap between them is bigger than the price tags suggest.
+
+| Plan | Price | Roughly | Best for |
+|---|---|---|---|
+| Pro | $20/month ($17/month billed annually) | ~45 messages per 5-hour window | Casual use, occasional coding |
+| Max 5x | $100/month | ~225 messages per 5-hour window | Regular coding sessions, Opus access |
+| Max 20x | $200/month | ~900 messages per 5-hour window | Heavy daily use, professional workloads |
+
+The "roughly" numbers aren't a hard promise from Anthropic — actual usage depends on message length, model choice, and how much context you're carrying in a conversation. But they're a useful anchor: Max 5x gives roughly five times Pro's budget, Max 20x roughly twenty times, matching the plan names.
+
+What isn't obvious from the pricing page: all three plans share the same mechanic for when and how often that budget refills.
+
+## The 5-hour rolling window
+
+Claude doesn't reset usage at midnight, or at any fixed clock time. Every account, Pro or Max, runs a five-hour rolling window starting from your *first* message in a session. Send a message at 8:14 AM, and your window resets at 1:14 PM, not some clean hour.
+
+This matters more than people expect. Two users on the same plan can have wildly different experiences depending purely on when they happen to start using Claude each day. If your first message consistently lands right before a focused work block, you're fighting your own usage window without realizing it.
+
+The budget inside that window differs by plan: Pro gives roughly 45 messages before you're throttled, Max 5x roughly 225, Max 20x roughly 900. For light, conversational use, Pro's 45 messages can comfortably cover a window. For large code files, long documents, or heavy back-and-forth iteration, that budget disappears fast — the exact complaint that shows up constantly in Claude user communities.
+
+## The weekly cap nobody expects
+
+The 5-hour window isn't the only limit. Both Pro and Max also enforce a separate weekly cap spanning all models combined, calculated on a rolling 7-day basis and resetting at a fixed time specific to your account (visible under Settings > Usage).
+
+Max plans layer on one more restriction: a separate, tighter weekly cap specifically for Opus usage. Opus is Anthropic's most capable and most expensive model to run, so even generous Max plans put a firmer ceiling on it, separate from your overall weekly budget.
+
+The practical effect: a Max subscriber who leans heavily on Opus for complex tasks can hit their Opus-specific weekly cap well before touching their overall weekly limit, at which point Claude falls back to a lighter model like Sonnet for the rest of the week unless a manual override is available.
+
+## What this actually feels like day to day
+
+The gap between "technically works" and "comfortable to use" shows up clearly once you look at what real users report.
+
+Pro handles casual, spread-out use just fine — a few questions across the day, help drafting an email, reviewing a short document, and 45 messages per window rarely feels tight. Push Pro into a real coding session and the story changes fast. One user described burning through their entire Pro limit in about fifteen minutes trying to refactor a 2,000-line file. Another signed up for Pro one evening, burned through their usage in ten minutes, upgraded to Max that same night, and then coded for five straight hours using about 90% of their total weekly usage in that one session.
+
+Max fixes the immediate problem for most people, but it doesn't make limits disappear. A recurring question in user forums is some version of "how is it even possible to hit a full weekly limit in just a few hours," usually posted by someone who assumed Max meant unlimited and discovered the weekly cap the hard way, often specifically around Opus. Common enough that some users run two or three Pro accounts in parallel, effectively paying $600+ a year to route around limits, rather than upgrading to a single Max plan that would likely serve them better and cost less.
+
+## Choosing between them
+
+A rough framework, based on how people actually describe their own usage:
+
+**Stay on Pro if** you're a casual user who doesn't hit limits on most days, you mainly work with Sonnet rather than Opus, and your usage is spread out across a day rather than concentrated into long focused sessions.
+
+**Upgrade to Max 5x if** you regularly burn through your Pro limit before the middle of the week, want reliable access to Opus for harder problems, or need the priority routing and higher output limits for your workflow.
+
+**Upgrade to Max 20x if** you're a genuinely heavy daily user, using Claude professionally or across a team where volume matters, and the per-message cost of Max 20x still comes out cheaper than juggling multiple Pro accounts or hitting constant interruptions.
+
+Max also includes priority routing during high-traffic periods, higher output limits per response, an extended context window for long documents or codebases, and earlier access to new features as Anthropic ships them.
+
+## The timing lever that upgrading doesn't touch
+
+Easy to miss: upgrading from Pro to Max solves a *budget* problem. It doesn't touch the *timing* problem, because both plans run on the exact same five-hour rolling window mechanic described above.
+
+If your first Claude message of the day lands at 10 AM, your reset lands at 3 PM, whether you're on Pro or Max 20x. The plan changes how much you get inside that window — it does nothing to change when the window starts, and that timing is a separate lever, just as relevant on a $20 plan as on a $200 one.
+
+Controlling that timing means deliberately triggering your first call at a moment you choose, rather than whenever your first real message of the day happens to land. Do that consistently and your reset windows start lining up with your actual work hours instead of drifting. [TokFresh](https://github.com/stevejkang/tokfresh) automates exactly this: a Cloudflare Worker running on your own account pre-triggers your usage cycle on a schedule you set, so your reset consistently lands before your workday starts rather than in the middle of it.
+
+## What to do when you actually hit a limit
+
+If you hit a limit mid-session, there are a few practical options rather than just waiting it out.
+
+**Wait for the reset.** The most straightforward option: the 5-hour window refreshes on its own, and if the weekly cap is what you've hit, that resets on its fixed weekly schedule.
+
+**Upgrade your plan.** If this is a recurring pattern rather than a one-off, moving from Pro to Max 5x, or from Max 5x to Max 20x, addresses the root cause directly.
+
+**Enable usage-based credits.** Anthropic offers a pay-per-token option that kicks in once your plan's included usage runs out, letting you keep working past the cap at metered pricing instead of waiting.
+
+**Switch to a lighter model.** Dropping from Opus to Sonnet, or Sonnet to Haiku, for less demanding parts of your task stretches your remaining budget further without waiting or paying extra.
+
+None of these fix the underlying timing issue on their own — that part is about when your window starts, not how big it is. Most people's real answer isn't picking one lever over the other. It's using the right plan for their volume, and controlling their reset timing on top of it.

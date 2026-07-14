@@ -1,0 +1,51 @@
+---
+title: "Introducing TokFresh: Automate Your Claude Token Reset Timing"
+description: "TokFresh shifts your Claude Pro or Max 5-hour reset window to match your actual work hours, using a free Cloudflare Worker on your own account."
+category: "product-updates"
+author: "Steve Kang"
+publishedAt: "2026-02-19"
+---
+
+## The 9-to-5 problem nobody talks about
+
+If you use Claude Pro or Max for real work, you know the rhythm. Claude resets your usage limit five hours after your first message in a session. That sounds generous until you map it against an actual workday.
+
+Say you sit down at 9 AM. Check email, review a ticket, join a standup. Your first real Claude prompt doesn't happen until 10 AM. That starts the clock. Your reset lands at 3 PM.
+
+Now subtract lunch, the meeting that ran long, and the twenty minutes you spent debugging something unrelated before you even opened Claude. What's left is maybe two hours of genuinely usable time before you hit the wall mid-task, mid-thought, mid-refactor.
+
+You're deep in a problem, context loaded, momentum building, and then you're locked out until the next window opens. Whatever you were building has to wait, and by the time access comes back, you've lost the thread.
+
+The reset window itself isn't the issue. Five hours is a fair amount of usage. The issue is when that window starts, anchored to whenever you happen to send your first message, which for most people is later than it should be and completely outside their control.
+
+## Shifting the window instead of fighting it
+
+TokFresh doesn't change how much you get. It changes when the clock starts.
+
+If Claude resets five hours after your first API call, triggering that call earlier means the reset happens earlier too. TokFresh sends a small, harmless ping to Claude's API at a time you choose, before you'd normally start working. That ping starts the five-hour timer on your behalf.
+
+Instead of your first real prompt at 10 AM starting the clock, TokFresh triggers a ping at 6 AM while you're still asleep or grabbing coffee. The five-hour window now runs from 6 AM to 11 AM. By the time you sit down to work at 9 or 10, you're already partway through a session that's about to reset again in your favor.
+
+Run the math and the difference is real: two hours of usable time becomes three or more once the window is aligned to when you actually work. Roughly 50% more usable time, without changing your subscription, your habits, or anything Anthropic controls. You're just making the clock start when it's convenient for you instead of whenever you happened to open the app.
+
+## How the setup actually works
+
+TokFresh is built to be something you set up once and forget. Three steps.
+
+**Connect with OAuth.** You authenticate through Claude's own OAuth flow, the same one Claude Code uses. No API keys to generate, copy, or accidentally leak in a config file. TokFresh never sees your password and never asks for one.
+
+**Set your schedule.** Tell TokFresh what time you want your reset windows to land, and it calculates the 5-hour intervals working backward from there. Want a fresh window at 9 AM and another in the afternoon? TokFresh figures out exactly when the pings need to fire.
+
+**Deploy to Cloudflare.** With one click, TokFresh deploys a Worker to your own Cloudflare account. The free tier easily covers this workload, so there's no billing surprise waiting for you.
+
+Start to finish, it takes about three minutes. After that, the Worker runs quietly on your infrastructure, firing the scheduled pings, and you don't have to think about it again.
+
+## Why it's built this way
+
+**Fully stateless.** TokFresh's own servers store nothing about you. No usage logs, no schedules, no tokens sitting in a database waiting to be a liability. Once your Worker is deployed, it runs independently on Cloudflare's infrastructure using credentials scoped to your account.
+
+**Zero cost.** The entire thing runs on Cloudflare Workers' free tier. No subscription, no usage-based billing, no upsell waiting around the corner. The ping is lightweight enough that you'd need dozens of accounts before it even approached a paid tier.
+
+**No lock-in.** Because the Worker lives on your Cloudflare account, you're never dependent on TokFresh's infrastructure staying online. Inspect the code, modify it, or delete it whenever you want. The project is open source at [github.com/stevejkang/tokfresh](https://github.com/stevejkang/tokfresh).
+
+The goal was never to build a service you rely on indefinitely. It's a small tool that fixes one specific annoyance, hands the running infrastructure over to you, and gets out of the way.
