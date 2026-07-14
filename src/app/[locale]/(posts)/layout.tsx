@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 
 import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -21,6 +22,7 @@ export default async function PostsLayout({
     <div className="min-h-screen bg-background">
       <SiteHeader showGitHubStars={false} />
       {children}
+      <SiteFooter />
     </div>
   );
 }
