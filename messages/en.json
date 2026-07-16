@@ -15,10 +15,10 @@
     "posts": "Posts"
   },
   "Landing": {
-    "badge": "Free forever. No API keys needed.",
+    "badge": "Free forever. Tokens never touch our servers.",
     "heroTitle1": "Automate Your Claude",
     "heroTitle2": "Token Reset Timing",
-    "heroDescription": "Schedule automatic API calls to start your 5-hour cycle exactly when you want. Use your Claude tokens more efficiently.",
+    "heroDescription": "Schedule automatic API calls to start your 5-hour cycle exactly when you want. Use your Claude subscription more efficiently.",
     "heroCta": "Get Started Free",
     "trustedBy": "Trusted by professionals at",
     "trustedByTooltip": "Based on anonymously reported data from email subscriptions",
