@@ -17,9 +17,9 @@ export async function TrustedBySection() {
       <div className="mx-auto max-w-6xl px-6 text-center">
         <p className="mb-10 inline-flex items-center gap-1 text-sm text-muted-foreground">
           {t("trustedBy")}
-          <span className="group relative">
+          <span className="group relative hidden sm:inline-flex">
             <CircleHelp className="h-3.5 w-3.5 cursor-help text-muted-foreground/50" />
-            <span className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md border border-border opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+            <span className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 max-w-[200px] whitespace-normal text-center rounded-md bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md border border-border opacity-0 transition-opacity duration-150 group-hover:opacity-100">
               {t("trustedByTooltip")}
             </span>
           </span>
