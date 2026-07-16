@@ -30,8 +30,8 @@ importers:
         specifier: 16.2.9
         version: 16.2.9(@babel/core@7.29.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       next-intl:
-        specifier: ^4.13.0
-        version: 4.13.0(next@16.2.9(@babel/core@7.29.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(typescript@5.9.3)
+        specifier: ^4.13.1
+        version: 4.13.2(next@16.2.9(@babel/core@7.29.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(typescript@5.9.3)
       next-mdx-remote:
         specifier: ^6.0.0
         version: 6.0.0(@types/react@19.2.17)(react@19.2.7)
@@ -2850,8 +2850,8 @@ packages:
     resolution: {integrity: sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==}
     engines: {node: '>=0.10.0'}
 
-  icu-minify@4.13.0:
-    resolution: {integrity: sha512-SIFMeUHZJjzS5RvIGvybKvWoHjDm9cGVEs2EpJ8PmywOdJLWyblPm7TdPLLoUtkJtwQD7iGhl2WMptZ+N0on+w==}
+  icu-minify@4.13.2:
+    resolution: {integrity: sha512-XhYQTEnBXBCyF6ERiwItFweoOXDUciujaGjIWCA7RhOCEPDfhVSTtuwfRq6HdVk7tKnYJh+yaurP96zGnaKsPg==}
 
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
@@ -3527,11 +3527,11 @@ packages:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
 
-  next-intl-swc-plugin-extractor@4.13.0:
-    resolution: {integrity: sha512-6S/fJI0KXvLCL8nhBo9P8eGaJPzmwJBTCzX0NaUIj0VyU8U89d//T+vjMLdNIXl5MlLaYH7B9MbAjb8Mvu+tqQ==}
+  next-intl-swc-plugin-extractor@4.13.2:
+    resolution: {integrity: sha512-O30N/Y4ifzRe5Sz80jD1Qkg4VY6Zfef4SbHNNE166QkHswBf3/Kygpdd1X52sUUwTCk6uvdisO8ybfAN/VYJHQ==}
 
-  next-intl@4.13.0:
-    resolution: {integrity: sha512-OvNq2v5XLx4EkQOsAhVE9g+6zdb83XHusADCXXtIW4LILYnjEVaeINdr1lkVWKSjzwNUiMSlH5N4K0OQTRiv6A==}
+  next-intl@4.13.2:
+    resolution: {integrity: sha512-iCYycEP7/PE+1ue4MWBuz1qns6ESA+SGzuXxNMNN1qiYUh2fLhJPiZvHW1zZC7zMTn44aJUglOVZxUb1+hUz6g==}
     peerDependencies:
       next: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0
@@ -4386,8 +4386,8 @@ packages:
       '@types/react':
         optional: true
 
-  use-intl@4.13.0:
-    resolution: {integrity: sha512-fAFDrWaASxlhXOipcOyb5VDD+YONqj6+8O8EcG/J7RBoOUF3A8YahRWLN+mBxYMrlMQB8N6Voqk5X+YC+HSL0A==}
+  use-intl@4.13.2:
+    resolution: {integrity: sha512-p6/gCromeBoec+wEuOIkPaytH77RBjW94KWv8MRsNrbI4UOx8QgwNhgl9lbPOKM/b0dpanLhCYztLEH5yQUjtg==}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0
 
@@ -7451,7 +7451,7 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  icu-minify@4.13.0:
+  icu-minify@4.13.2:
     dependencies:
       '@formatjs/icu-messageformat-parser': 3.5.7
 
@@ -8319,20 +8319,20 @@ snapshots:
 
   negotiator@1.0.0: {}
 
-  next-intl-swc-plugin-extractor@4.13.0: {}
+  next-intl-swc-plugin-extractor@4.13.2: {}
 
-  next-intl@4.13.0(next@16.2.9(@babel/core@7.29.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(typescript@5.9.3):
+  next-intl@4.13.2(next@16.2.9(@babel/core@7.29.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(typescript@5.9.3):
     dependencies:
       '@formatjs/intl-localematcher': 0.8.6
       '@parcel/watcher': 2.5.6
       '@swc/core': 1.15.33
-      icu-minify: 4.13.0
+      icu-minify: 4.13.2
       negotiator: 1.0.0
       next: 16.2.9(@babel/core@7.29.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      next-intl-swc-plugin-extractor: 4.13.0
+      next-intl-swc-plugin-extractor: 4.13.2
       po-parser: 2.1.1
       react: 19.2.7
-      use-intl: 4.13.0(react@19.2.7)
+      use-intl: 4.13.2(react@19.2.7)
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -9476,11 +9476,11 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.17
 
-  use-intl@4.13.0(react@19.2.7):
+  use-intl@4.13.2(react@19.2.7):
     dependencies:
       '@formatjs/fast-memoize': 3.1.4
       '@schummar/icu-type-parser': 1.21.5
-      icu-minify: 4.13.0
+      icu-minify: 4.13.2
       intl-messageformat: 11.2.4
       react: 19.2.7
 
