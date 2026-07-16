@@ -29,6 +29,7 @@ import {
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CtaSection } from "@/components/cta-section";
+import { TrustedBySection } from "@/components/trusted-by-section";
 import { PostCard } from "@/components/posts/post-card";
 import { getAllPosts } from "@/lib/posts";
 
@@ -92,6 +93,9 @@ export default async function Home({
           </Button>
         </div>
       </section>
+
+      {/* Trusted By */}
+      <TrustedBySection />
 
       {/* Token Math — 2T vs 3T */}
       <section className="py-20">
