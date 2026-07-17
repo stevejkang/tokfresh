@@ -30,7 +30,7 @@ importers:
         specifier: 16.2.10
         version: 16.2.10(@babel/core@7.29.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       next-intl:
-        specifier: ^4.13.1
+        specifier: ^4.13.2
         version: 4.13.2(next@16.2.10(@babel/core@7.29.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(typescript@5.9.3)
       next-mdx-remote:
         specifier: ^6.0.0
