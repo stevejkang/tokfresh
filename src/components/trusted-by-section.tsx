@@ -40,6 +40,17 @@ export async function TrustedBySection() {
         <p className="mt-6 text-xs text-muted-foreground/50">
           {t("trustedByMore")}
         </p>
+        <p className="mt-3 text-xs text-muted-foreground/50">
+          {t("trustedByCtaQuestion")}{" "}
+          <a
+            href="https://forms.gle/5QaMBGPnZeKpHWY27"
+            target="_blank"
+            rel="noreferrer"
+            className="cursor-pointer underline"
+          >
+            {t("trustedByCta")}
+          </a>
+        </p>
       </div>
     </section>
   );

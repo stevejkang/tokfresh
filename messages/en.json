@@ -23,6 +23,8 @@
     "trustedBy": "Trusted by professionals at",
     "trustedByTooltip": "Based on anonymously reported data from email subscriptions",
     "trustedByMore": "and more startups & teams around the world",
+    "trustedByCta": "Tell us and add your logo.",
+    "trustedByCtaQuestion": "Does your team use TokFresh?",
     "tokenMathTitle": "Same hours. More tokens.",
     "tokenMathSubtitle": "Claude resets every 5 hours from your first call. ",
     "tokenMathHighlight": "Start earlier, get more sessions.",
