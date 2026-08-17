@@ -30,7 +30,7 @@ importers:
         specifier: 16.3.0
         version: 16.3.0(@babel/core@7.29.0(supports-color@7.2.0))(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       next-intl:
-        specifier: ^4.13.5
+        specifier: ^4.13.6
         version: 4.13.6(next@16.3.0(@babel/core@7.29.0(supports-color@7.2.0))(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)(typescript@5.9.3)
       next-mdx-remote:
         specifier: ^6.0.0
@@ -6244,7 +6244,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.56.0
       debug: 4.4.3(supports-color@7.2.0)
       minimatch: 9.0.5
-      semver: 7.8.0
+      semver: 7.8.5
       tinyglobby: 0.2.15
       ts-api-utils: 2.4.0(typescript@5.9.3)
       typescript: 5.9.3
@@ -9008,8 +9008,7 @@ snapshots:
 
   semver@7.8.0: {}
 
-  semver@7.8.5:
-    optional: true
+  semver@7.8.5: {}
 
   send@1.2.1(supports-color@7.2.0):
     dependencies:
