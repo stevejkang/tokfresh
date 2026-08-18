@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
@@ -75,7 +76,7 @@ function categorizeError(error: string): string {
   return "unknown";
 }
 
-export default function SetupPage() {
+function SetupPageContent() {
   const t = useTranslations("Setup");
   const stepTitles = [t("stepConnect"), t("stepSchedule"), t("stepNotifications"), t("stepDeploy")];
 
@@ -91,26 +92,32 @@ export default function SetupPage() {
   const trackedActions = useRef(new Set<string>());
   const deployAttemptRef = useRef(0);
 
+  const searchParams = useSearchParams();
+  const referrer = searchParams.get("ref") || "direct";
+
+  const trackSetupEvent = useMemo(() => {
+    return (action: string, params?: Record<string, string | number>) => {
+      trackEvent({ action, params: { ...params, referrer } });
+    };
+  }, [referrer]);
+
   useEffect(() => {
     setState((prev) => ({ ...prev, timezone: detectTimezone() }));
-    trackEvent({ action: "setup_started" });
-  }, []);
+    trackSetupEvent("setup_started");
+  }, [trackSetupEvent]);
 
   useEffect(() => {
     if (trackedSteps.current.has(state.step)) return;
     trackedSteps.current.add(state.step);
 
     if (state.step <= 4) {
-      trackEvent({
-        action: "setup_step_viewed",
-        params: { step: state.step, step_name: STEP_TITLES_EN[state.step - 1] },
-      });
+      trackSetupEvent("setup_step_viewed", { step: state.step, step_name: STEP_TITLES_EN[state.step - 1] });
     }
 
     if (state.step === 5) {
-      trackEvent({ action: "setup_completed" });
+      trackSetupEvent("setup_completed");
     }
-  }, [state.step]);
+  }, [state.step, trackSetupEvent]);
 
   const update = useCallback(
     (partial: Partial<SetupState>) =>
@@ -125,16 +132,16 @@ export default function SetupPage() {
     sessionStorage.setItem("tokfresh_verifier", verifier);
     window.open(url, "_blank", "noopener");
     setOauthOpened(true);
-    trackEvent({ action: "setup_oauth_window_opened" });
+    trackSetupEvent("setup_oauth_window_opened");
   };
 
   const handleExchangeCode = async () => {
-    trackEvent({ action: "setup_oauth_code_submitted" });
+    trackSetupEvent("setup_oauth_code_submitted");
 
     const verifier = sessionStorage.getItem("tokfresh_verifier");
     if (!verifier) {
       setExchangeError("Session expired. Please connect Claude again.");
-      trackEvent({ action: "setup_oauth_exchange_error", params: { error_type: "session_expired" } });
+      trackSetupEvent("setup_oauth_exchange_error", { error_type: "session_expired" });
       return;
     }
 
@@ -150,10 +157,10 @@ export default function SetupPage() {
         claudeAccessToken: result.accessToken ?? null,
         step: 2,
       });
-      trackEvent({ action: "setup_oauth_exchange_success" });
+      trackSetupEvent("setup_oauth_exchange_success");
     } else {
       setExchangeError(result.error ?? "Failed to verify code");
-      trackEvent({ action: "setup_oauth_exchange_error", params: { error_type: "exchange_failed" } });
+      trackSetupEvent("setup_oauth_exchange_error", { error_type: "exchange_failed" });
     }
 
     setIsExchanging(false);
@@ -162,7 +169,7 @@ export default function SetupPage() {
   const handleScheduleContinue = () => {
     if (!trackedActions.current.has("schedule_configured")) {
       trackedActions.current.add("schedule_configured");
-      trackEvent({ action: "setup_schedule_configured", params: { start_time: state.startTime, timezone: state.timezone } });
+      trackSetupEvent("setup_schedule_configured", { start_time: state.startTime, timezone: state.timezone });
     }
     update({ step: 3 });
   };
@@ -170,10 +177,7 @@ export default function SetupPage() {
   const handleNotificationContinue = () => {
     if (!trackedActions.current.has("notification_configured")) {
       trackedActions.current.add("notification_configured");
-      trackEvent({
-        action: "setup_notification_configured",
-        params: { type: state.notificationType, failure_only: state.notifyOnFailureOnly ? "true" : "false" },
-      });
+      trackSetupEvent("setup_notification_configured", { type: state.notificationType, failure_only: state.notifyOnFailureOnly ? "true" : "false" });
     }
     update({ step: 4 });
   };
@@ -184,7 +188,7 @@ export default function SetupPage() {
     deployAttemptRef.current += 1;
     const attempt = deployAttemptRef.current;
 
-    trackEvent({ action: "setup_deploy_initiated", params: { attempt } });
+    trackSetupEvent("setup_deploy_initiated", { attempt });
     update({ deploymentStatus: "deploying", deploymentError: null, deploymentErrorCode: null });
     setDeployProgress(["Verifying Cloudflare token..."]);
 
@@ -196,14 +200,14 @@ export default function SetupPage() {
         deploymentStatus: "error",
         deploymentError: error,
       });
-      trackEvent({ action: "setup_cf_verify_error", params: { error_type: categorizeError(error), attempt } });
+      trackSetupEvent("setup_cf_verify_error", { error_type: categorizeError(error), attempt });
       return;
     }
 
     const accountId = verification.accountId!;
     update({ cloudflareAccountId: accountId });
     setDeployProgress((prev) => [...prev, "Token verified"]);
-    trackEvent({ action: "setup_cf_verify_success", params: { attempt } });
+    trackSetupEvent("setup_cf_verify_success", { attempt });
 
     const cronExpression = timeToCron(schedule, state.timezone);
     const workerCode = generateWorkerCode();
@@ -237,7 +241,7 @@ export default function SetupPage() {
 
     if (result.success) {
       update({ deploymentStatus: "success", step: 5 });
-      trackEvent({ action: "setup_deploy_success", params: { attempt } });
+      trackSetupEvent("setup_deploy_success", { attempt });
     } else {
       const error = result.error ?? "Deployment failed";
       const errorCode = result.errorCode ?? null;
@@ -248,14 +252,14 @@ export default function SetupPage() {
       });
       const params: Record<string, string | number> = { error_type: categorizeError(error), attempt };
       if (errorCode != null) params.error_code = errorCode;
-      trackEvent({ action: "setup_deploy_error", params });
+      trackSetupEvent("setup_deploy_error", params);
     }
   };
 
   const handleSubscribe = async () => {
     if (!subscribeEmail.trim()) return;
 
-    trackEvent({ action: "setup_subscribe_submitted" });
+    trackSetupEvent("setup_subscribe_submitted");
     setSubscribeStatus("submitting");
 
     try {
@@ -270,14 +274,14 @@ export default function SetupPage() {
       if (data.success) {
         const status = data.alreadySubscribed ? "already" : "success";
         setSubscribeStatus(status);
-        trackEvent({ action: "setup_subscribe_result", params: { result: status } });
+        trackSetupEvent("setup_subscribe_result", { result: status });
       } else {
         setSubscribeStatus("error");
-        trackEvent({ action: "setup_subscribe_result", params: { result: "error" } });
+        trackSetupEvent("setup_subscribe_result", { result: "error" });
       }
     } catch {
       setSubscribeStatus("error");
-      trackEvent({ action: "setup_subscribe_result", params: { result: "error" } });
+      trackSetupEvent("setup_subscribe_result", { result: "error" });
     }
   };
 
@@ -893,5 +897,13 @@ export default function SetupPage() {
       {state.step === 4 && renderStep4()}
       {state.step === 5 && renderSuccess()}
     </>
+  );
+}
+
+export default function SetupPage() {
+  return (
+    <Suspense>
+      <SetupPageContent />
+    </Suspense>
   );
 }

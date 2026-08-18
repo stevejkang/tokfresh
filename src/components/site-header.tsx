@@ -27,7 +27,7 @@ export async function SiteHeader({
           {showGitHubStars && <GitHubStarButton />}
           <LanguageSwitcher />
           <Button asChild size="sm">
-            <Link href="/setup">{tNav("getStarted")}</Link>
+            <Link href="/setup?ref=header">{tNav("getStarted")}</Link>
           </Button>
         </div>
       </div>

@@ -86,7 +86,7 @@ export default async function Home({
             {t("heroDescription")}
           </p>
           <Button asChild size="lg" className="h-12 px-8 text-base">
-            <Link href="/setup">
+            <Link href="/setup?ref=hero">
               {t("heroCta")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
@@ -463,7 +463,7 @@ export default async function Home({
       </section>
 
       {/* CTA */}
-      <CtaSection />
+      <CtaSection trackingRef="cta_home" />
 
       {/* Recent Updates */}
       {recentPosts.length > 0 && (

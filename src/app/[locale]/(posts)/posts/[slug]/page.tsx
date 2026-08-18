@@ -133,7 +133,7 @@ export default async function PostDetailPage({
         />
       </div>
 
-      <CtaSection />
+      <CtaSection trackingRef={`cta_post_${slug}`} />
     </article>
   );
 }

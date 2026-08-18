@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 
-export async function CtaSection() {
+export async function CtaSection({ trackingRef }: { trackingRef?: string } = {}) {
   const t = await getTranslations("Landing");
 
   return (
@@ -22,7 +22,7 @@ export async function CtaSection() {
           {t("ctaPrivacy")}
         </p>
         <Button asChild size="lg" className="h-12 px-8 text-base">
-          <Link href="/setup">
+          <Link href={trackingRef ? `/setup?ref=${trackingRef}` : "/setup"}>
             {t("heroCta")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
