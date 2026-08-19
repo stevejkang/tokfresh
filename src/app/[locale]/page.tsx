@@ -114,14 +114,14 @@ export default async function Home({
             </Link>
           </Button>
           {displayCount > 0 && (
-            <div className="mt-6 flex items-center justify-center gap-4 text-xs text-muted-foreground/70">
+            <div className="mt-6 flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground/70 sm:flex-row sm:gap-4">
               <span className="inline-flex items-center gap-1">
                 <CheckCircle2 className="h-3 w-3 text-emerald-500" />
                 {t("trustedByStats", { count: displayCount.toLocaleString() })}
               </span>
               {lastTriggerAt && (
                 <>
-                  <span className="text-border">·</span>
+                  <span className="hidden text-border sm:inline">·</span>
                   <span>{t("trustedByLastTrigger", { time: formatRelativeTime(lastTriggerAt) })}</span>
                 </>
               )}

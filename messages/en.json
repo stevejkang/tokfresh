@@ -23,7 +23,7 @@
     "trustedBy": "Trusted by professionals at",
     "trustedByTooltip": "Based on anonymously reported data from email subscriptions",
     "trustedByStats": "{count}+ resets triggered since Feb 2026",
-    "trustedByLastTrigger": "Last trigger {time}",
+    "trustedByLastTrigger": "Last triggered {time}",
     "trustedByMore": "and more startups & teams around the world",
     "trustedByCta": "Tell us and add your logo.",
     "trustedByCtaQuestion": "Does your team use TokFresh?",
