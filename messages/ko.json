@@ -22,6 +22,8 @@
     "heroCta": "무료로 시작하기",
     "trustedBy": "다음 팀에서 사용하고 있습니다",
     "trustedByTooltip": "이메일 구독에서 익명으로 수집된 데이터 기반",
+    "trustedByStats": "2026년 2월부터 {count}회 이상 리셋 실행됨",
+    "trustedByLastTrigger": "마지막 실행 {time}",
     "trustedByMore": "외 다수의 스타트업과 팀에서 사용 중",
     "trustedByCta": "알려주시고 로고를 등록해 주세요.",
     "trustedByCtaQuestion": "팀에서 TokFresh를 쓰고 계신가요?",

@@ -32,6 +32,18 @@ import { CtaSection } from "@/components/cta-section";
 import { TrustedBySection } from "@/components/trusted-by-section";
 import { PostCard } from "@/components/posts/post-card";
 import { getAllPosts } from "@/lib/posts";
+import { redis } from "@/lib/redis";
+
+function formatRelativeTime(timestamp: number): string {
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
 
 export async function generateMetadata({
   params,
@@ -67,6 +79,16 @@ export default async function Home({
   const tPosts = await getTranslations("Posts");
   const recentPosts = getAllPosts(locale).slice(0, 3);
 
+  let totalTriggers = 0;
+  let lastTriggerAt: number | null = null;
+  try {
+    [totalTriggers, lastTriggerAt] = await Promise.all([
+      redis.get<number>("total_triggers").then((v) => v ?? 0),
+      redis.get<number>("last_trigger_at"),
+    ]);
+  } catch {}
+  const displayCount = Math.floor(totalTriggers / 100) * 100;
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -91,6 +113,20 @@ export default async function Home({
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
+          {displayCount > 0 && (
+            <div className="mt-6 flex items-center justify-center gap-4 text-xs text-muted-foreground/70">
+              <span className="inline-flex items-center gap-1">
+                <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                {t("trustedByStats", { count: displayCount.toLocaleString() })}
+              </span>
+              {lastTriggerAt && (
+                <>
+                  <span className="text-border">·</span>
+                  <span>{t("trustedByLastTrigger", { time: formatRelativeTime(lastTriggerAt) })}</span>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
