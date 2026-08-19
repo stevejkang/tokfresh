@@ -25,6 +25,13 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { GitHubStarNudge } from "@/components/github-star-nudge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   ArrowLeft,
@@ -37,6 +44,7 @@ import {
   Shield,
   Globe,
   CheckCircle2,
+  XCircle,
   Info,
   Copy,
   Mail,
@@ -78,9 +86,17 @@ function categorizeError(error: string): string {
 
 function SetupPageContent() {
   const t = useTranslations("Setup");
+  const tFaq = useTranslations("SetupFaq");
+  const tLanding = useTranslations("Landing");
   const stepTitles = [t("stepConnect"), t("stepSchedule"), t("stepNotifications"), t("stepDeploy")];
 
+  const searchParams = useSearchParams();
+  const referrer = searchParams.get("ref") || "direct";
+  const isFromPost = referrer.startsWith("post_") || referrer.startsWith("cta_post_");
+
   const [state, setState] = useState<SetupState>(INITIAL_SETUP_STATE);
+  const [onboardingStep, setOnboardingStep] = useState<number | null>(null);
+  const [onboardingInitialized, setOnboardingInitialized] = useState(false);
   const [authCode, setAuthCode] = useState("");
   const [isExchanging, setIsExchanging] = useState(false);
   const [exchangeError, setExchangeError] = useState<string | null>(null);
@@ -92,14 +108,21 @@ function SetupPageContent() {
   const trackedActions = useRef(new Set<string>());
   const deployAttemptRef = useRef(0);
 
-  const searchParams = useSearchParams();
-  const referrer = searchParams.get("ref") || "direct";
-
   const trackSetupEvent = useMemo(() => {
     return (action: string, params?: Record<string, string | number>) => {
       trackEvent({ action, params: { ...params, referrer } });
     };
   }, [referrer]);
+
+  useEffect(() => {
+    if (!onboardingInitialized) {
+      setOnboardingInitialized(true);
+      if (isFromPost) {
+        setOnboardingStep(1);
+        trackSetupEvent("setup_onboarding_started", { referrer });
+      }
+    }
+  }, [isFromPost, onboardingInitialized, trackSetupEvent, referrer]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, timezone: detectTimezone() }));
@@ -283,6 +306,320 @@ function SetupPageContent() {
       setSubscribeStatus("error");
       trackSetupEvent("setup_subscribe_result", { result: "error" });
     }
+  };
+
+  const handleOnboardingNext = () => {
+    if (onboardingStep === null) return;
+    if (onboardingStep >= 3) {
+      trackSetupEvent("setup_onboarding_completed");
+      setOnboardingStep(null);
+    } else {
+      setOnboardingStep(onboardingStep + 1);
+    }
+  };
+
+  const handleOnboardingSkip = () => {
+    trackSetupEvent("setup_onboarding_skipped", { at_step: onboardingStep ?? 0 });
+    setOnboardingStep(null);
+  };
+
+  const renderOnboarding = () => {
+    if (onboardingStep === null) return null;
+
+    return (
+      <Card>
+        <CardHeader>
+          <div className="mb-2 flex items-center justify-between">
+            <div className="flex gap-1.5">
+              {[1, 2, 3].map((s) => (
+                <div
+                  key={s}
+                  className={`h-1.5 w-8 rounded-full transition-colors ${
+                    s <= onboardingStep ? "bg-primary" : "bg-muted"
+                  }`}
+                />
+              ))}
+            </div>
+            <button
+              onClick={handleOnboardingSkip}
+              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {t("onboardingSkip")}
+            </button>
+          </div>
+          <CardTitle className="text-xl">
+            {onboardingStep === 1 && t("onboardingStep1Title")}
+            {onboardingStep === 2 && t("onboardingStep2Title")}
+            {onboardingStep === 3 && t("onboardingStep3Title")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {onboardingStep === 1 && (
+            <>
+              <p className="text-sm text-muted-foreground">
+                {t("onboardingStep1Description")}
+              </p>
+
+              <div className="space-y-6">
+                {/* Scenario 1: Start at 9 AM — 2T */}
+                <div>
+                  <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                      {tLanding("tokenMathScenario1Label")}
+                      <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground/70">
+                        {tLanding("tokenMathScenario1Tag")}
+                      </span>
+                    </div>
+                    <div className="text-sm font-semibold tabular-nums text-muted-foreground">
+                      2T{" "}
+                      <span className="font-normal text-muted-foreground/70">
+                        {tLanding("tokenMathAvailable")}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mb-1.5 flex items-stretch">
+                    <div className="flex-[3]" />
+                    <div className="flex h-5 flex-[9] items-center justify-center rounded-md border border-dashed border-muted-foreground/50 dark:border-muted-foreground/55">
+                      <span className="text-[9px] font-medium tracking-wide text-muted-foreground/80 dark:text-muted-foreground/80">
+                        9–18 {tLanding("tokenMathWorkingHours")}
+                      </span>
+                    </div>
+                    <div className="hidden flex-[3] sm:block" />
+                  </div>
+
+                  <div className="flex items-stretch gap-1">
+                    <div className="flex h-14 flex-[3] items-center justify-center rounded-lg border border-dashed border-border bg-muted/30">
+                      <span className="hidden text-[10px] text-muted-foreground/40 sm:inline">
+                        {tLanding("tokenMathIdle")}
+                      </span>
+                    </div>
+                    <div className="flex h-14 flex-[5] items-center justify-center rounded-lg border border-border bg-muted">
+                      <div className="text-center">
+                        <div className="text-xs font-medium text-foreground">
+                          {tLanding("tokenMathSession")} 1
+                        </div>
+                        <div className="text-[10px] text-muted-foreground">
+                          9–14
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex h-14 flex-[5] items-center justify-center rounded-lg border border-border bg-muted">
+                      <div className="text-center">
+                        <div className="text-xs font-medium text-foreground">
+                          {tLanding("tokenMathSession")} 2
+                        </div>
+                        <div className="text-[10px] text-muted-foreground">
+                          14–19
+                        </div>
+                      </div>
+                    </div>
+                    <div className="hidden h-14 flex-[2] items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 sm:flex" />
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="flex items-center gap-3 text-xs text-muted-foreground/50">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="shrink-0">↓</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+
+                {/* Scenario 2: Start at 6 AM — 3T */}
+                <div>
+                  <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                      {tLanding("tokenMathScenario2Label")}
+                      <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">
+                        {tLanding("tokenMathScenario2Tag")}
+                      </span>
+                    </div>
+                    <div className="text-sm font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+                      3T{" "}
+                      <span className="font-normal text-emerald-600/70 dark:text-emerald-400/70">
+                        {tLanding("tokenMathAvailable")}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mb-1.5 flex items-stretch">
+                    <div className="flex-[3]" />
+                    <div className="flex h-5 flex-[9] items-center justify-center rounded-md border border-dashed border-muted-foreground/50 dark:border-muted-foreground/55">
+                      <span className="text-[9px] font-medium tracking-wide text-muted-foreground/80 dark:text-muted-foreground/80">
+                        9–18 {tLanding("tokenMathWorkingHours")}
+                      </span>
+                    </div>
+                    <div className="flex-[3]" />
+                  </div>
+
+                  <div className="flex h-14 items-stretch overflow-hidden rounded-xl border border-emerald-200 shadow-sm dark:border-emerald-500/20 dark:shadow-emerald-500/5">
+                    <div className="flex flex-1 items-center justify-center bg-emerald-50 dark:bg-emerald-500/10">
+                      <div className="text-center">
+                        <div className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                          {tLanding("tokenMathSession")} 1
+                        </div>
+                        <div className="text-[10px] text-emerald-600/60 dark:text-emerald-400/60">
+                          6–11
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-px bg-emerald-200 dark:bg-emerald-500/30" />
+                    <div className="flex flex-1 items-center justify-center bg-emerald-50 dark:bg-emerald-500/10">
+                      <div className="text-center">
+                        <div className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                          {tLanding("tokenMathSession")} 2
+                        </div>
+                        <div className="text-[10px] text-emerald-600/60 dark:text-emerald-400/60">
+                          11–16
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-px bg-emerald-200 dark:bg-emerald-500/30" />
+                    <div className="flex flex-1 items-center justify-center bg-emerald-50 dark:bg-emerald-500/10">
+                      <div className="text-center">
+                        <div className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                          {tLanding("tokenMathSession")} 3
+                        </div>
+                        <div className="text-[10px] text-emerald-600/60 dark:text-emerald-400/60">
+                          16–21
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Punchline */}
+              <div className="text-center">
+                <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                  {tLanding("tokenMathPunchline")}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {tLanding("tokenMathPunchlineDetail")}
+                </p>
+              </div>
+            </>
+          )}
+
+          {onboardingStep === 2 && (
+            <>
+              <p className="text-sm text-muted-foreground">
+                {t("onboardingStep2Description")}
+              </p>
+
+              <div className="space-y-6">
+                {/* Without TokFresh */}
+                <div>
+                  <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <XCircle className="h-4 w-4 text-red-500" />
+                    {tLanding("withoutTokFresh")}
+                  </div>
+
+                  <div className="flex items-stretch gap-2.5">
+                    <div className="flex h-[4.5rem] flex-[5] items-center justify-center rounded-xl border border-border bg-muted">
+                      <div className="text-center">
+                        <div className="text-xs font-medium text-foreground">
+                          {tLanding("session")}
+                        </div>
+                        <div className="mt-0.5 text-[10px] text-muted-foreground">
+                          {tLanding("limitReached")}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex h-[4.5rem] shrink-0 flex-col items-center justify-center rounded-xl border border-red-200 bg-red-50 px-5 dark:border-red-500/20 dark:bg-red-950/40">
+                      <span className="text-base leading-none">⏳</span>
+                      <span className="mt-1 text-[9px] font-medium text-red-600 dark:text-red-400">
+                        {tLanding("wait")}
+                      </span>
+                    </div>
+
+                    <div className="flex h-[4.5rem] flex-[3] items-center justify-center rounded-xl border border-dashed border-border bg-muted/50">
+                      <span className="text-[10px] text-muted-foreground">
+                        {tLanding("restOfWork")}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="mt-3 text-xs text-red-600/80 dark:text-red-400/80">
+                    {tLanding("withoutDescription")}
+                  </p>
+                </div>
+
+                {/* Divider */}
+                <div className="flex items-center gap-3 text-xs text-muted-foreground/50">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="shrink-0">{tLanding("sameWork")}</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+
+                {/* With TokFresh */}
+                <div>
+                  <div className="mb-3 flex items-center gap-2 text-sm font-medium">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    {tLanding("withTokFresh")}
+                  </div>
+
+                  <div className="flex h-[4.5rem] items-stretch overflow-hidden rounded-xl border border-emerald-200 shadow-sm dark:border-emerald-500/20 dark:shadow-emerald-500/5">
+                    <div className="flex flex-1 items-center justify-center bg-emerald-50 dark:bg-emerald-500/10">
+                      <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                        {tLanding("session1")}
+                      </span>
+                    </div>
+                    <div className="flex w-12 shrink-0 flex-col items-center justify-center bg-emerald-100 dark:bg-emerald-500/25 dark:shadow-[0_0_16px_rgba(16,185,129,0.3)]">
+                      <span className="text-sm font-bold leading-none text-emerald-700 dark:text-emerald-300">
+                        ↻
+                      </span>
+                      <span className="mt-0.5 text-[8px] font-medium text-emerald-600/60 dark:text-emerald-400/60">
+                        {tLanding("refresh")}
+                      </span>
+                    </div>
+                    <div className="flex flex-1 items-center justify-center bg-emerald-50 dark:bg-emerald-500/10">
+                      <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                        {tLanding("session2")}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                      {tLanding("withHighlight")}
+                    </span>{" "}
+                    {tLanding("withDescription")}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+
+          {onboardingStep === 3 && (
+            <>
+              <div className="space-y-4">
+                {[t("onboardingStep3Point1"), t("onboardingStep3Point2"), t("onboardingStep3Point3")].map((point, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                      {i + 1}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{point}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-start gap-2 rounded-md bg-emerald-500/10 px-3 py-2 text-xs text-emerald-600 dark:text-emerald-400">
+                <Shield className="mt-0.5 h-3 w-3 shrink-0" />
+                <span>{t("onboardingStep3Safety")}</span>
+              </div>
+            </>
+          )}
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          <Button onClick={handleOnboardingNext}>
+            {onboardingStep >= 3 ? t("onboardingStart") : t("onboardingNext")}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </CardFooter>
+      </Card>
+    );
   };
 
   const renderStepIndicator = () => (
@@ -889,13 +1226,93 @@ function SetupPageContent() {
         {t("title")}
       </h1>
 
-      {state.step <= 4 && renderStepIndicator()}
+      {onboardingStep !== null ? (
+        <div className="mt-6">{renderOnboarding()}</div>
+      ) : (
+        <>
+          {state.step <= 4 && renderStepIndicator()}
 
-      {state.step === 1 && renderStep1()}
-      {state.step === 2 && renderStep2()}
-      {state.step === 3 && renderStep3()}
-      {state.step === 4 && renderStep4()}
-      {state.step === 5 && renderSuccess()}
+          {state.step === 1 && renderStep1()}
+          {state.step === 2 && renderStep2()}
+          {state.step === 3 && renderStep3()}
+          {state.step === 4 && renderStep4()}
+          {state.step === 5 && renderSuccess()}
+          {state.step === 5 && <GitHubStarNudge />}
+        </>
+      )}
+
+      {onboardingStep === null && state.step <= 4 && (
+        <div className="mt-8">
+          <h3 className="mb-4 text-sm font-medium text-muted-foreground">
+            {tFaq("title")}
+          </h3>
+          <Accordion type="single" collapsible defaultValue="what-problem" className="w-full">
+            <AccordionItem value="what-problem">
+              <AccordionTrigger className="text-sm">{tFaq("faq2Question")}</AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                {tFaq("faq2Answer")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="ban">
+              <AccordionTrigger className="text-sm">{tFaq("faq1Question")}</AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                {tFaq("faq1Answer")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="cost">
+              <AccordionTrigger className="text-sm">{tFaq("faq3Question")}</AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                {tFaq("faq3Answer")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="turn-off">
+              <AccordionTrigger className="text-sm">{tFaq("faq4Question")}</AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                {tFaq("faq4Answer")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="verify-safety">
+              <AccordionTrigger className="text-sm">{tFaq("faq5Question")}</AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                {tFaq("faq5Answer1")}
+                <a
+                  href="https://github.com/stevejkang/tokfresh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
+                >
+                  {tFaq("faq5Link")}
+                </a>
+                {tFaq("faq5Answer2")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="who-runs">
+              <AccordionTrigger className="text-sm">{tFaq("faq6Question")}</AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                {tFaq("faq6Answer1")}
+                <a
+                  href="https://github.com/stevejkang"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
+                >
+                  {tFaq("faq6DevLink")}
+                </a>
+                {tFaq("faq6Answer2")}
+                <a
+                  href="https://github.com/stevejkang/tokfresh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
+                >
+                  {tFaq("faq6Link")}
+                </a>
+                {tFaq("faq6Answer3")}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      )}
     </>
   );
 }

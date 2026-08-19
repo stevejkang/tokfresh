@@ -530,6 +530,84 @@ export default async function Home({
                 {t("faq2Answer3")}
               </AccordionContent>
             </AccordionItem>
+            <AccordionItem value="how-it-works">
+              <AccordionTrigger>{t("faq3Question")}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                {t("faq3Answer")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="account-safety">
+              <AccordionTrigger>{t("faq4Question")}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                {t("faq4Answer1")}
+                <a
+                  href="https://github.com/stevejkang/tokfresh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
+                >
+                  {t("faq4Link")}
+                </a>
+                {t("faq4Answer2")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="verify-safety">
+              <AccordionTrigger>{t("faq8Question")}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                {t("faq8Answer1")}
+                <a
+                  href="https://github.com/stevejkang/tokfresh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
+                >
+                  {t("faq8Link")}
+                </a>
+                {t("faq8Answer2")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="tos-ban">
+              <AccordionTrigger>{t("faq5Question")}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                {t("faq5Answer")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="cost">
+              <AccordionTrigger>{t("faq6Question")}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                {t("faq6Answer")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="turn-off">
+              <AccordionTrigger>{t("faq7Question")}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                {t("faq7Answer")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="who-runs">
+              <AccordionTrigger>{t("faq9Question")}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                {t("faq9Answer1")}
+                <a
+                  href="https://github.com/stevejkang"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
+                >
+                  {t("faq9DevLink")}
+                </a>
+                {t("faq9Answer2")}
+                <a
+                  href="https://github.com/stevejkang/tokfresh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
+                >
+                  {t("faq9Link")}
+                </a>
+                {t("faq9Answer3")}
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
         </div>
       </section>

@@ -13,6 +13,7 @@ import { getAllSlugs, getPostBySlug } from "@/lib/posts";
 import { generateArticleJsonLd, generatePostMetadata } from "@/lib/seo";
 import type { PostCategory } from "@/types/post";
 import { CtaSection } from "@/components/cta-section";
+import { PostNudgeSection } from "@/components/post-nudge-section";
 import { mdxComponents } from "./mdx-components";
 
 const categoryTranslationKeys: Record<PostCategory, string> = {
@@ -83,57 +84,60 @@ export default async function PostDetailPage({
   const jsonLd = generateArticleJsonLd(post, locale);
 
   return (
-    <article className="mx-auto max-w-3xl px-4 pb-24 pt-12 sm:px-6">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <nav className="mb-8 text-center text-sm text-muted-foreground">
-        <Link
-          href="/posts"
-          className="transition-colors hover:text-foreground"
-        >
-          {t("backToPosts")}
-        </Link>
-        <span className="mx-2">/</span>
-        <span>{categoryLabel}</span>
-      </nav>
+    <>
+      <PostNudgeSection />
+      <article className="mx-auto max-w-3xl px-4 pb-24 pt-12 sm:px-6">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <nav className="mb-8 text-center text-sm text-muted-foreground">
+          <Link
+            href="/posts"
+            className="transition-colors hover:text-foreground"
+          >
+            {t("backToPosts")}
+          </Link>
+          <span className="mx-2">/</span>
+          <span>{categoryLabel}</span>
+        </nav>
 
-      <h1 className="mb-8 text-center text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-        {post.title}
-      </h1>
+        <h1 className="mb-8 text-center text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          {post.title}
+        </h1>
 
-      {post.heroImage && (
-        <div className="mx-auto mb-8 max-w-2xl overflow-hidden rounded-lg">
-          <Image
-            src={post.heroImage}
-            alt={post.title}
-            width={1200}
-            height={630}
-            className="h-auto w-full"
-            priority
+        {post.heroImage && (
+          <div className="mx-auto mb-8 max-w-2xl overflow-hidden rounded-lg">
+            <Image
+              src={post.heroImage}
+              alt={post.title}
+              width={1200}
+              height={630}
+              className="h-auto w-full"
+              priority
+            />
+          </div>
+        )}
+
+        <p className="mb-12 text-center text-sm text-muted-foreground">
+          {post.author} &middot; {formattedDate}
+        </p>
+
+        <div className="mx-auto max-w-prose">
+          <MDXRemote
+            source={post.content}
+            options={{
+              mdxOptions: {
+                remarkPlugins: [remarkGfm],
+                rehypePlugins: [rehypeSlug, rehypeAutolinkHeadings],
+              },
+            }}
+            components={mdxComponents}
           />
         </div>
-      )}
 
-      <p className="mb-12 text-center text-sm text-muted-foreground">
-        {post.author} &middot; {formattedDate}
-      </p>
-
-      <div className="mx-auto max-w-prose">
-        <MDXRemote
-          source={post.content}
-          options={{
-            mdxOptions: {
-              remarkPlugins: [remarkGfm],
-              rehypePlugins: [rehypeSlug, rehypeAutolinkHeadings],
-            },
-          }}
-          components={mdxComponents}
-        />
-      </div>
-
-      <CtaSection trackingRef={`cta_post_${slug}`} />
-    </article>
+        <CtaSection trackingRef={`cta_post_${slug}`} />
+      </article>
+    </>
   );
 }
