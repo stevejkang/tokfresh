@@ -33,7 +33,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^20.19.43",
     "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
+    "@types/react-dom": "^19.2.7",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.0",
     "shadcn": "^3.8.5",
