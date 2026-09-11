@@ -110,7 +110,7 @@ importers:
   .:
     dependencies:
       '@upstash/redis':
-        specifier: ^1.38.3
+        specifier: ^1.38.4
         version: 1.38.4
       '@vercel/analytics':
         specifier: ^1.6.1
