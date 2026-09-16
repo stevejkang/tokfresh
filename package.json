@@ -26,7 +26,7 @@
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
-    "resend": "^6.26.0",
+    "resend": "^6.27.0",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
