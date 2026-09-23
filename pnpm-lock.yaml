@@ -161,7 +161,7 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1(supports-color@7.2.0)
       resend:
-        specifier: ^6.28.0
+        specifier: ^6.28.1
         version: 6.28.1
       tailwind-merge:
         specifier: ^3.6.0
