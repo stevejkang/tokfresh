@@ -21,14 +21,25 @@ export async function SiteFooter() {
           </a>
           {" "}&copy; {new Date().getFullYear()}
         </span>
-        <a
-          href="https://github.com/stevejkang/tokfresh"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <Github className="h-5 w-5" />
-        </a>
+        <div className="flex items-center gap-4">
+          <a
+            href="https://github.com/stevejkang/tokfresh/issues/new/choose"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-muted-foreground underline transition-colors hover:text-foreground"
+          >
+            {t("footerReportIssue")}
+          </a>
+          <a
+            href="https://github.com/stevejkang/tokfresh"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Github className="h-5 w-5" />
+          </a>
+        </div>
       </div>
     </footer>
   );

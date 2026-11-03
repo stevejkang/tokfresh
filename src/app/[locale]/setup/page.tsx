@@ -1310,6 +1310,21 @@ function SetupPageContent() {
                 {tFaq("faq6Answer3")}
               </AccordionContent>
             </AccordionItem>
+            <AccordionItem value="report-issue">
+              <AccordionTrigger className="text-sm">{tFaq("faq7Question")}</AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                {tFaq("faq7Answer1")}
+                <a
+                  href="https://github.com/stevejkang/tokfresh/issues/new/choose"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
+                >
+                  {tFaq("faq7Link")}
+                </a>
+                {tFaq("faq7Answer2")}
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
         </div>
       )}

@@ -109,7 +109,12 @@
     "faq9Link": "open source",
     "faq9Answer3": ".",
     "footerMadeWith": "TokFresh made with",
-    "footerBy": "by"
+    "footerBy": "by",
+    "faq10Question": "How do I report a bug or issue?",
+    "faq10Answer1": "We only accept reports via ",
+    "faq10Link": "GitHub Issues",
+    "faq10Answer2": ". Please include your browser, the setup step where it happened, and any error message you saw.",
+    "footerReportIssue": "Report an issue"
   },
   "Setup": {
     "title": "Set Up TokFresh",
@@ -222,7 +227,11 @@
     "faq6DevLink": "independent developer",
     "faq6Answer2": " in South Korea 🇰🇷 builds and runs it — fully ",
     "faq6Link": "open source",
-    "faq6Answer3": "."
+    "faq6Answer3": ".",
+    "faq7Question": "How do I report a bug or issue?",
+    "faq7Answer1": "We only accept reports via ",
+    "faq7Link": "GitHub Issues",
+    "faq7Answer2": ". Please include your browser, the setup step where it happened, and any error message you saw."
   },
   "PostNudge": {
     "title": "Automate your Claude usage reset",

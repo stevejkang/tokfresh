@@ -110,7 +110,12 @@
     "faq9Link": "오픈소스",
     "faq9Answer3": "로 공개하고 직접 운영하고 있어요.",
     "footerMadeWith": "TokFresh made with",
-    "footerBy": "by"
+    "footerBy": "by",
+    "faq10Question": "버그나 문제는 어떻게 제보하나요?",
+    "faq10Answer1": "제보는 ",
+    "faq10Link": "GitHub Issues",
+    "faq10Answer2": "로만 받고 있어요. 사용한 브라우저, 문제가 생긴 셋업 단계, 표시된 에러 메시지를 함께 적어주시면 빠르게 확인할 수 있어요.",
+    "footerReportIssue": "문제 제보"
   },
   "Setup": {
     "title": "TokFresh 설정",
@@ -223,7 +228,11 @@
     "faq6DevLink": "개인 개발자",
     "faq6Answer2": "가 ",
     "faq6Link": "오픈소스",
-    "faq6Answer3": "로 공개하고 직접 운영하고 있어요."
+    "faq6Answer3": "로 공개하고 직접 운영하고 있어요.",
+    "faq7Question": "버그나 문제는 어떻게 제보하나요?",
+    "faq7Answer1": "제보는 ",
+    "faq7Link": "GitHub Issues",
+    "faq7Answer2": "로만 받고 있어요. 사용한 브라우저, 문제가 생긴 셋업 단계, 표시된 에러 메시지를 함께 적어주시면 빠르게 확인할 수 있어요."
   },
   "PostNudge": {
     "title": "Claude 사용량 초기화를 자동으로",

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: CLI issues
+    url: https://github.com/stevejkang/tokfresh-cli/issues
+    about: Problems with the tokfresh CLI belong in the tokfresh-cli repository.
