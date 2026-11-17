@@ -1,27 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { X, AlertTriangle, ArrowRight } from "lucide-react";
 
 const DISMISS_KEY = "tokfresh_banner_may15_dismissed";
 
+const subscribe = () => () => {};
+const getDismissedSnapshot = () => localStorage.getItem(DISMISS_KEY) !== null;
+const getServerDismissedSnapshot = () => true;
+
 export function AnnouncementBanner() {
   const t = useTranslations("Banner");
-  const [visible, setVisible] = useState(false);
+  const storedDismissed = useSyncExternalStore(subscribe, getDismissedSnapshot, getServerDismissedSnapshot);
+  const [dismissed, setDismissed] = useState(false);
 
-  useEffect(() => {
-    if (!localStorage.getItem(DISMISS_KEY)) {
-      setVisible(true);
-    }
-  }, []);
-
-  if (!visible) return null;
+  if (storedDismissed || dismissed) return null;
 
   const dismiss = () => {
     localStorage.setItem(DISMISS_KEY, "1");
-    setVisible(false);
+    setDismissed(true);
   };
 
   return (

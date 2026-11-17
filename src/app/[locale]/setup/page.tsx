@@ -94,9 +94,11 @@ function SetupPageContent() {
   const referrer = searchParams.get("ref") || "direct";
   const isFromPost = referrer.startsWith("post_") || referrer.startsWith("cta_post_");
 
-  const [state, setState] = useState<SetupState>(INITIAL_SETUP_STATE);
-  const [onboardingStep, setOnboardingStep] = useState<number | null>(null);
-  const [onboardingInitialized, setOnboardingInitialized] = useState(false);
+  const [state, setState] = useState<SetupState>(() => ({
+    ...INITIAL_SETUP_STATE,
+    timezone: detectTimezone(),
+  }));
+  const [onboardingStep, setOnboardingStep] = useState<number | null>(() => (isFromPost ? 1 : null));
   const [authCode, setAuthCode] = useState("");
   const [isExchanging, setIsExchanging] = useState(false);
   const [exchangeError, setExchangeError] = useState<string | null>(null);
@@ -115,17 +117,13 @@ function SetupPageContent() {
   }, [referrer]);
 
   useEffect(() => {
-    if (!onboardingInitialized) {
-      setOnboardingInitialized(true);
-      if (isFromPost) {
-        setOnboardingStep(1);
-        trackSetupEvent("setup_onboarding_started", { referrer });
-      }
+    if (isFromPost && !trackedActions.current.has("onboarding_started")) {
+      trackedActions.current.add("onboarding_started");
+      trackSetupEvent("setup_onboarding_started", { referrer });
     }
-  }, [isFromPost, onboardingInitialized, trackSetupEvent, referrer]);
+  }, [isFromPost, trackSetupEvent, referrer]);
 
   useEffect(() => {
-    setState((prev) => ({ ...prev, timezone: detectTimezone() }));
     trackSetupEvent("setup_started");
   }, [trackSetupEvent]);
 
