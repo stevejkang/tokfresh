@@ -2,10 +2,11 @@
 export const DEFAULT_LOGIN_LIFETIME_DAYS = 28;
 export const REMINDER_LEAD_DAYS = 3;
 
-const SETUP_URL =
-  "https://tokfresh.com/setup?utm_source=resend&amp;utm_medium=email&amp;utm_campaign=reauth-reminder";
-const SETUP_URL_TEXT =
-  "https://tokfresh.com/setup?utm_source=resend&utm_medium=email&utm_campaign=reauth-reminder";
+export type ReminderLocale = "en" | "ko";
+
+function setupUrl(locale: ReminderLocale): string {
+  return `https://tokfresh.com/${locale}/setup?utm_source=resend&utm_medium=email&utm_campaign=reauth-reminder`;
+}
 const GITHUB_URL = "https://github.com/stevejkang/tokfresh";
 
 const RESET_TABLE_STYLE =
@@ -13,7 +14,6 @@ const RESET_TABLE_STYLE =
 const P_GREETING = "margin:0 0 20px 0;padding:0;font-size:15px;line-height:1.6;color:#27272a";
 const P_HEADING = "margin:0 0 8px 0;padding:0;font-size:15px;line-height:1.6;color:#27272a;font-weight:600";
 const P_BODY = "margin:0 0 24px 0;padding:0;font-size:14px;line-height:1.6;color:#52525b";
-const P_MUTED = "margin:0 0 20px 0;padding:0;font-size:14px;line-height:1.6;color:#71717a";
 
 function escapeHtml(value: string): string {
   return value
@@ -43,7 +43,7 @@ function link(href: string, label: string): string {
 >`;
 }
 
-function button(label: string): string {
+function button(href: string, label: string): string {
   return `<table
   border="0"
   cellpadding="0"
@@ -60,7 +60,7 @@ function button(label: string): string {
       >
         <p style="margin:0;padding:0">
           <a
-            href="${SETUP_URL}"
+            href="${href}"
             rel="noopener noreferrer nofollow"
             style="color:#ffffff;text-decoration-line:none;text-decoration:none;display:inline-block;padding:10px 24px;font-size:14px;font-weight:600"
             target="_blank"
@@ -73,38 +73,59 @@ function button(label: string): string {
 </table>`;
 }
 
-const DIVIDER = `<table
-  width="100%"
-  border="0"
-  cellpadding="0"
-  cellspacing="0"
-  role="presentation"
-  style="margin-top:0;margin-right:0;margin-bottom:24px;margin-left:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0"
->
-  <tbody>
-    <tr style="margin:0;padding:0">
-      <td data-id="__react-email-column" style="margin:0;padding:0;border-top:1px solid #e4e4e7">
-        <p style="margin:0;padding:0"><br /></p>
-      </td>
-    </tr>
-  </tbody>
-</table>`;
+// HTML-bearing fields expect already-escaped `account`/`date` values.
+const COPY = {
+  ko: {
+    dateLocale: "ko-KR",
+    subject: "[TokFresh] Claude 재연결이 필요합니다",
+    preheader: "Claude 로그인이 곧 만료됩니다. 셋업을 한 번 다시 실행해 주세요.",
+    greeting: "안녕하세요,",
+    expiry: (account: string, date: string) =>
+      `<code>${account}</code> 계정의 Claude 로그인이 <strong>${date}</strong>에 만료됩니다. 만료되면 토큰을 더 이상 갱신할 수 없어 TokFresh 워커가 멈춥니다.`,
+    heading: "해 주셔야 할 것",
+    action:
+      "TokFresh 셋업을 한 번 다시 실행해 Claude를 재연결해 주세요. 같은 Claude 계정으로 배포하면 기존 워커가 그대로 교체됩니다. TokFresh는 로그인 정보를 보관하지 않기 때문에 대신 연장해 드릴 수 없습니다.",
+    button: "셋업 다시 실행하기",
+    share: `TokFresh가 도움이 되셨다면 주변 동료나 지인분들에게도 소개해 주세요. 모든 코드는 ${link(GITHUB_URL, "GitHub에 공개")}되어 있습니다. 시간 되실 때 ★ 한 번 눌러주시면 큰 힘이 됩니다.`,
+    footer: "셋업 중 재로그인 알림을 신청하셔서 1회 발송되는 메일입니다.",
+    textExpiry: (account: string, date: string) => `${account} 계정의 Claude 로그인이 ${date}에 만료됩니다.`,
+    textAction: (url: string) => `TokFresh 셋업을 한 번 다시 실행해 Claude를 재연결해 주세요: ${url}`,
+  },
+  en: {
+    dateLocale: "en-US",
+    subject: "[TokFresh] Reconnect Claude to keep TokFresh running",
+    preheader: "Your Claude login for TokFresh expires soon.",
+    greeting: "Hi there,",
+    expiry: (account: string, date: string) =>
+      `The Claude login for <code>${account}</code> expires on <strong>${date}</strong>. After that, the token can no longer be refreshed and your TokFresh worker will stop.`,
+    heading: "What you need to do",
+    action:
+      "Re-run the TokFresh setup once to reconnect Claude. Deploying with the same Claude account replaces your existing worker. TokFresh never stores your login, so we can&#x27;t extend it for you.",
+    button: "Re-run Setup",
+    share: `If you find TokFresh useful, share it with your colleagues. All code is ${link(GITHUB_URL, "open source")} — a star on the repo would mean a lot.`,
+    footer: "You&#x27;re receiving this one-time email because you requested a re-login reminder during setup.",
+    textExpiry: (account: string, date: string) => `The Claude login for ${account} expires on ${date}.`,
+    textAction: (url: string) => `Re-run the TokFresh setup once to reconnect Claude: ${url}`,
+  },
+} as const;
 
 export function buildReminderEmail(params: {
   claudeEmail: string;
   expiresAt: Date;
   timeZone: string;
+  locale: ReminderLocale;
 }): { subject: string; html: string; text: string } {
+  const c = COPY[params.locale];
   const account = escapeHtml(params.claudeEmail);
-  const koDateRaw = formatDate(params.expiresAt, "ko-KR", params.timeZone);
-  const enDateRaw = formatDate(params.expiresAt, "en-US", params.timeZone);
-  const koDate = escapeHtml(koDateRaw);
-  const enDate = escapeHtml(enDateRaw);
+  const dateRaw = formatDate(params.expiresAt, c.dateLocale, params.timeZone);
+  const date = escapeHtml(dateRaw);
+  const urlText = setupUrl(params.locale);
+  const urlHtml = escapeHtml(urlText);
 
-  const subject = "[TokFresh] Claude 재연결이 필요합니다 — Reconnect Claude to keep TokFresh running";
+  const subject = c.subject;
 
   const html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html dir="ltr" lang="en">
+<html dir="ltr" lang="${params.locale}">
   <head>
     <meta content="width=device-width" name="viewport" />
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
@@ -133,8 +154,7 @@ export function buildReminderEmail(params: {
                       <span style="color:transparent"
                         ><span
                           style="color:transparent;display:none;height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;visibility:hidden;width:0"
-                          >Claude 로그인이 곧 만료됩니다. 셋업을 한 번 다시 실행해 주세요. — Your Claude login for
-                          TokFresh expires soon.</span
+                          >${c.preheader}</span
                         ></span
                       >
                     </p>
@@ -183,47 +203,12 @@ export function buildReminderEmail(params: {
                                 </tr>
                                 <tr style="margin:0;padding:0">
                                   <td data-id="__react-email-column" style="margin:0;padding:24px 32px">
-                                    <p
-                                      style="margin:0 0 24px 0;padding:0;font-size:13px;line-height:1.5;color:#a1a1aa;font-style:italic"
-                                    >
-                                      <em>🇰🇷 한국어 안내가 먼저 나옵니다. English follows below.</em>
-                                    </p>
-                                    <p style="${P_GREETING}">안녕하세요,</p>
-                                    <p style="${P_GREETING}">
-                                      <code>${account}</code> 계정의 Claude 로그인이 <strong>${koDate}</strong>에
-                                      만료됩니다. 만료되면 토큰을 더 이상 갱신할 수 없어 TokFresh 워커가 멈춥니다.
-                                    </p>
-                                    <p style="${P_HEADING}">해 주셔야 할 것</p>
-                                    <p style="${P_BODY}">
-                                      TokFresh 셋업을 한 번 다시 실행해 Claude를 재연결해 주세요. 같은 Claude 계정으로
-                                      배포하면 기존 워커가 그대로 교체됩니다. TokFresh는 로그인 정보를 보관하지 않기
-                                      때문에 대신 연장해 드릴 수 없습니다.
-                                    </p>
-                                    ${button("셋업 다시 실행하기")}
-                                    <p style="${P_MUTED}">
-                                      TokFresh가 도움이 되셨다면 주변 동료나 지인분들에게도 소개해 주세요. 모든 코드는
-                                      ${link(GITHUB_URL, "GitHub에 공개")}되어 있습니다. 시간 되실 때 ★ 한 번 눌러주시면
-                                      큰 힘이 됩니다.
-                                    </p>
-                                    ${DIVIDER}
-                                    <p style="${P_GREETING}">Hi there,</p>
-                                    <p style="${P_GREETING}">
-                                      The Claude login for <code>${account}</code> expires on
-                                      <strong>${enDate}</strong>. After that, the token can no longer be refreshed and
-                                      your TokFresh worker will stop.
-                                    </p>
-                                    <p style="${P_HEADING}">What you need to do</p>
-                                    <p style="${P_BODY}">
-                                      Re-run the TokFresh setup once to reconnect Claude. Deploying with the same Claude
-                                      account replaces your existing worker. TokFresh never stores your login, so we
-                                      can&#x27;t extend it for you.
-                                    </p>
-                                    ${button("Re-run Setup")}
-                                    <p style="margin:0;padding:0;font-size:14px;line-height:1.6;color:#71717a">
-                                      If you find TokFresh useful, share it with your colleagues. All code is
-                                      ${link(GITHUB_URL, "open source")}
-                                      — a star on the repo would mean a lot.
-                                    </p>
+                                    <p style="${P_GREETING}">${c.greeting}</p>
+                                    <p style="${P_GREETING}">${c.expiry(account, date)}</p>
+                                    <p style="${P_HEADING}">${c.heading}</p>
+                                    <p style="${P_BODY}">${c.action}</p>
+                                    ${button(urlHtml, c.button)}
+                                    <p style="margin:0;padding:0;font-size:14px;line-height:1.6;color:#71717a">${c.share}</p>
                                   </td>
                                 </tr>
                                 <tr style="margin:0;padding:0">
@@ -242,11 +227,7 @@ export function buildReminderEmail(params: {
                                             data-id="__react-email-column"
                                             style="margin:0;padding:0;padding-top:20px;font-size:12px;line-height:1.5;color:#a1a1aa"
                                           >
-                                            <p style="margin:0;padding:0">
-                                              셋업 중 재로그인 알림을 신청하셔서 1회 발송되는 메일입니다.
-                                              <br />You&#x27;re receiving this one-time email because you requested a
-                                              re-login reminder during setup.
-                                            </p>
+                                            <p style="margin:0;padding:0">${c.footer}</p>
                                           </td>
                                         </tr>
                                       </tbody>
@@ -272,17 +253,10 @@ export function buildReminderEmail(params: {
 </html>`;
 
   const text = [
-    "안녕하세요,",
+    c.greeting,
     "",
-    `${params.claudeEmail} 계정의 Claude 로그인이 ${koDateRaw}에 만료됩니다.`,
-    `TokFresh 셋업을 한 번 다시 실행해 Claude를 재연결해 주세요: ${SETUP_URL_TEXT}`,
-    "",
-    "---",
-    "",
-    "Hi there,",
-    "",
-    `The Claude login for ${params.claudeEmail} expires on ${enDateRaw}.`,
-    `Re-run the TokFresh setup once to reconnect Claude: ${SETUP_URL_TEXT}`,
+    c.textExpiry(params.claudeEmail, dateRaw),
+    c.textAction(urlText),
   ].join("\n");
 
   return { subject, html, text };

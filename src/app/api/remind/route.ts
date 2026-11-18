@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json().catch(() => null);
-  const { email, claudeEmail, expiresAt, timeZone } = body ?? {};
+  const { email, claudeEmail, expiresAt, timeZone, locale } = body ?? {};
 
   if (!isValidEmail(email) || !isValidEmail(claudeEmail)) {
     return NextResponse.json({ success: false, error: "Invalid email" }, { status: 400 });
@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
     claudeEmail,
     expiresAt: new Date(expiresAt),
     timeZone: typeof timeZone === "string" && timeZone ? timeZone : "UTC",
+    locale: locale === "ko" ? "ko" : "en",
   });
 
   const resend = new Resend(apiKey);

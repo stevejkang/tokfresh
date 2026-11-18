@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -89,6 +89,7 @@ function categorizeError(error: string): string {
 
 function SetupPageContent() {
   const t = useTranslations("Setup");
+  const locale = useLocale();
   const tFaq = useTranslations("SetupFaq");
   const tLanding = useTranslations("Landing");
   const stepTitles = [t("stepConnect"), t("stepSchedule"), t("stepNotifications"), t("stepDeploy")];
@@ -224,6 +225,7 @@ function SetupPageContent() {
           claudeEmail: state.claudeEmail,
           expiresAt: state.claudeLoginExpiresAt,
           timeZone: state.timezone,
+          locale,
         }),
       });
       const data = await res.json();
