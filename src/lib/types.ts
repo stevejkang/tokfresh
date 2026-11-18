@@ -2,6 +2,7 @@ export interface SetupState {
   step: number;
   claudeRefreshToken: string | null;
   claudeAccessToken: string | null;
+  claudeEmail: string | null;
   startTime: string;
   timezone: string;
   notificationType: "none" | "slack" | "discord";
@@ -14,12 +15,14 @@ export interface SetupState {
   deploymentStatus: "idle" | "deploying" | "success" | "error";
   deploymentError: string | null;
   deploymentErrorCode: number | null;
+  workerName: string | null;
 }
 
 export const INITIAL_SETUP_STATE: SetupState = {
   step: 1,
   claudeRefreshToken: null,
   claudeAccessToken: null,
+  claudeEmail: null,
   startTime: "06:00",
   timezone: "Asia/Seoul",
   notificationType: "none",
@@ -32,4 +35,5 @@ export const INITIAL_SETUP_STATE: SetupState = {
   deploymentStatus: "idle",
   deploymentError: null,
   deploymentErrorCode: null,
+  workerName: null,
 };

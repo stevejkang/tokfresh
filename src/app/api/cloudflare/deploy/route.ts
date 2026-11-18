@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getWorkerName } from "@/lib/worker-name";
 
 const CF_API_BASE = "https://api.cloudflare.com/client/v4";
-const WORKER_NAME = "tokfresh-scheduler";
-const KV_NAMESPACE_TITLE = "tokfresh-tokens";
 
 function parseCfErrorCode(body: string): number | undefined {
   try {
@@ -15,6 +14,7 @@ function parseCfErrorCode(body: string): number | undefined {
 
 async function findOrCreateKVNamespace(
   accountId: string,
+  title: string,
   headers: Record<string, string>,
 ): Promise<{ id: string | null; error?: string }> {
   const listRes = await fetch(
@@ -25,7 +25,7 @@ async function findOrCreateKVNamespace(
   if (listRes.ok) {
     const listData = await listRes.json();
     const existing = listData.result?.find(
-      (ns: { title: string }) => ns.title === KV_NAMESPACE_TITLE,
+      (ns: { title: string }) => ns.title === title,
     );
     if (existing) {
       return { id: existing.id };
@@ -37,7 +37,7 @@ async function findOrCreateKVNamespace(
     {
       method: "POST",
       headers: { ...headers, "Content-Type": "application/json" },
-      body: JSON.stringify({ title: KV_NAMESPACE_TITLE }),
+      body: JSON.stringify({ title }),
     },
   );
 
@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
     accountId,
     workerCode,
     refreshToken,
+    claudeEmail,
     schedule,
     timezone,
     notificationConfig,
@@ -64,17 +65,25 @@ export async function POST(request: NextRequest) {
     enableTraces,
   } = body;
 
-  if (!apiToken || !accountId || !workerCode || !refreshToken || !schedule) {
+  if (
+    !apiToken ||
+    !accountId ||
+    !workerCode ||
+    !refreshToken ||
+    !claudeEmail ||
+    !schedule
+  ) {
     return NextResponse.json(
       { success: false, error: "Missing required fields" },
       { status: 400 },
     );
   }
 
+  const workerName = await getWorkerName(claudeEmail);
   const headers = { Authorization: `Bearer ${apiToken}` };
-  const workerUrl = `${CF_API_BASE}/accounts/${accountId}/workers/scripts/${WORKER_NAME}`;
+  const workerUrl = `${CF_API_BASE}/accounts/${accountId}/workers/scripts/${workerName}`;
 
-  const kvResult = await findOrCreateKVNamespace(accountId, headers);
+  const kvResult = await findOrCreateKVNamespace(accountId, workerName, headers);
   if (!kvResult.id) {
     return NextResponse.json({
       success: false,
@@ -147,6 +156,23 @@ export async function POST(request: NextRequest) {
     });
   }
 
+  // The worker has no fetch handler, and its name contains the account email,
+  // so keep it off the public workers.dev hostname.
+  const subdomainRes = await fetch(`${workerUrl}/subdomain`, {
+    method: "POST",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify({ enabled: false, previews_enabled: false }),
+  });
+
+  if (!subdomainRes.ok) {
+    const text = await subdomainRes.text();
+    return NextResponse.json({
+      success: false,
+      error: `workers.dev disable failed (${subdomainRes.status}): ${text}`,
+      errorCode: parseCfErrorCode(text),
+    });
+  }
+
   const cronRes = await fetch(`${workerUrl}/schedules`, {
     method: "PUT",
     headers: { ...headers, "Content-Type": "application/json" },
@@ -187,5 +213,5 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, workerName });
 }

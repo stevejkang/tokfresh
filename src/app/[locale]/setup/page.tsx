@@ -171,11 +171,15 @@ function SetupPageContent() {
 
     const result = await exchangeCode(authCode, verifier);
 
-    if (result.success) {
+    if (result.success && !result.email) {
+      setExchangeError(t("step1NoEmail"));
+      trackSetupEvent("setup_oauth_exchange_error", { error_type: "missing_email" });
+    } else if (result.success) {
       sessionStorage.removeItem("tokfresh_verifier");
       update({
         claudeRefreshToken: result.refreshToken ?? null,
         claudeAccessToken: result.accessToken ?? null,
+        claudeEmail: result.email ?? null,
         step: 2,
       });
       trackSetupEvent("setup_oauth_exchange_success");
@@ -204,7 +208,7 @@ function SetupPageContent() {
   };
 
   const handleDeploy = async () => {
-    if (!state.cloudflareApiToken || !state.claudeRefreshToken) return;
+    if (!state.cloudflareApiToken || !state.claudeRefreshToken || !state.claudeEmail) return;
 
     deployAttemptRef.current += 1;
     const attempt = deployAttemptRef.current;
@@ -252,6 +256,7 @@ function SetupPageContent() {
       accountId,
       workerCode,
       refreshToken: state.claudeRefreshToken,
+      claudeEmail: state.claudeEmail,
       schedule: cronExpression,
       timezone: state.timezone,
       notificationConfig,
@@ -261,7 +266,7 @@ function SetupPageContent() {
     });
 
     if (result.success) {
-      update({ deploymentStatus: "success", step: 5 });
+      update({ deploymentStatus: "success", workerName: result.workerName ?? null, step: 5 });
       trackSetupEvent("setup_deploy_success", { attempt });
     } else {
       const error = result.error ?? "Deployment failed";
@@ -727,6 +732,12 @@ function SetupPageContent() {
         <CardDescription>
           {t("step2Description")}
         </CardDescription>
+        {state.claudeEmail && (
+          <p className="text-sm text-muted-foreground">
+            {t("step2ConnectedAs")}{" "}
+            <span className="font-mono text-foreground">{state.claudeEmail}</span>
+          </p>
+        )}
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -1095,9 +1106,14 @@ function SetupPageContent() {
           <div className="rounded-lg border border-border bg-muted/50 p-4">
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
+                <span className="text-muted-foreground">{t("successAccount")}</span>
+                <span className="font-mono font-medium">{state.claudeEmail}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between gap-4">
                 <span className="text-muted-foreground">{t("successWorker")}</span>
-                <span className="font-mono font-medium">
-                  tokfresh-scheduler
+                <span className="break-all text-right font-mono font-medium">
+                  {state.workerName}
                 </span>
               </div>
               <Separator />
@@ -1200,7 +1216,7 @@ function SetupPageContent() {
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
           <a
-            href="https://dash.cloudflare.com/?to=/:account/workers/services/view/tokfresh-scheduler/production"
+            href={`https://dash.cloudflare.com/?to=/:account/workers/services/view/${state.workerName}/production`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full"
@@ -1267,6 +1283,12 @@ function SetupPageContent() {
               <AccordionTrigger className="text-sm">{tFaq("faq4Question")}</AccordionTrigger>
               <AccordionContent className="text-sm text-muted-foreground">
                 {tFaq("faq4Answer")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="multi-account">
+              <AccordionTrigger className="text-sm">{tFaq("faqMultiAccountQuestion")}</AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                {tFaq("faqMultiAccountAnswer")}
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="verify-safety">

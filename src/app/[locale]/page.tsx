@@ -537,7 +537,7 @@ export default async function Home({
               <AccordionContent className="text-muted-foreground">
                 {t("faq1Answer")}
                 <a
-                  href="https://dash.cloudflare.com/?to=/:account/workers/services/view/tokfresh-scheduler/production/settings"
+                  href="https://dash.cloudflare.com/?to=/:account/workers-and-pages"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
@@ -552,7 +552,7 @@ export default async function Home({
               <AccordionContent className="text-muted-foreground">
                 {t("faq2Answer1")}
                 <a
-                  href="https://dash.cloudflare.com/?to=/:account/workers/services/view/tokfresh-scheduler/production/settings"
+                  href="https://dash.cloudflare.com/?to=/:account/workers-and-pages"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium underline underline-offset-4 transition-colors hover:text-foreground"
@@ -564,6 +564,12 @@ export default async function Home({
                   {t("faq2Code")}
                 </code>
                 {t("faq2Answer3")}
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="multi-account">
+              <AccordionTrigger>{t("faqMultiAccountQuestion")}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                {t("faqMultiAccountAnswer")}
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="how-it-works">

@@ -22,13 +22,19 @@ export async function deployWorker(params: {
   accountId: string;
   workerCode: string;
   refreshToken: string;
+  claudeEmail: string;
   schedule: string;
   timezone: string;
   notificationConfig?: string;
   enableLogs?: boolean;
   enableTraces?: boolean;
   onProgress?: (step: string) => void;
-}): Promise<{ success: boolean; error?: string; errorCode?: number }> {
+}): Promise<{
+  success: boolean;
+  workerName?: string;
+  error?: string;
+  errorCode?: number;
+}> {
   const { onProgress, ...payload } = params;
 
   try {

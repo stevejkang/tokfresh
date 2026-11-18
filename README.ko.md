@@ -22,10 +22,13 @@ Cloudflare Worker가 **당신의** 계정에서 cron으로 24시간 실행됩니
 ## FAQ
 
 **스케줄은 어떻게 변경하나요?**
-셋업을 다시 실행하세요. 같은 워커에 배포되므로 새 배포가 기존 스케줄을 대체합니다. 또는 [Cloudflare Worker 설정](https://dash.cloudflare.com/?to=/:account/workers/services/view/tokfresh-scheduler/production/settings)의 Trigger Events 섹션에서 cron 표현식(UTC)을 직접 수정할 수 있습니다.
+같은 Claude 계정으로 셋업을 다시 실행하세요. Claude 계정마다 워커가 따로 만들어지므로, 새 배포가 해당 계정의 기존 스케줄을 대체합니다. 또는 [Cloudflare Workers 대시보드](https://dash.cloudflare.com/?to=/:account/workers-and-pages)에서 해당 워커의 Trigger Events 섹션에서 cron 표현식(UTC)을 직접 수정할 수 있습니다.
 
 **스케줄러를 삭제하려면 어떻게 하나요?**
-[Cloudflare Worker 설정](https://dash.cloudflare.com/?to=/:account/workers/services/view/tokfresh-scheduler/production/settings)에서 `tokfresh-scheduler` 워커를 삭제하면 됩니다.
+[Cloudflare Workers 대시보드](https://dash.cloudflare.com/?to=/:account/workers-and-pages)에서 해당 Claude 계정의 `tokfresh-<이메일>-xxxxxx` 워커를 삭제하면 됩니다.
+
+**Cloudflare 계정 하나로 Claude 계정 여러 개를 쓸 수 있나요?**  
+네. Claude 계정마다 셋업을 한 번씩 실행하세요. 계정마다 이메일 기반 이름의 워커와 KV 네임스페이스가 따로 만들어집니다.
 
 ## 개인정보
 

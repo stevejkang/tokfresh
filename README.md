@@ -22,10 +22,13 @@ A Cloudflare Worker runs on **your** account, on cron, 24/7. Your computer can b
 ## FAQ
 
 **How do I change my schedule?**  
-Run the setup again. It deploys to the same worker, so a new deployment replaces the existing one with your updated schedule. Alternatively, you can edit the cron expression(UTC) directly in the Trigger Events section of your [Cloudflare Worker settings](https://dash.cloudflare.com/?to=/:account/workers/services/view/tokfresh-scheduler/production/settings).
+Run the setup again with the same Claude account. Each Claude account gets its own worker, so a new deployment replaces that account's existing one with your updated schedule. Alternatively, you can edit the cron expression(UTC) directly in the Trigger Events section of the worker in your [Cloudflare Workers dashboard](https://dash.cloudflare.com/?to=/:account/workers-and-pages).
 
 **How do I remove scheduler?**  
-Go to your [Cloudflare Worker settings](https://dash.cloudflare.com/?to=/:account/workers/services/view/tokfresh-scheduler/production/settings) and delete the `tokfresh-scheduler` worker.
+Go to your [Cloudflare Workers dashboard](https://dash.cloudflare.com/?to=/:account/workers-and-pages) and delete the `tokfresh-<your-email>-xxxxxx` worker for that Claude account.
+
+**Can I use multiple Claude accounts with one Cloudflare account?**  
+Yes. Run the setup once per Claude account. Each account gets its own worker and KV namespace, named after its email.
 
 ## Privacy
 
