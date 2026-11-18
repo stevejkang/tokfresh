@@ -45,5 +45,6 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     refresh_token: json.refresh_token,
     access_token: json.access_token,
+    email: json.account?.email_address ?? null,
   });
 }

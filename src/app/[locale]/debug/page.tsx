@@ -127,6 +127,7 @@ export default function TestPage() {
   const [exchangeError, setExchangeError] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState("");
   const [refreshToken, setRefreshToken] = useState("");
+  const [email, setEmail] = useState<string | null>(null);
 
   const [isTriggering, setIsTriggering] = useState(false);
   const [triggerResult, setTriggerResult] = useState<TriggerResult | null>(
@@ -164,6 +165,7 @@ export default function TestPage() {
       sessionStorage.removeItem("tokfresh_test_verifier");
       setAccessToken(result.accessToken ?? "");
       setRefreshToken(result.refreshToken ?? "");
+      setEmail(result.email ?? null);
     } else {
       setExchangeError(result.error ?? "Exchange failed");
     }
@@ -277,6 +279,12 @@ export default function TestPage() {
                 <CheckCircle2 className="h-4 w-4" />
                 Tokens obtained
               </div>
+              <p className="text-sm text-muted-foreground">
+                Account:{" "}
+                <span className="font-mono text-foreground">
+                  {email ?? "(email not returned)"}
+                </span>
+              </p>
               <div className="space-y-1.5">
                 <TokenDisplay
                   label="Access Token"
