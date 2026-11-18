@@ -1,0 +1,35 @@
+---
+title: "November 2026 Product Updates: Multiple Accounts and Re-login Reminders"
+description: "Run TokFresh for several Claude accounts on one Cloudflare account, get an email before your Claude login expires, and a newer model under the hood."
+category: "product-updates"
+author: "Steve Kang"
+publishedAt: "2026-11-18"
+---
+
+Here's what's new in TokFresh this month.
+
+## Multiple Claude accounts, one Cloudflare account
+
+Each Claude account now gets its own worker, named after its email. If you use more than one Claude account, just run the setup once per account. They all live side by side on the same Cloudflare account and run independently.
+
+Re-running the setup with the same Claude account updates that account's worker instead of creating a new one, so changing your schedule works exactly as before.
+
+## See which account you connected
+
+After you connect Claude, the setup page shows the account email you signed in with. No more guessing which account a worker belongs to.
+
+## Re-login reminders
+
+Claude logins expire after about 28 days. Once that happens, the token can't be refreshed anymore and you need to run the setup again. Since TokFresh never stores your login, we can't extend it for you.
+
+So the setup now asks where to send a reminder. We'll email you once, a few days before your login expires, with a link back to the setup. Your Claude account email is filled in by default; you can use a different address or opt out entirely.
+
+## Newer model
+
+Workers now ping Claude with Claude Haiku 5.5 instead of Haiku 4.5. Haiku 5.5's API list price is one-tenth of Haiku 4.5's: $0.10 vs $1.00 per million input tokens, and $0.50 vs $5.00 per million output tokens. TokFresh's ping was already tiny, and now it costs even less of your plan's usage.
+
+Workers deployed from the setup page since May 15, 2026 don't have the model baked in (it's applied dynamically). They ask TokFresh which model to use on every run, so they switched to Haiku 5.5 on their own. There's nothing to do. If you set up TokFresh before then, re-run the setup once to move to the current worker.
+
+## Try it
+
+Head to [the setup page](/setup) to connect another account or turn on re-login reminders for an existing one.
