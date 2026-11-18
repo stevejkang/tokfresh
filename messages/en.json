@@ -1,4 +1,10 @@
 {
+  "Banner": {
+    "title": "November 2026 updates:",
+    "description": "Multiple Claude accounts per Cloudflare account and re-login reminders.",
+    "learnMore": "See what's new",
+    "dismiss": "Dismiss"
+  },
   "Metadata": {
     "title": "TokFresh - Claude Token Reset Automation",
     "description": "Automate your Claude Pro/Max token reset timing with Cloudflare Workers. Schedule 5-hour cycles to align with your workday. Free, secure, 24/7 automatic."

@@ -6,6 +6,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AnnouncementBanner } from "@/components/announcement-banner";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
@@ -109,6 +110,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           disableTransitionOnChange
         >
           <NextIntlClientProvider>
+            <AnnouncementBanner />
             {children}
           </NextIntlClientProvider>
         </ThemeProvider>
