@@ -1,6 +1,6 @@
 const CLI_VERSION = "2.1.80";
 
-export const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
+export const CLAUDE_MODEL = "claude-haiku-5-5";
 
 export const CLAUDE_HEADERS: Record<string, string> = {
   "anthropic-version": "2023-06-01",
