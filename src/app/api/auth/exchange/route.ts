@@ -46,5 +46,9 @@ export async function POST(request: NextRequest) {
     refresh_token: json.refresh_token,
     access_token: json.access_token,
     email: json.account?.email_address ?? null,
+    refresh_token_expires_in:
+      typeof json.refresh_token_expires_in === "number"
+        ? json.refresh_token_expires_in
+        : null,
   });
 }

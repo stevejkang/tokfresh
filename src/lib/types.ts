@@ -3,6 +3,11 @@ export interface SetupState {
   claudeRefreshToken: string | null;
   claudeAccessToken: string | null;
   claudeEmail: string | null;
+  claudeLoginExpiresAt: number | null;
+  claudeLoginLifetimeDays: number | null;
+  reminderOptOut: boolean;
+  reminderUseClaudeEmail: boolean;
+  reminderEmail: string;
   startTime: string;
   timezone: string;
   notificationType: "none" | "slack" | "discord";
@@ -23,6 +28,11 @@ export const INITIAL_SETUP_STATE: SetupState = {
   claudeRefreshToken: null,
   claudeAccessToken: null,
   claudeEmail: null,
+  claudeLoginExpiresAt: null,
+  claudeLoginLifetimeDays: null,
+  reminderOptOut: false,
+  reminderUseClaudeEmail: true,
+  reminderEmail: "",
   startTime: "06:00",
   timezone: "Asia/Seoul",
   notificationType: "none",

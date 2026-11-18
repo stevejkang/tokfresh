@@ -65,6 +65,9 @@ import {
   deployWorker,
 } from "@/lib/cloudflare-api";
 import { trackEvent } from "@/lib/analytics";
+import { DEFAULT_LOGIN_LIFETIME_DAYS, REMINDER_LEAD_DAYS } from "@/lib/reminder-email";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const STEP_TITLES_EN = [
   "Connect Claude",
@@ -105,6 +108,8 @@ function SetupPageContent() {
   const [oauthOpened, setOauthOpened] = useState(false);
   const [deployProgress, setDeployProgress] = useState<string[]>([]);
   const [subscribeEmail, setSubscribeEmail] = useState("");
+  const [subscribeUseClaudeEmail, setSubscribeUseClaudeEmail] = useState(true);
+  const [reminderResult, setReminderResult] = useState<{ status: "scheduled" | "error"; remindAt?: number } | null>(null);
   const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "submitting" | "success" | "already" | "error">("idle");
   const trackedSteps = useRef(new Set<number>());
   const trackedActions = useRef(new Set<string>());
@@ -176,10 +181,13 @@ function SetupPageContent() {
       trackSetupEvent("setup_oauth_exchange_error", { error_type: "missing_email" });
     } else if (result.success) {
       sessionStorage.removeItem("tokfresh_verifier");
+      const loginLifetimeSeconds = result.refreshTokenExpiresIn ?? DEFAULT_LOGIN_LIFETIME_DAYS * 86400;
       update({
         claudeRefreshToken: result.refreshToken ?? null,
         claudeAccessToken: result.accessToken ?? null,
         claudeEmail: result.email ?? null,
+        claudeLoginExpiresAt: Date.now() + loginLifetimeSeconds * 1000,
+        claudeLoginLifetimeDays: Math.max(1, Math.round(loginLifetimeSeconds / 86400)),
         step: 2,
       });
       trackSetupEvent("setup_oauth_exchange_success");
@@ -199,10 +207,47 @@ function SetupPageContent() {
     update({ step: 3 });
   };
 
+  const reminderRecipient = state.reminderUseClaudeEmail ? state.claudeEmail ?? "" : state.reminderEmail.trim();
+  const reminderRecipientValid = state.reminderOptOut || EMAIL_PATTERN.test(reminderRecipient);
+  const loginLifetimeDays = state.claudeLoginLifetimeDays ?? DEFAULT_LOGIN_LIFETIME_DAYS;
+  const effectiveSubscribeEmail = subscribeUseClaudeEmail ? state.claudeEmail ?? "" : subscribeEmail.trim();
+
+  const scheduleReminder = async () => {
+    if (state.reminderOptOut || !state.claudeEmail || !state.claudeLoginExpiresAt) return;
+
+    try {
+      const res = await fetch("/api/remind", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: reminderRecipient,
+          claudeEmail: state.claudeEmail,
+          expiresAt: state.claudeLoginExpiresAt,
+          timeZone: state.timezone,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReminderResult({ status: "scheduled", remindAt: data.remindAt });
+        trackSetupEvent("setup_reminder_result", { result: "scheduled", own_email: state.reminderUseClaudeEmail ? "true" : "false" });
+      } else {
+        setReminderResult({ status: "error" });
+        trackSetupEvent("setup_reminder_result", { result: "error" });
+      }
+    } catch {
+      setReminderResult({ status: "error" });
+      trackSetupEvent("setup_reminder_result", { result: "error" });
+    }
+  };
+
   const handleNotificationContinue = () => {
     if (!trackedActions.current.has("notification_configured")) {
       trackedActions.current.add("notification_configured");
-      trackSetupEvent("setup_notification_configured", { type: state.notificationType, failure_only: state.notifyOnFailureOnly ? "true" : "false" });
+      trackSetupEvent("setup_notification_configured", {
+        type: state.notificationType,
+        failure_only: state.notifyOnFailureOnly ? "true" : "false",
+        reminder: state.reminderOptOut ? "opt_out" : state.reminderUseClaudeEmail ? "claude_email" : "custom_email",
+      });
     }
     update({ step: 4 });
   };
@@ -268,6 +313,7 @@ function SetupPageContent() {
     if (result.success) {
       update({ deploymentStatus: "success", workerName: result.workerName ?? null, step: 5 });
       trackSetupEvent("setup_deploy_success", { attempt });
+      void scheduleReminder();
     } else {
       const error = result.error ?? "Deployment failed";
       const errorCode = result.errorCode ?? null;
@@ -283,16 +329,16 @@ function SetupPageContent() {
   };
 
   const handleSubscribe = async () => {
-    if (!subscribeEmail.trim()) return;
+    if (!effectiveSubscribeEmail) return;
 
-    trackSetupEvent("setup_subscribe_submitted");
+    trackSetupEvent("setup_subscribe_submitted", { own_email: subscribeUseClaudeEmail ? "true" : "false" });
     setSubscribeStatus("submitting");
 
     try {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: subscribeEmail.trim() }),
+        body: JSON.stringify({ email: effectiveSubscribeEmail }),
       });
 
       const data = await res.json();
@@ -913,13 +959,61 @@ function SetupPageContent() {
             </div>
           </div>
         )}
+
+        <Separator />
+
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+          <h4 className="mb-1 flex items-center gap-2 text-sm font-semibold text-amber-600 dark:text-amber-300">
+            <AlertCircle className="h-4 w-4" />
+            {t("reminderTitle")}
+          </h4>
+          <p className="mb-3 text-xs text-muted-foreground">
+            {t("reminderDescription", { days: loginLifetimeDays, leadDays: REMINDER_LEAD_DAYS })}
+          </p>
+
+          <div className={`space-y-3 ${state.reminderOptOut ? "opacity-50" : ""}`}>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="reminder-use-claude-email"
+                checked={state.reminderUseClaudeEmail}
+                onCheckedChange={(checked) =>
+                  update({ reminderUseClaudeEmail: checked === true })
+                }
+                disabled={state.reminderOptOut}
+              />
+              <Label htmlFor="reminder-use-claude-email" className="text-sm font-normal">
+                {t("useClaudeEmail")}
+              </Label>
+            </div>
+            <Input
+              type="email"
+              placeholder={t("subscribePlaceholder")}
+              value={state.reminderUseClaudeEmail ? state.claudeEmail ?? "" : state.reminderEmail}
+              onChange={(e) => update({ reminderEmail: e.target.value })}
+              disabled={state.reminderOptOut || state.reminderUseClaudeEmail}
+            />
+          </div>
+
+          <div className="mt-3 flex items-center space-x-2">
+            <Checkbox
+              id="reminder-opt-out"
+              checked={state.reminderOptOut}
+              onCheckedChange={(checked) =>
+                update({ reminderOptOut: checked === true })
+              }
+            />
+            <Label htmlFor="reminder-opt-out" className="text-sm font-normal text-muted-foreground">
+              {t("reminderOptOut")}
+            </Label>
+          </div>
+        </div>
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="ghost" onClick={() => update({ step: 2 })}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t("back")}
         </Button>
-        <Button onClick={handleNotificationContinue}>
+        <Button onClick={handleNotificationContinue} disabled={!reminderRecipientValid}>
           {t("continue")}
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
@@ -1166,6 +1260,24 @@ function SetupPageContent() {
             </AlertDescription>
           </Alert>
 
+          {reminderResult?.status === "scheduled" && reminderResult.remindAt && (
+            <div className="flex items-start gap-2 rounded-md bg-emerald-500/10 px-3 py-2 text-xs text-emerald-600 dark:text-emerald-400">
+              <Mail className="mt-0.5 h-3 w-3 shrink-0" />
+              <span>
+                {t("reminderScheduled", {
+                  email: reminderRecipient,
+                  date: new Date(reminderResult.remindAt).toLocaleDateString(undefined, { timeZone: state.timezone }),
+                })}
+              </span>
+            </div>
+          )}
+          {reminderResult?.status === "error" && (
+            <div className="flex items-start gap-2 rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
+              <span>{t("reminderError", { days: loginLifetimeDays })}</span>
+            </div>
+          )}
+
           <Separator />
 
           <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
@@ -1188,17 +1300,28 @@ function SetupPageContent() {
               </div>
             ) : (
               <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="subscribe-use-claude-email"
+                    checked={subscribeUseClaudeEmail}
+                    onCheckedChange={(checked) => setSubscribeUseClaudeEmail(checked === true)}
+                    disabled={subscribeStatus === "submitting"}
+                  />
+                  <Label htmlFor="subscribe-use-claude-email" className="text-sm font-normal">
+                    {t("useClaudeEmail")}
+                  </Label>
+                </div>
                 <div className="flex gap-2">
                   <Input
                     type="email"
                     placeholder={t("subscribePlaceholder")}
-                    value={subscribeEmail}
+                    value={subscribeUseClaudeEmail ? state.claudeEmail ?? "" : subscribeEmail}
                     onChange={(e) => setSubscribeEmail(e.target.value)}
-                    disabled={subscribeStatus === "submitting"}
+                    disabled={subscribeUseClaudeEmail || subscribeStatus === "submitting"}
                   />
                   <Button
                     onClick={handleSubscribe}
-                    disabled={!subscribeEmail.trim() || subscribeStatus === "submitting"}
+                    disabled={!EMAIL_PATTERN.test(effectiveSubscribeEmail) || subscribeStatus === "submitting"}
                   >
                     {subscribeStatus === "submitting" ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

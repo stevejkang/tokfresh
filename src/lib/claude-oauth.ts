@@ -52,6 +52,7 @@ export async function exchangeCode(
   refreshToken?: string;
   accessToken?: string;
   email?: string | null;
+  refreshTokenExpiresIn?: number | null;
   error?: string;
 }> {
   try {
@@ -75,6 +76,7 @@ export async function exchangeCode(
       refreshToken: json.refresh_token,
       accessToken: json.access_token,
       email: json.email ?? null,
+      refreshTokenExpiresIn: json.refresh_token_expires_in ?? null,
     };
   } catch (err) {
     return {
