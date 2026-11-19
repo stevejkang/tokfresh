@@ -75,11 +75,16 @@ export default async function PostDetailPage({
   const format = await getFormatter({ locale });
 
   const categoryLabel = t(categoryTranslationKeys[post.category]);
-  const formattedDate = format.dateTime(new Date(post.publishedAt), {
+  const dateFormat = {
     year: "numeric",
     month: "short",
     day: "numeric",
-  });
+  } as const;
+  const formattedDate = format.dateTime(new Date(post.publishedAt), dateFormat);
+  const formattedUpdatedDate =
+    post.updatedAt && post.updatedAt !== post.publishedAt
+      ? format.dateTime(new Date(post.updatedAt), dateFormat)
+      : null;
 
   const jsonLd = generateArticleJsonLd(post, locale);
 
@@ -120,7 +125,19 @@ export default async function PostDetailPage({
         )}
 
         <p className="mb-12 text-center text-sm text-muted-foreground">
-          {post.author} &middot; {formattedDate}
+          {post.author} &middot;{" "}
+          <time dateTime={post.publishedAt}>
+            {t("publishedAt", { date: formattedDate })}
+          </time>
+          {formattedUpdatedDate && post.updatedAt && (
+            <>
+              {" "}
+              &middot;{" "}
+              <time dateTime={post.updatedAt}>
+                {t("updatedAt", { date: formattedUpdatedDate })}
+              </time>
+            </>
+          )}
         </p>
 
         <div className="mx-auto max-w-prose">
