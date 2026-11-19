@@ -1,79 +1,98 @@
 ---
-title: "Claude Pro vs Max: Usage Limits Explained and How to Choose"
-description: "A clear breakdown of Claude Pro vs Max usage limits, the 5-hour rolling window, weekly caps, and how to decide which plan actually fits how you work."
+title: "Claude Pro vs Max vs Ultra: Usage Limits Explained and How to Choose"
+description: "A clear breakdown of Claude Pro, Max, and Ultra usage limits: the 5-hour window, the fixed weekly reset, the separate Fable cap, and how to decide which plan fits how you work."
 category: "blog"
 author: "Steve Kang"
 publishedAt: "2026-07-14"
+updatedAt: "2026-11-19"
 ---
+
+> **Updated November 2026.** The Max 20x plan is now called **Ultra**: it has no 5-hour limit for verified accounts and 10x Pro usage per week. The separate weekly model cap now applies to **Fable**, not Opus. Weekly limits reset at a fixed time assigned to your account, not on a rolling 7-day basis. This post has been rewritten against Anthropic's current [pricing page](https://claude.com/pricing) and help center.
 
 ## The plans at a glance
 
-Anthropic sells three tiers of Claude subscription for individuals, and the gap between them is bigger than the price tags suggest.
+Anthropic sells three paid tiers of Claude for individuals. Limits are published as multiples of Pro, not as message counts.
 
-| Plan | Price | Roughly | Best for |
-|---|---|---|---|
-| Pro | $20/month ($17/month billed annually) | ~45 messages per 5-hour window | Casual use, occasional coding |
-| Max 5x | $100/month | ~225 messages per 5-hour window | Regular coding sessions, Opus access |
-| Max 20x | $200/month | ~900 messages per 5-hour window | Heavy daily use, professional workloads |
+| Plan | Price | 5-hour limit | Weekly limit | Fable |
+|---|---|---|---|---|
+| Pro | $20/month ($17/month billed annually) | 1x | 1x | Usage credits only |
+| Max | $100/month | 5x Pro | 5x Pro | Up to 50% of weekly limit |
+| Ultra (formerly Max 20x) | $200/month | None (verified accounts) | 10x Pro | Up to 50% of weekly limit |
 
-The "roughly" numbers aren't a hard promise from Anthropic — actual usage depends on message length, model choice, and how much context you're carrying in a conversation. But they're a useful anchor: Max 5x gives roughly five times Pro's budget, Max 20x roughly twenty times, matching the plan names.
+Older guides, including the first version of this post, quoted "~45 / ~225 / ~900 messages per 5 hours." Anthropic doesn't publish message counts, and the help center is explicit about why: how fast you reach a limit depends on the model, the effort level, how long your chats are, and how large your files are. The multiples are the only official numbers.
 
-What isn't obvious from the pricing page: all three plans share the same mechanic for when and how often that budget refills.
+Two changes are easy to miss. Ultra is not "4x Max": per week it is 2x Max (10x vs. 5x Pro). What you're really buying is the removal of the 5-hour limit. And Max and Ultra now include monthly API credits for the Claude Platform ($100 and $200 respectively), on top of priority access at high-traffic times.
 
-## The 5-hour rolling window
+Your usage across claude.ai, Claude Code, and Claude Desktop all counts against the same limits.
 
-Claude doesn't reset usage at midnight, or at any fixed clock time. Every account, Pro or Max, runs a five-hour rolling window starting from your *first* message in a session. Send a message at 8:14 AM, and your window resets at 1:14 PM, not some clean hour.
+## The 5-hour window
 
-This matters more than people expect. Two users on the same plan can have wildly different experiences depending purely on when they happen to start using Claude each day. If your first message consistently lands right before a focused work block, you're fighting your own usage window without realizing it.
+Claude doesn't reset session usage at midnight or on any fixed clock. On Pro and Max, the five-hour period starts when you send your first message, and your limit resets in full five hours later. Send a message at 8:14 AM and the window resets at 1:14 PM. You can see the time remaining under **Current session** in [Settings > Usage](https://claude.ai/settings/usage).
 
-The budget inside that window differs by plan: Pro gives roughly 45 messages before you're throttled, Max 5x roughly 225, Max 20x roughly 900. For light, conversational use, Pro's 45 messages can comfortably cover a window. For large code files, long documents, or heavy back-and-forth iteration, that budget disappears fast — the exact complaint that shows up constantly in Claude user communities.
+This matters more than people expect. Two users on the same plan can have very different days depending on when they happen to send their first message. If yours consistently lands right before a focused work block, you end up fighting your own window. The mechanics are covered in detail in [How Claude's 5-Hour Session Window Actually Works](/posts/how-claude-5-hour-session-window-works).
 
-## The weekly cap nobody expects
+Ultra is the exception. Verified Ultra accounts have no 5-hour limit and work only against the weekly limit. Anthropic verifies accounts automatically from account and payment history; until then a temporary 5-hour limit applies. If you don't see a Current session bar in Settings > Usage, your account is verified.
 
-The 5-hour window isn't the only limit. Both Pro and Max also enforce a separate weekly cap spanning all models combined, calculated on a rolling 7-day basis and resetting at a fixed time specific to your account (visible under Settings > Usage).
+## The weekly limits
 
-Max plans layer on one more restriction: a separate, tighter weekly cap specifically for Opus usage. Opus is Anthropic's most capable and most expensive model to run, so even generous Max plans put a firmer ceiling on it, separate from your overall weekly budget.
+Every paid plan also has a weekly limit that applies across all models. The detail most older write-ups get wrong: it does **not** roll over a trailing 7 days. Each account is assigned a fixed reset day and time, and it stays the same regardless of when you start using Claude or when you subscribed. You get the full weekly allowance each cycle, and the next reset is shown in Settings > Usage.
 
-The practical effect: a Max subscriber who leans heavily on Opus for complex tasks can hit their Opus-specific weekly cap well before touching their overall weekly limit, at which point Claude falls back to a lighter model like Sonnet for the rest of the week unless a manual override is available.
+Max and Ultra add a second, separate weekly limit for **Fable**, Anthropic's top model. Fable can use up to half of your weekly limit. On Pro, Fable isn't part of the included usage at all and runs on usage credits.
+
+So a Max or Ultra subscriber who leans on Fable can hit the Fable cap with half the weekly budget left, and has to finish the week on Opus, Sonnet, or Haiku. Earlier versions of this post described the same thing as an Opus cap; Opus is now covered by the all-models limit.
 
 ## What this actually feels like day to day
 
-The gap between "technically works" and "comfortable to use" shows up clearly once you look at what real users report.
+Pro handles casual, spread-out use fine: a few questions across the day, drafting an email, reviewing a short document. Put Pro through a real coding session and it changes fast. Claude Code and long agentic tasks with large files consume the window far quicker than chat, because each turn re-sends a large context.
 
-Pro handles casual, spread-out use just fine — a few questions across the day, help drafting an email, reviewing a short document, and 45 messages per window rarely feels tight. Push Pro into a real coding session and the story changes fast. One user described burning through their entire Pro limit in about fifteen minutes trying to refactor a 2,000-line file. Another signed up for Pro one evening, burned through their usage in ten minutes, upgraded to Max that same night, and then coded for five straight hours using about 90% of their total weekly usage in that one session.
+Max fixes the immediate problem for most people, but limits don't disappear. A recurring forum question is "how did I hit my weekly limit in a few days?", usually from someone who assumed the 5-hour limit was the only one.
 
-Max fixes the immediate problem for most people, but it doesn't make limits disappear. A recurring question in user forums is some version of "how is it even possible to hit a full weekly limit in just a few hours," usually posted by someone who assumed Max meant unlimited and discovered the weekly cap the hard way, often specifically around Opus. Common enough that some users run two or three Pro accounts in parallel, effectively paying $600+ a year to route around limits, rather than upgrading to a single Max plan that would likely serve them better and cost less.
+Comparing plans by what they actually hold, using the published numbers as multiples of Pro:
+
+| Plan | 5-hour size | Weekly size |
+|---|---|---|
+| Pro | 1 | 1 |
+| Max | 5 | 5 |
+| Ultra | — (no 5-hour limit) | 10 |
+
+The same view makes one practical point clear: **unused quota does not carry over.** Whatever is left in a 5-hour window when it resets, or in a week when it resets, is gone. Planning around when windows reset is worth as much as the size of the window.
 
 ## Choosing between them
 
-A rough framework, based on how people actually describe their own usage:
+**Stay on Pro if** you rarely hit limits, you're fine on Opus and Sonnet, and your usage is spread across the day rather than packed into long sessions. If you want Fable occasionally, Pro can pay for it with usage credits.
 
-**Stay on Pro if** you're a casual user who doesn't hit limits on most days, you mainly work with Sonnet rather than Opus, and your usage is spread out across a day rather than concentrated into long focused sessions.
+**Upgrade to Max if** you regularly hit the Pro 5-hour or weekly limit, use Claude Code daily, or want Fable included. Max is the plan where the 5-hour window is still the thing you'll feel most.
 
-**Upgrade to Max 5x if** you regularly burn through your Pro limit before the middle of the week, want reliable access to Opus for harder problems, or need the priority routing and higher output limits for your workflow.
+**Upgrade to Ultra if** the 5-hour limit is what keeps stopping you: long agentic runs, background tasks that go for hours, or days where you need to work without breaks. Ultra doubles Max's weekly budget, but the bigger change is removing the session limit entirely.
 
-**Upgrade to Max 20x if** you're a genuinely heavy daily user, using Claude professionally or across a team where volume matters, and the per-message cost of Max 20x still comes out cheaper than juggling multiple Pro accounts or hitting constant interruptions.
+If you work in an organization, Team seats are a separate track: a Standard seat gives more usage than Pro, and a Premium seat gives 5x a Standard seat.
 
-Max also includes priority routing during high-traffic periods, higher output limits per response, an extended context window for long documents or codebases, and earlier access to new features as Anthropic ships them.
+## Timing: what upgrading does and doesn't fix
 
-## The timing lever that upgrading doesn't touch
+On Pro and Max, upgrading solves a *budget* problem, not a *timing* problem. Both run on the same 5-hour window. If your first message of the day lands at 10 AM, your reset lands at 3 PM on either plan. The plan changes how much fits in a window, not when the window starts.
 
-Easy to miss: upgrading from Pro to Max solves a *budget* problem. It doesn't touch the *timing* problem, because both plans run on the exact same five-hour rolling window mechanic described above.
+Controlling that timing means triggering your first call at a moment you choose, rather than whenever your first real message happens. [TokFresh](https://github.com/stevejkang/tokfresh) automates this: a Cloudflare Worker on your own account pre-triggers your usage cycle on a schedule, so the reset lands before your workday instead of in the middle of it.
 
-If your first Claude message of the day lands at 10 AM, your reset lands at 3 PM, whether you're on Pro or Max 20x. The plan changes how much you get inside that window — it does nothing to change when the window starts, and that timing is a separate lever, just as relevant on a $20 plan as on a $200 one.
-
-Controlling that timing means deliberately triggering your first call at a moment you choose, rather than whenever your first real message of the day happens to land. Do that consistently and your reset windows start lining up with your actual work hours instead of drifting. [TokFresh](https://github.com/stevejkang/tokfresh) automates exactly this: a Cloudflare Worker running on your own account pre-triggers your usage cycle on a schedule you set, so your reset consistently lands before your workday starts rather than in the middle of it.
+Verified Ultra accounts don't need this, since there's no 5-hour window to align. The weekly reset can't be shifted on any plan: it's fixed per account.
 
 ## What to do when you actually hit a limit
 
-If you hit a limit mid-session, there are a few practical options rather than just waiting it out.
+**Wait for the reset.** The 5-hour window refreshes on its own; the weekly limit resets at your account's fixed weekly time. Both are shown in Settings > Usage.
 
-**Wait for the reset.** The most straightforward option: the 5-hour window refreshes on its own, and if the weekly cap is what you've hit, that resets on its fixed weekly schedule.
+**Use a limit reset if you have one.** Anthropic sometimes grants limit resets, which restore your 5-hour session limit or weekly limits to full.
 
-**Upgrade your plan.** If this is a recurring pattern rather than a one-off, moving from Pro to Max 5x, or from Max 5x to Max 20x, addresses the root cause directly.
+**Enable usage credits.** All paid plans can turn on usage credits, so work continues on metered credits instead of stopping when included usage runs out.
 
-**Enable usage-based credits.** Anthropic offers a pay-per-token option that kicks in once your plan's included usage runs out, letting you keep working past the cap at metered pricing instead of waiting.
+**Switch to a lighter model or lower effort.** Moving from Fable to Opus, Opus to Sonnet, or lowering the effort level for routine work stretches the remaining budget. Turning off connectors and tools you don't need also helps, since they're token-heavy.
 
-**Switch to a lighter model.** Dropping from Opus to Sonnet, or Sonnet to Haiku, for less demanding parts of your task stretches your remaining budget further without waiting or paying extra.
+**Upgrade.** If you hit the same wall every week, Max or Ultra fixes the cause. An upgrade takes effect immediately.
 
-None of these fix the underlying timing issue on their own — that part is about when your window starts, not how big it is. Most people's real answer isn't picking one lever over the other. It's using the right plan for their volume, and controlling their reset timing on top of it.
+Most people's real answer isn't one of these alone. It's the right plan for their volume, plus control over when their windows start.
+
+## Sources
+
+- [Claude pricing](https://claude.com/pricing)
+- [How do usage and length limits work?](https://support.claude.com/en/articles/11647753-understanding-usage-and-length-limits)
+- [What is the Pro plan?](https://support.claude.com/en/articles/8325606-what-is-the-pro-plan)
+- [What is the Max plan?](https://support.claude.com/en/articles/11049741-what-is-the-max-plan)
+- [What is the Ultra plan?](https://support.claude.com/en/articles/17728952-what-is-the-ultra-plan)
