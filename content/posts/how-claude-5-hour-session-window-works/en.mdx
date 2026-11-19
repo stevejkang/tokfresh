@@ -4,9 +4,12 @@ description: "Claude resets usage every 5 hours from your first message, not on 
 category: "blog"
 author: "Steve Kang"
 publishedAt: "2026-04-15"
+updatedAt: "2026-11-19"
 ---
 
-Ask ten Claude Pro users how the usage reset works and you'll get ten different answers, most of them wrong. That's not on them — Anthropic never spells out the mechanism, so people fill the gaps with assumptions that feel logical but aren't.
+> **Updated November 2026.** Anthropic's help center now documents this rule directly, and the mechanism below matches it. Two things changed since this post was first written: the Ultra plan (formerly Max 20x) has no 5-hour limit for verified accounts, and the weekly limit resets at a fixed time per account. Both are covered below.
+
+Ask ten Claude Pro users how the usage reset works and you'll get ten different answers, most of them wrong. For a long time Anthropic didn't spell out the mechanism, so people filled the gaps with assumptions that felt logical but weren't. The [help center](https://support.claude.com/en/articles/11647753-understanding-usage-and-length-limits) now states it plainly, yet the old assumptions are still everywhere.
 
 Once you understand the actual rule, the frustrating moments start making sense. Better still, there's a lever most people never touch.
 
@@ -26,11 +29,13 @@ This is the costliest misunderstanding, because it makes people passive. They hi
 
 ## How it actually works
 
-The real rule: **the 5-hour window starts from your first API call in a session, and runs on a rolling basis.**
+The real rule: **the 5-hour window starts from your first message in a session, and resets in full five hours later.** In Anthropic's words: "The period starts when you send your first message, and your limit resets in full five hours later."
 
 Your first message after being idle (or after a previous window closes) stamps the start of a new 5-hour block. Every message within that block draws from the same usage pool, and the block closes exactly 5 hours after it opened, regardless of how many messages you sent or how recent your last one was.
 
 Nothing happens automatically once the block closes. You don't get a fresh window until you send another message, which opens a brand new block and restarts the cycle.
+
+Usage from claude.ai, Claude Code, and Claude Desktop all draws from the same window, so a Claude Code call opens it just as a chat message does. You can watch the window in [Settings > Usage](https://claude.ai/settings/usage) under **Current session**, including the time remaining.
 
 This is why the "last message" theory falls apart under scrutiny. The clock is anchored to the *first* touch of a session, not renewed by ongoing activity. Message 47 doesn't push your reset time later — only starting a *new* session, after the previous one expires, does that.
 
@@ -42,9 +47,11 @@ If your first message happens organically, that's usually somewhere between 9 an
 
 Two windows cover your workday, but coverage is imperfect. The second bleeds past quitting time, and there's dead time between window one ending and you noticing.
 
-Now imagine your first message fires at 6 AM, three hours before you sit down. Window one: 6 AM–11 AM. Window two: 11 AM–4 PM, opening automatically. Window three: 4 PM–9 PM, again right on time.
+Now imagine your first message fires at 6 AM, three hours before you sit down. Window one: 6 AM–11 AM. Window two: 11 AM–4 PM, opened by a trigger at exactly 11. Window three: 4 PM–9 PM, again right on time.
 
 That's three windows overlapping your workday instead of two, aligned to when you're actually working rather than when you happened to remember to send a message. Three sessions instead of two is roughly 50% more usable capacity across the same 9 hours, purely from shifting when the first window starts.
+
+One caveat: every paid plan also has a weekly limit across all models, and it resets at a fixed day and time assigned to your account, not on a rolling basis. More 5-hour windows let you spend your weekly budget when you need it, but they don't enlarge it. If you already hit the weekly limit before the week ends, the extra window helps less.
 
 ## The real cost of getting cut off
 
@@ -60,7 +67,9 @@ Most people miss this: you can't change the 5-hour interval, but you *can* chang
 
 If your first message lands naturally at 9 or 10 AM, that's your day's usage anchor, whether you like it or not. Send one at 6 AM, before you're even awake, and the whole day's rhythm shifts earlier, lining your windows up with your actual working hours instead of trailing behind them.
 
-This is the single biggest optimization available to any Claude Pro or Max user, and it costs nothing. You're not buying tokens or upgrading your plan, just moving the start line.
+This is the single biggest optimization available to any Claude Free, Pro, or Max user, and it costs nothing. You're not buying tokens or upgrading your plan, just moving the start line.
+
+Two exceptions. Verified Ultra accounts have no 5-hour limit at all, so there's no window to align. And no plan lets you move the weekly reset: it's fixed per account.
 
 ## Automating the trigger
 
