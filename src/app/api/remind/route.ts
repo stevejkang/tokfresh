@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { redis } from "@/lib/redis";
 import { buildReminderEmail, REMINDER_LEAD_DAYS } from "@/lib/reminder-email";
+import { verifyReminderToken } from "@/lib/reminder-token";
 
 const FROM = "TokFresh <noreply@updates.tokfresh.com>";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -18,7 +19,8 @@ function isValidEmail(value: unknown): value is string {
 
 export async function POST(request: NextRequest) {
   const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
+  const signingSecret = process.env.REMINDER_SIGNING_SECRET;
+  if (!apiKey || !signingSecret) {
     return NextResponse.json(
       { success: false, error: "Reminder not configured" },
       { status: 500 },
@@ -41,14 +43,20 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json().catch(() => null);
-  const { email, claudeEmail, expiresAt, timeZone, locale } = body ?? {};
+  const { email, reminderToken, timeZone, locale } = body ?? {};
 
-  if (!isValidEmail(email) || !isValidEmail(claudeEmail)) {
+  const claims = verifyReminderToken(reminderToken, signingSecret);
+  if (!claims) {
+    return NextResponse.json({ success: false, error: "Invalid reminder token" }, { status: 401 });
+  }
+  const { claudeEmail, expiresAt } = claims;
+
+  if (!isValidEmail(email)) {
     return NextResponse.json({ success: false, error: "Invalid email" }, { status: 400 });
   }
 
   const now = Date.now();
-  if (typeof expiresAt !== "number" || expiresAt <= now || expiresAt > now + 90 * DAY_MS) {
+  if (expiresAt <= now || expiresAt > now + 90 * DAY_MS) {
     return NextResponse.json({ success: false, error: "Invalid expiresAt" }, { status: 400 });
   }
 

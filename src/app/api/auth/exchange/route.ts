@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { DEFAULT_LOGIN_LIFETIME_DAYS } from "@/lib/reminder-email";
+import { issueReminderToken } from "@/lib/reminder-token";
 
 const CLIENT_ID = "9d1c250a-e61b-44d9-88ed-5944d1962f5e";
 const REDIRECT_URI = "https://console.anthropic.com/oauth/code/callback";
@@ -41,14 +43,31 @@ export async function POST(request: NextRequest) {
   }
 
   const json = await response.json();
+  const email: string | null = json.account?.email_address ?? null;
+  const refreshTokenExpiresIn: number | null =
+    typeof json.refresh_token_expires_in === "number"
+      ? json.refresh_token_expires_in
+      : null;
+
+  const secret = process.env.REMINDER_SIGNING_SECRET;
+  const reminderToken =
+    secret && email
+      ? issueReminderToken(
+          {
+            claudeEmail: email,
+            expiresAt:
+              Date.now() +
+              (refreshTokenExpiresIn ?? DEFAULT_LOGIN_LIFETIME_DAYS * 86400) * 1000,
+          },
+          secret,
+        )
+      : null;
 
   return NextResponse.json({
     refresh_token: json.refresh_token,
     access_token: json.access_token,
-    email: json.account?.email_address ?? null,
-    refresh_token_expires_in:
-      typeof json.refresh_token_expires_in === "number"
-        ? json.refresh_token_expires_in
-        : null,
+    email,
+    refresh_token_expires_in: refreshTokenExpiresIn,
+    reminder_token: reminderToken,
   });
 }

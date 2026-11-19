@@ -189,6 +189,7 @@ function SetupPageContent() {
         claudeEmail: result.email ?? null,
         claudeLoginExpiresAt: Date.now() + loginLifetimeSeconds * 1000,
         claudeLoginLifetimeDays: Math.max(1, Math.round(loginLifetimeSeconds / 86400)),
+        reminderToken: result.reminderToken ?? null,
         step: 2,
       });
       trackSetupEvent("setup_oauth_exchange_success");
@@ -214,7 +215,7 @@ function SetupPageContent() {
   const effectiveSubscribeEmail = subscribeUseClaudeEmail ? state.claudeEmail ?? "" : subscribeEmail.trim();
 
   const scheduleReminder = async () => {
-    if (state.reminderOptOut || !state.claudeEmail || !state.claudeLoginExpiresAt) return;
+    if (state.reminderOptOut || !state.reminderToken) return;
 
     try {
       const res = await fetch("/api/remind", {
@@ -222,8 +223,7 @@ function SetupPageContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: reminderRecipient,
-          claudeEmail: state.claudeEmail,
-          expiresAt: state.claudeLoginExpiresAt,
+          reminderToken: state.reminderToken,
           timeZone: state.timezone,
           locale,
         }),

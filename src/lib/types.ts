@@ -5,6 +5,7 @@ export interface SetupState {
   claudeEmail: string | null;
   claudeLoginExpiresAt: number | null;
   claudeLoginLifetimeDays: number | null;
+  reminderToken: string | null;
   reminderOptOut: boolean;
   reminderUseClaudeEmail: boolean;
   reminderEmail: string;
@@ -30,6 +31,7 @@ export const INITIAL_SETUP_STATE: SetupState = {
   claudeEmail: null,
   claudeLoginExpiresAt: null,
   claudeLoginLifetimeDays: null,
+  reminderToken: null,
   reminderOptOut: false,
   reminderUseClaudeEmail: true,
   reminderEmail: "",
